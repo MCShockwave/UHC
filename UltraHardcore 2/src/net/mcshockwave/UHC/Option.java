@@ -150,6 +150,10 @@ public enum Option {
 		Material.NETHERRACK,
 		0,
 		true),
+	Damage_Indicators(
+		Material.REDSTONE,
+		0,
+		false),
 	UHC_Mode(
 		Material.GOLD_INGOT,
 		0,

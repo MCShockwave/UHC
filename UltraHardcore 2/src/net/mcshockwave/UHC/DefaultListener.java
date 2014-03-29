@@ -7,6 +7,7 @@ import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
+import net.mcshockwave.UHC.Utils.LocUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -84,6 +85,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.WordUtils;
 
+import com.dsh105.holoapi.HoloAPI;
 import com.dsh105.holoapi.api.Hologram;
 import com.dsh105.holoapi.api.HologramFactory;
 
@@ -339,11 +341,23 @@ public class DefaultListener implements Listener {
 		}
 
 		if (e instanceof Player) {
-			Player p = (Player) e;
+			final Player p = (Player) e;
 
 			if (UltraHC.started && event.getCause() == DamageCause.SUFFOCATION && UltraHC.count.getTime() <= 60) {
 				p.teleport(p.getLocation().add(0, 1, 0));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 10, 100));
+			}
+			
+			if (Option.Damage_Indicators.getBoolean()) {
+				final double health = p.getHealth();
+				Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+					public void run() {
+						double healthEnd = p.getHealth();
+						HoloAPI.getManager().createSimpleHologram(
+								LocUtils.addRand(p.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
+								"§c§l-" + (health - healthEnd) + " HP");
+					}
+				}, 1l);
 			}
 		}
 	}
@@ -446,6 +460,10 @@ public class DefaultListener implements Listener {
 		if (e instanceof Player && Option.UHC_Mode.getBoolean()) {
 			if (event.getRegainReason() == RegainReason.SATIATED) {
 				event.setCancelled(true);
+			} else if (Option.Damage_Indicators.getBoolean()) {
+				HoloAPI.getManager().createSimpleHologram(
+						LocUtils.addRand(e.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
+						"§a§l+" + event.getAmount() + " HP");
 			}
 		}
 	}
