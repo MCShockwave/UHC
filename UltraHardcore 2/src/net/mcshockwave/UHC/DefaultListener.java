@@ -353,9 +353,13 @@ public class DefaultListener implements Listener {
 				Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
 					public void run() {
 						double healthEnd = p.getHealth();
+						double damage = health - healthEnd;
+						if (damage <= 0) {
+							return;
+						}
 						HoloAPI.getManager().createSimpleHologram(
 								LocUtils.addRand(p.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
-								"§c§l-" + (health - healthEnd) + " HP");
+								"§c§l-" + (damage) + " HP");
 					}
 				}, 1l);
 			}

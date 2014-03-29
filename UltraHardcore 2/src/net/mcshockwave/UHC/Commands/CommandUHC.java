@@ -98,6 +98,11 @@ public class CommandUHC implements CommandExecutor {
 					Bukkit.broadcastMessage("§cERROR: " + e.getMessage());
 				}
 			}
+			if (args[0].equalsIgnoreCase("sethealth")) {
+				Player set = Bukkit.getPlayer(args[1]);
+				
+				set.setHealth(Double.parseDouble(args[2]));
+			}
 		}
 		return true;
 	}
