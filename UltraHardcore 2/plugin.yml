@@ -1,0 +1,17 @@
+name: UltraHardcore
+version: 2.0
+main: net.mcshockwave.UHC.UltraHC
+author: Blaxcraft
+depend: [WorldEdit, HoloAPI]
+softdepend: [MCShockwave]
+commands:
+   uhc:
+   team:
+   vote:
+      aliases: [v, vo]
+   silence:
+      aliases: [sil]
+   restr:
+      aliases: [res]
+   options:
+      aliases: [opt, option]
