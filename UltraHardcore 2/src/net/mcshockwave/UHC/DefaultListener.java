@@ -196,7 +196,7 @@ public class DefaultListener implements Listener {
 			return p.isOp();
 		}
 
-		if (Bukkit.getPluginManager().getPlugin("MCShockwave") != null) {
+		if (UltraHC.isMCShockwaveEnabled()) {
 			return SQLTable.hasRank(p.getName(), Rank.valueOf(op.toUpperCase().replace(' ', '_')));
 		} else {
 			return p.isWhitelisted();
@@ -222,7 +222,7 @@ public class DefaultListener implements Listener {
 						p.getLocation().getChunk().load();
 						UltraHC.onDeath(p);
 					}
-				}.runTaskLater(UltraHC.ins, 6000);
+				}.runTaskLater(UltraHC.ins, 12000);
 
 				logOut.put(p.getName(), bt);
 			}
@@ -521,7 +521,7 @@ public class DefaultListener implements Listener {
 		// }
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		final Player p = event.getPlayer();
 
