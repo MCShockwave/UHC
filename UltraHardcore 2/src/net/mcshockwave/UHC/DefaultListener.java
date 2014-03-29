@@ -89,9 +89,9 @@ import com.dsh105.holoapi.api.HologramFactory;
 
 public class DefaultListener implements Listener {
 
-	Random	rand	= new Random();
-	
-	public static int maxLength = 12;
+	Random				rand		= new Random();
+
+	public static int	maxLength	= 12;
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
@@ -134,12 +134,12 @@ public class DefaultListener implements Listener {
 
 			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
 		}
-		
+
 		if (p.getName().length() > maxLength) {
 			p.setPlayerListName(getShortName(p));
 		}
 	}
-	
+
 	public static String getShortName(Player p) {
 		String name = p.getName();
 		name = name.substring(0, maxLength) + "..";
@@ -361,11 +361,11 @@ public class DefaultListener implements Listener {
 		Entity ee = event.getEntity();
 		Entity de = event.getDamager();
 
-		if (ee instanceof Player && de instanceof Player) {
+		if (de instanceof Player) {
 			// Player p = (Player) ee;s
 			Player d = (Player) de;
 
-			if (UltraHC.started && Option.No_Kill_Time.getInt() > UltraHC.count.getTotalMins()) {
+			if (ee instanceof Player && UltraHC.started && Option.No_Kill_Time.getInt() > UltraHC.count.getTotalMins()) {
 				event.setCancelled(true);
 				d.sendMessage("§cKilling is disabled until " + Option.No_Kill_Time.getInt() + " minutes in!");
 			}
@@ -563,14 +563,14 @@ public class DefaultListener implements Listener {
 			p.teleport(event.getTo());
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		Player p = event.getPlayer();
-		
+
 		if (p.isOp() && !UltraHC.isMCShockwaveEnabled()) {
 			String mes = event.getMessage();
-			
+
 			if (mes.contains("@all")) {
 				event.setCancelled(true);
 				for (Player p2 : Bukkit.getOnlinePlayers()) {
