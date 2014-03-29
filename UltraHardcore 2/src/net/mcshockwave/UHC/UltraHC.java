@@ -170,7 +170,7 @@ public class UltraHC extends JavaPlugin {
 					w.setTime(count.runCount * 20);
 				}
 
-				long c = count.runCountMin;
+				long c = count.runCountMin - 1;
 				boolean isM = count.runCount % 60 == 0;
 				if (isM && c % Option.Mark_Time.getInt() == 0 && c != 0) {
 					Bukkit.broadcastMessage("§c§lMARK " + c + " MINS IN!");
