@@ -347,6 +347,9 @@ public class TeamSystem {
 						if (u.getPlayers().contains(p)) {
 							u.removePlayer(p);
 							t.addPlayer(p);
+							if (p.getName().length() > DefaultListener.maxLength) {
+								p.setPlayerListName(t.getPrefix() + DefaultListener.getShortName(p));
+							}
 							done = true;
 						}
 					} while (!done);
