@@ -459,17 +459,22 @@ public class DefaultListener implements Listener {
 		}
 	}
 
+	RegainReason[]	noHolo	= { RegainReason.MAGIC, RegainReason.MAGIC_REGEN };
+
 	@EventHandler
 	public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
 		Entity e = event.getEntity();
 		if (e instanceof Player && Option.UHC_Mode.getBoolean()) {
 			if (event.getRegainReason() == RegainReason.SATIATED) {
 				event.setCancelled(true);
-			} else if (Option.Damage_Indicators.getBoolean()) {
-				HoloAPI.getManager().createSimpleHologram(
-						LocUtils.addRand(e.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
-						"§a§l+" + event.getAmount() + " HP");
 			}
+		}
+
+		if (e instanceof Player && Option.Damage_Indicators.getBoolean()
+				&& !Arrays.asList(noHolo).contains(event.getRegainReason())) {
+			HoloAPI.getManager().createSimpleHologram(
+					LocUtils.addRand(e.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
+					"§a§l+" + event.getAmount() + " HP");
 		}
 	}
 
