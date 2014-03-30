@@ -470,8 +470,11 @@ public class DefaultListener implements Listener {
 			}
 		}
 
-		if (e instanceof Player && Option.Damage_Indicators.getBoolean()
-				&& !Arrays.asList(noHolo).contains(event.getRegainReason())) {
+		if (e instanceof Player
+				&& Option.Damage_Indicators.getBoolean()
+				&& !Arrays.asList(noHolo).contains(event.getRegainReason())
+				&& (Option.UHC_Mode.getBoolean() && event.getRegainReason() == RegainReason.SATIATED || !Option.UHC_Mode
+						.getBoolean())) {
 			HoloAPI.getManager().createSimpleHologram(
 					LocUtils.addRand(e.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
 					"§a§l+" + event.getAmount() + " HP");
