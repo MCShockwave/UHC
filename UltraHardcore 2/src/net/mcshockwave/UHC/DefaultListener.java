@@ -347,13 +347,14 @@ public class DefaultListener implements Listener {
 				p.teleport(p.getLocation().add(0, 1, 0));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 10, 100));
 			}
-			
+
 			if (Option.Damage_Indicators.getBoolean()) {
 				final double health = p.getHealth();
 				Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
 					public void run() {
 						double healthEnd = p.getHealth();
 						double damage = health - healthEnd;
+						damage = (double) Math.round(damage * 10) / 10;
 						if (damage <= 0) {
 							return;
 						}
