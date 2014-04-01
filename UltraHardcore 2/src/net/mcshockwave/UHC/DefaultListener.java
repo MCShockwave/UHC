@@ -135,6 +135,16 @@ public class DefaultListener implements Listener {
 			event.setJoinMessage("");
 
 			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
+		} else {
+			for (Player p2 : Bukkit.getOnlinePlayers()) {
+				if (UltraHC.specs.contains(p2.getName())) {
+					p.hidePlayer(p2);
+				} else {
+					p.showPlayer(p2);
+				}
+
+				p2.showPlayer(p);
+			}
 		}
 
 		if (p.getName().length() > maxLength) {
