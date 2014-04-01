@@ -213,10 +213,11 @@ public class DefaultListener implements Listener {
 				event.disallow(Result.KICK_WHITELIST, "§cYou are out of this game!");
 			} else if (!UltraHC.players.contains(p.getName()) && !canSpectate(p)) {
 				event.disallow(Result.KICK_WHITELIST, "§cThe game has already started!");
-			} else if (logOut.containsKey(p.getName())) {
-				logOut.get(p.getName()).cancel();
-				logOut.remove(p.getName());
 			}
+			// else if (logOut.containsKey(p.getName())) {
+			// logOut.get(p.getName()).cancel();
+			// logOut.remove(p.getName());
+			// }
 		}
 	}
 
@@ -236,7 +237,7 @@ public class DefaultListener implements Listener {
 		}
 	}
 
-	HashMap<String, BukkitTask>	logOut	= new HashMap<>();
+	// HashMap<String, BukkitTask> logOut = new HashMap<>();
 
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
@@ -247,19 +248,20 @@ public class DefaultListener implements Listener {
 				UltraHC.score.getPlayerTeam(p).removePlayer(p);
 			}
 		} else {
-			if (!UltraHC.specs.contains(p.getName())) {
-				BukkitTask bt = new BukkitRunnable() {
-					public void run() {
-						logOut.remove(p.getName());
-						Bukkit.broadcastMessage("§c" + p.getName() + " was logged out too long!");
-						p.getLocation().getChunk().load();
-						UltraHC.players.remove(p.getName());
-						UltraHC.onDeath(p);
-					}
-				}.runTaskLater(UltraHC.ins, 12000);
-
-				logOut.put(p.getName(), bt);
-			}
+			// if (!UltraHC.specs.contains(p.getName())) {
+			// BukkitTask bt = new BukkitRunnable() {
+			// public void run() {
+			// logOut.remove(p.getName());
+			// Bukkit.broadcastMessage("§c" + p.getName() +
+			// " was logged out too long!");
+			// p.getLocation().getChunk().load();
+			// UltraHC.players.remove(p.getName());
+			// UltraHC.onDeath(p);
+			// }
+			// }.runTaskLater(UltraHC.ins, 12000);
+			//
+			// logOut.put(p.getName(), bt);
+			// }
 		}
 	}
 
