@@ -131,14 +131,14 @@ public class UltraHC extends JavaPlugin {
 			players.add(p.getName());
 		}
 
-		health = score.registerNewObjective("Health", "health");
+		health = score.registerNewObjective("Health", "dummy");
 		health.setDisplayName(" / 20");
 		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			health.getScore(p).setScore(20);
 		}
 
-		healthList = score.registerNewObjective("HealthList", "health");
+		healthList = score.registerNewObjective("HealthList", "dummy");
 		healthList.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			healthList.getScore(p).setScore(20);
@@ -170,7 +170,7 @@ public class UltraHC extends JavaPlugin {
 					w.setTime(count.runCount * 20);
 				}
 
-				long c = count.runCountMin - 1;
+				long c = count.runCountMin + 1;
 				boolean isM = count.runCount % 60 == 0;
 				if (isM && c % Option.Mark_Time.getInt() == 0 && c != 0) {
 					Bukkit.broadcastMessage("§c§lMARK " + c + " MINS IN!");
@@ -187,6 +187,16 @@ public class UltraHC extends JavaPlugin {
 				if (isM && c == Option.Meet_Up_Time.getInt()) {
 					Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z:0)");
 					mutime.setScore(0);
+				}
+
+				for (Player p : getAlive()) {
+					if (p.getName().length() > DefaultListener.maxLength) {
+						healthList.getScore(Bukkit.getOfflinePlayer(DefaultListener.getShortName(p))).setScore(
+								getRoundedHealth(p.getHealth()));
+					} else
+						healthList.getScore(p).setScore(getRoundedHealth(p.getHealth()));
+
+					health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
 				}
 
 				// if (isM && c == Option.Border_Time.getInt()) {
@@ -213,6 +223,13 @@ public class UltraHC extends JavaPlugin {
 		Option.getScenario().onStart();
 
 		ts.setScores();
+	}
+
+	public static int getRoundedHealth(double h) {
+		h = Math.round(h * 10);
+		h /= 2;
+
+		return (int) h;
 	}
 
 	public static void stop(World w) {

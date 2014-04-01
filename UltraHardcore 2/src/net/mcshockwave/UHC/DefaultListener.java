@@ -138,7 +138,11 @@ public class DefaultListener implements Listener {
 		}
 
 		if (p.getName().length() > maxLength) {
-			p.setPlayerListName(getShortName(p));
+			String sname = getShortName(p);
+			if (UltraHC.score.getPlayerTeam(p) != null) {
+				sname = UltraHC.score.getPlayerTeam(p).getPrefix() + sname;
+			}
+			p.setPlayerListName(sname);
 		}
 	}
 
