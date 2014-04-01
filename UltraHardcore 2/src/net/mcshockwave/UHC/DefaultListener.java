@@ -93,7 +93,7 @@ public class DefaultListener implements Listener {
 
 	Random				rand		= new Random();
 
-	public static int	maxLength	= 12;
+	public static int	maxLength	= 10;
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {

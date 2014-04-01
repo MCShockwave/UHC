@@ -132,7 +132,7 @@ public class UltraHC extends JavaPlugin {
 		}
 
 		health = score.registerNewObjective("Health", "dummy");
-		health.setDisplayName(" / 20");
+		health.setDisplayName(" / 100");
 		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			health.getScore(p).setScore(20);
