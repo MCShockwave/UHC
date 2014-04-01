@@ -107,8 +107,10 @@ public class DefaultListener implements Listener {
 			p.teleport(b.getLocation().clone().add(0, 2, 0));
 
 			if (!UltraHC.isMCShockwaveEnabled()) {
+				p.getInventory().clear();
 				p.getInventory().addItem(
-						ItemMetaUtils.setLore(ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "Hall of Fame"),
+						ItemMetaUtils.setLore(
+								ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "§e§lHall of Fame"),
 								"§bClick to view"));
 			}
 
@@ -163,7 +165,7 @@ public class DefaultListener implements Listener {
 			p.setPlayerListName(sname);
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		if (!UltraHC.started) {
