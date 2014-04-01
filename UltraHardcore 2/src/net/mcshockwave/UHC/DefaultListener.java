@@ -3,6 +3,7 @@ package net.mcshockwave.UHC;
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
 import net.mcshockwave.UHC.Commands.VoteCommand;
+import net.mcshockwave.UHC.HoF.HallOfFame;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
@@ -128,9 +129,6 @@ public class DefaultListener implements Listener {
 				p.showPlayer(p2);
 			}
 
-			int len = p.getName().length();
-			p.setPlayerListName("\u2718" + (len >= 16 ? p.getName().substring(0, 15) : p.getName()));
-
 			Bukkit.broadcastMessage("§3§o" + p.getName() + " is now spectating");
 			event.setJoinMessage("");
 
@@ -147,7 +145,10 @@ public class DefaultListener implements Listener {
 			}
 		}
 
-		if (p.getName().length() > maxLength) {
+		if (UltraHC.specs.contains(p.getName())) {
+			int len = p.getName().length();
+			p.setPlayerListName("\u2718" + (len >= 16 ? p.getName().substring(0, 15) : p.getName()));
+		} else if (p.getName().length() > maxLength) {
 			String sname = getShortName(p);
 			if (UltraHC.score.getPlayerTeam(p) != null) {
 				sname = UltraHC.score.getPlayerTeam(p).getPrefix() + sname;
@@ -236,6 +237,7 @@ public class DefaultListener implements Listener {
 						logOut.remove(p.getName());
 						Bukkit.broadcastMessage("§c" + p.getName() + " was logged out too long!");
 						p.getLocation().getChunk().load();
+						UltraHC.players.remove(p.getName());
 						UltraHC.onDeath(p);
 					}
 				}.runTaskLater(UltraHC.ins, 12000);
@@ -663,6 +665,32 @@ public class DefaultListener implements Listener {
 
 			m.open(p);
 		}
+
+		if (ItemMetaUtils.hasCustomName(it)
+				&& ChatColor.stripColor(ItemMetaUtils.getItemName(it)).equalsIgnoreCase("Hall of Fame")) {
+			event.setCancelled(true);
+
+			ItemMenu m = new ItemMenu("Hall of Fame", HallOfFame.values().length);
+
+			for (int i = 0; i < HallOfFame.values().length; i++) {
+				HallOfFame hof = HallOfFame.values()[i];
+				Button h = new Button(false, Material.SKULL_ITEM, 1, 0, getColorsHOF(hof.name), "§3Game #"
+						+ hof.getNum(), "§7Teams: §o" + hof.getTeams(), "§7Scenario: §o" + hof.getScenario());
+				m.addButton(h, i);
+			}
+
+			m.open(p);
+		}
+	}
+
+	public String getColorsHOF(String name) {
+		name = "§e" + name;
+
+		if (name.contains("and")) {
+			name = name.replaceAll(" and ", " §7and§e ");
+		}
+
+		return name;
 	}
 
 	public short getWoolDura(Player p) {
