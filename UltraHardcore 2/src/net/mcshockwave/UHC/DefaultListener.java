@@ -46,6 +46,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -105,6 +106,12 @@ public class DefaultListener implements Listener {
 
 			p.teleport(b.getLocation().clone().add(0, 2, 0));
 
+			if (!UltraHC.isMCShockwaveEnabled()) {
+				p.getInventory().addItem(
+						ItemMetaUtils.setLore(ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "Hall of Fame"),
+								"§bClick to view"));
+			}
+
 			List<Material> mats = Arrays.asList(new Material[] { Material.WATER, Material.STATIONARY_WATER,
 					Material.LAVA, Material.STATIONARY_LAVA });
 
@@ -154,6 +161,13 @@ public class DefaultListener implements Listener {
 				sname = UltraHC.score.getPlayerTeam(p).getPrefix() + sname;
 			}
 			p.setPlayerListName(sname);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
+		if (!UltraHC.started) {
+			event.setCancelled(true);
 		}
 	}
 
@@ -674,8 +688,9 @@ public class DefaultListener implements Listener {
 
 			for (int i = 0; i < HallOfFame.values().length; i++) {
 				HallOfFame hof = HallOfFame.values()[i];
-				Button h = new Button(false, Material.SKULL_ITEM, 1, 0, getColorsHOF(hof.name), "§3Game #"
-						+ hof.getNum(), "§7Teams: §o" + hof.getTeams(), "§7Scenario: §o" + hof.getScenario());
+				Button h = new Button(false, Material.SKULL_ITEM, 1, (hof.name.contains(" and ") && !hof.getTeams()
+						.contains("FFA")) ? 0 : 1, getColorsHOF(hof.name), "§3Game #" + hof.getNum(), "§7Teams: §o"
+						+ hof.getTeams(), "§bScenario: §o" + hof.getScenario());
 				m.addButton(h, i);
 			}
 

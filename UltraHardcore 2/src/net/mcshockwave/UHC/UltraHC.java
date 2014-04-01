@@ -126,6 +126,9 @@ public class UltraHC extends JavaPlugin {
 
 			if (startCon != null) {
 				UltraHC.setInventory(p, startCon, startACon);
+			} else {
+				p.getInventory().clear();
+				p.getInventory().setArmorContents(null);
 			}
 
 			players.add(p.getName());

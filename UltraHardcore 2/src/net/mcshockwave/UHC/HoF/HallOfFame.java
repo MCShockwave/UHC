@@ -18,7 +18,7 @@ public enum HallOfFame {
 	public int getNum() {
 		for (int i = 0; i < values().length; i++) {
 			if (values()[i] == this) {
-				return i;
+				return i + 1;
 			}
 		}
 		return 0;
