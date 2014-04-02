@@ -15,6 +15,7 @@ import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -193,12 +194,12 @@ public class UltraHC extends JavaPlugin {
 				}
 
 				for (Player p : getAlive()) {
+					OfflinePlayer op = p;
 					if (p.getName().length() > DefaultListener.maxLength) {
-						healthList.getScore(Bukkit.getOfflinePlayer(DefaultListener.getShortName(p))).setScore(
-								getRoundedHealth(p.getHealth()));
-					} else
-						healthList.getScore(p).setScore(getRoundedHealth(p.getHealth()));
+						op = Bukkit.getOfflinePlayer(DefaultListener.getShortName(p));
+					}
 
+					healthList.getScore(op).setScore(getRoundedHealth(p.getHealth()));
 					health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
 				}
 
