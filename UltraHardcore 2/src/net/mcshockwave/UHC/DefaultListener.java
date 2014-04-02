@@ -714,6 +714,10 @@ public class DefaultListener implements Listener {
 		if (name.contains("and")) {
 			name = name.replaceAll(" and ", " §7and§e ");
 		}
+		
+		if (name.contains(",")) {
+			name = name.replaceAll(", ", "§7,§e ");
+		}
 
 		return name;
 	}
