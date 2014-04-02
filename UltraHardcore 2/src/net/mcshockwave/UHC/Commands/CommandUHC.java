@@ -84,6 +84,12 @@ public class CommandUHC implements CommandExecutor {
 				UltraHC.players.add(args[1]);
 				p.sendMessage("§c" + args[1] + " removed from spectators and added to players");
 			}
+			if (args[0].equalsIgnoreCase("listSpecs")) {
+				p.sendMessage(UltraHC.specs.toArray(new String[0]));
+			}
+			if (args[0].equalsIgnoreCase("listPlayers")) {
+				p.sendMessage(UltraHC.players.toArray(new String[0]));
+			}
 			if (args[0].equalsIgnoreCase("genborder")) {
 				int rad = Integer.parseInt(args[1]);
 				EditSession es = new EditSession(new BukkitWorld(p.getWorld()), Integer.MAX_VALUE);
