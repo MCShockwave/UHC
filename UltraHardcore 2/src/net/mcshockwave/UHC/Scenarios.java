@@ -21,7 +21,8 @@ public enum Scenarios {
 	Triple_Ores(
 		new TripleListener()),
 	Hallucinations(),
-	Barebones(new BarebonesListener());
+	Barebones(
+		new BarebonesListener());
 
 	public Listener	l	= null;
 
@@ -88,10 +89,6 @@ public enum Scenarios {
 		if (this == Triple_Ores) {
 //			Option.Border_Time.setInt(30);
 			Option.Meet_Up_Time.setInt(30);
-		}
-		
-		if (this == Barebones) {
-			
 		}
 	}
 
