@@ -196,7 +196,7 @@ public class UltraHC extends JavaPlugin {
 				for (Player p : getAlive()) {
 					OfflinePlayer op = p;
 					if (p.getName().length() > DefaultListener.maxLength) {
-						op = Bukkit.getOfflinePlayer(DefaultListener.getShortName(p));
+						op = Bukkit.getOfflinePlayer(p.getPlayerListName());
 					}
 
 					healthList.getScore(op).setScore(getRoundedHealth(p.getHealth()));
