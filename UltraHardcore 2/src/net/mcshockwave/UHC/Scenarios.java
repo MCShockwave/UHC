@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC;
 
+import net.mcshockwave.UHC.Listeners.BarebonesListener;
 import net.mcshockwave.UHC.Listeners.CruxListener;
 import net.mcshockwave.UHC.Listeners.HallucinationHandler;
 import net.mcshockwave.UHC.Listeners.LinkedListener;
@@ -19,7 +20,8 @@ public enum Scenarios {
 		new LinkedListener()),
 	Triple_Ores(
 		new TripleListener()),
-	Hallucinations();
+	Hallucinations(),
+	Barebones(new BarebonesListener());
 
 	public Listener	l	= null;
 
@@ -86,6 +88,10 @@ public enum Scenarios {
 		if (this == Triple_Ores) {
 //			Option.Border_Time.setInt(30);
 			Option.Meet_Up_Time.setInt(30);
+		}
+		
+		if (this == Barebones) {
+			
 		}
 	}
 

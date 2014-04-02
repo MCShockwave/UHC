@@ -25,7 +25,8 @@ public enum Option {
 		"Crux",
 		"Linked",
 		"Triple Ores",
-		"Hallucinations"),
+		"Hallucinations",
+		"Barebones"),
 	Spectating(
 		Material.THIN_GLASS,
 		0,
