@@ -1,20 +1,31 @@
 package net.mcshockwave.UHC.HoF;
 
 public enum HallOfFame {
-	
-	andrewbaseball99("FFA::No Hunger"),
-	oXTheBigOneXo_and_Yerru("To2::Linked"),
-	Nyzian("FFA::Hallucinations"),
-	MooshroomCrafter_and_Epiktuu("FFA One Ally::Triple Ores");
-	
-	private String scenario;
-	public String name;
-	
-	private HallOfFame(String scen) {
+
+	Num1(
+		"andrewbaseball99",
+		"FFA::No Hunger"),
+	Num2(
+		"oXTheBigOneXo and Yerru",
+		"To2::Linked"),
+	Num3(
+		"Nyzian",
+		"FFA::Hallucinations"),
+	Num4(
+		"MooshroomCrafter and Epiktuu",
+		"FFA One Ally::Triple Ores"),
+	Num5(
+		"Blaxcraft, Dianab0522, Offical_Sam and TnTToy",
+		"RTo4::Vanilla");
+
+	private String	scenario;
+	public String	name;
+
+	private HallOfFame(String players, String scen) {
 		scenario = scen;
-		name = name().replace('_', ' ');
+		name = players;
 	}
-	
+
 	public int getNum() {
 		for (int i = 0; i < values().length; i++) {
 			if (values()[i] == this) {
@@ -23,11 +34,11 @@ public enum HallOfFame {
 		}
 		return 0;
 	}
-	
+
 	public String getTeams() {
 		return scenario.split("::")[0];
 	}
-	
+
 	public String getScenario() {
 		return scenario.split("::")[1];
 	}
