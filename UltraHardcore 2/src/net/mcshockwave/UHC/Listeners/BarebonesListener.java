@@ -12,12 +12,10 @@ import java.util.Random;
 
 public class BarebonesListener implements Listener {
 
-	Random	r	= new Random();
-
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e) {
-		int i = r.nextInt(3) + 1;
-		for (int a = 0; a < i; i++) {
+		int i = new Random().nextInt(3) + 1;
+		for (int a = 0; a < i; a++) {
 			e.getDrops().add(new ItemStack(Material.DIAMOND));
 		}
 	}
