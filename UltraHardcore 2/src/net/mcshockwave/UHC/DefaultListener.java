@@ -226,6 +226,12 @@ public class DefaultListener implements Listener {
 		if (p.isOp()) {
 			return true;
 		}
+		if (op.equalsIgnoreCase("ALL")) {
+			return true;
+		}
+		if (op.equalsIgnoreCase("Whitelisted Only")) {
+			return p.isWhitelisted();
+		}
 		if (op.equalsIgnoreCase("OP Only")) {
 			return p.isOp();
 		}
