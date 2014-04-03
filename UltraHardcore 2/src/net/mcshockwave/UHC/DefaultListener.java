@@ -622,6 +622,14 @@ public class DefaultListener implements Listener {
 		if (p.isOp() && !UltraHC.isMCShockwaveEnabled()) {
 			event.setFormat("§c[§lOP§c]§r " + event.getFormat());
 		}
+
+		if (UltraHC.specs.contains(p.getName()) && (p.isOp() && event.getMessage().startsWith("$") || !p.isOp())) {
+			event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
+			event.setMessage("§7" + event.getMessage());
+			for (Player p2 : UltraHC.getAlive()) {
+				event.getRecipients().remove(p2);
+			}
+		}
 	}
 
 	@EventHandler
