@@ -625,7 +625,7 @@ public class DefaultListener implements Listener {
 
 		if (UltraHC.specs.contains(p.getName()) && (p.isOp() && event.getMessage().startsWith("$") || !p.isOp())) {
 			event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
-			event.setMessage("§7" + event.getMessage());
+			event.setMessage("§7" + event.getMessage().replaceFirst("$", ""));
 			for (Player p2 : UltraHC.getAlive()) {
 				event.getRecipients().remove(p2);
 			}
