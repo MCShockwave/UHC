@@ -19,7 +19,10 @@ public enum HallOfFame {
 		"RTo4::Vanilla"),
 	Num6(
 		"1bennettc",
-		"FFA::Barebones");
+		"FFA::Barebones"),
+	Num7(
+		"matthew010411 and osi12345678",
+		"RTo2::Triple Ores");
 
 	private String	scenario;
 	public String	name;
