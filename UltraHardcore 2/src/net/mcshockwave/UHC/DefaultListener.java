@@ -770,6 +770,11 @@ public class DefaultListener implements Listener {
 
 		if (t instanceof Player) {
 			Player p = (Player) t;
+			
+			if (!UltraHC.started) {
+				event.setTarget(null);
+				return;
+			}
 
 			if (UltraHC.specs.contains(p.getName())) {
 				event.setCancelled(true);
