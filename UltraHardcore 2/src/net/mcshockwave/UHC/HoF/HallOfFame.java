@@ -16,7 +16,10 @@ public enum HallOfFame {
 		"FFA One Ally::Triple Ores"),
 	Num5(
 		"Blaxcraft, Dianab0522, Offical_Sam and TnTToy",
-		"RTo4::Vanilla");
+		"RTo4::Vanilla"),
+	Num6(
+		"1bennettc",
+		"FFA::Barebones");
 
 	private String	scenario;
 	public String	name;
@@ -42,5 +45,4 @@ public enum HallOfFame {
 	public String getScenario() {
 		return scenario.split("::")[1];
 	}
-
 }
