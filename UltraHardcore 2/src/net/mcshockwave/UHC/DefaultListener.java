@@ -273,7 +273,9 @@ public class DefaultListener implements Listener {
 
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
-		UltraHC.onDeath(event.getPlayer());
+		if (event.getReason().contains("Kicked")) {
+			UltraHC.onDeath(event.getPlayer());
+		}
 	}
 
 	public static final BlockFace[]	radial	= { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST,
@@ -714,7 +716,7 @@ public class DefaultListener implements Listener {
 		if (name.contains("and")) {
 			name = name.replaceAll(" and ", " §7and§e ");
 		}
-		
+
 		if (name.contains(",")) {
 			name = name.replaceAll(", ", "§7,§e ");
 		}
