@@ -3,9 +3,11 @@ package net.mcshockwave.UHC;
 import net.mcshockwave.UHC.Commands.CommandOption;
 import net.mcshockwave.UHC.Commands.CommandTeam;
 import net.mcshockwave.UHC.Commands.CommandUHC;
+import net.mcshockwave.UHC.Commands.MoleChatCommand;
 import net.mcshockwave.UHC.Commands.RestrictCommand;
 import net.mcshockwave.UHC.Commands.SilenceCommand;
 import net.mcshockwave.UHC.Commands.VoteCommand;
+import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenuListener;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
@@ -79,6 +81,8 @@ public class UltraHC extends JavaPlugin {
 		getCommand("silence").setExecutor(new SilenceCommand());
 		getCommand("restr").setExecutor(new RestrictCommand());
 		getCommand("options").setExecutor(new CommandOption());
+		getCommand("mole").setExecutor(new MoleListener());
+		getCommand("mc").setExecutor(new MoleChatCommand());
 
 		score = Bukkit.getScoreboardManager().getMainScoreboard();
 
@@ -182,6 +186,15 @@ public class UltraHC extends JavaPlugin {
 
 				if (isM && c == Option.No_Kill_Time.getInt()) {
 					Bukkit.broadcastMessage("§aKilling is now allowed!");
+					
+					if (Option.Scenario.getString().equalsIgnoreCase("Mole")) {
+						for (Team t : ts.teams.values()) {
+							OfflinePlayer[] ps = t.getPlayers().toArray(new OfflinePlayer[0]);
+							OfflinePlayer mole = ps[rand.nextInt(ps.length)];
+							
+							MoleListener.setAsMole(mole);
+						}
+					}
 				}
 
 				if (c < Option.Meet_Up_Time.getInt()) {

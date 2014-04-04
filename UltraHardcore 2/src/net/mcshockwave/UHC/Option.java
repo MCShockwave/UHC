@@ -26,7 +26,8 @@ public enum Option {
 		"Linked",
 		"Triple Ores",
 		"Hallucinations",
-		"Barebones"),
+		"Barebones",
+		"Mole"),
 	Spectating(
 		Material.THIN_GLASS,
 		0,
@@ -266,7 +267,7 @@ public enum Option {
 	}
 
 	public ItemMenu getMenu() {
-		ItemMenu m = new ItemMenu(name, ((int) Math.ceil(getVals().length / 9.0)) * 9);
+		ItemMenu m = new ItemMenu(name, getVals().length + 1);
 
 		if (getType() == Integer.class) {
 			for (int i = 0; i < intVals.length; i++) {
@@ -354,8 +355,7 @@ public enum Option {
 	}
 
 	public static ItemMenu getGlobalMenu(boolean editable) {
-		ItemMenu m = new ItemMenu("Options - " + (editable ? "Editable" : "Viewing"), values().length
-				+ (9 - (values().length % 9)));
+		ItemMenu m = new ItemMenu("Options - " + (editable ? "Editable" : "Viewing"), values().length);
 
 		int in = 0;
 		for (Option o : values()) {

@@ -4,6 +4,7 @@ import net.mcshockwave.UHC.Listeners.BarebonesListener;
 import net.mcshockwave.UHC.Listeners.CruxListener;
 import net.mcshockwave.UHC.Listeners.HallucinationHandler;
 import net.mcshockwave.UHC.Listeners.LinkedListener;
+import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Listeners.TripleListener;
 
 import org.bukkit.entity.Player;
@@ -22,7 +23,8 @@ public enum Scenarios {
 		new TripleListener()),
 	Hallucinations(),
 	Barebones(
-		new BarebonesListener());
+		new BarebonesListener()),
+	Mole(new MoleListener());
 
 	public Listener	l	= null;
 
@@ -107,6 +109,9 @@ public enum Scenarios {
 		if (this == Hallucinations) {
 			HallucinationHandler.onStartGame();
 		}
+		if (this == Mole) {
+			MoleListener.onStart();
+		}
 	}
 
 	public void onStop() {
@@ -120,6 +125,10 @@ public enum Scenarios {
 		}
 		if (this == Hallucinations) {
 			HallucinationHandler.onEndGame();
+		}
+		if (this == Mole) {
+			MoleListener.moleKit.clear();
+			MoleListener.moles.clear();
 		}
 	}
 
