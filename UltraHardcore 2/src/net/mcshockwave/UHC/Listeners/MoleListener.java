@@ -1,6 +1,7 @@
 package net.mcshockwave.UHC.Listeners;
 
 import net.mcshockwave.UHC.UltraHC;
+import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -134,7 +135,9 @@ public class MoleListener implements Listener, CommandExecutor {
 				new ItemStack(Material.POTION, 3, (short) 16460), new ItemStack(Material.MONSTER_EGG, 3, (short) 54),
 				new ItemStack(Material.MONSTER_EGG, 3, (short) 52), new ItemStack(Material.MONSTER_EGG, 3, (short) 51),
 				new ItemStack(Material.MONSTER_EGG, 3, (short) 50) };
-		i.addItem(items);
+		for (ItemStack it : items) {
+			i.addItem(ItemMetaUtils.setLore(it, "§6Mole Item"));
+		}
 
 		return i;
 	}

@@ -314,6 +314,12 @@ public class DefaultListener implements Listener {
 				boolean mole = MoleListener.isMole(p.getName());
 
 				Bukkit.broadcastMessage("§aThis player was " + (mole ? "§ca mole" : "§bnot a mole"));
+
+				for (ItemStack it : event.getDrops().toArray(new ItemStack[0])) {
+					if (ItemMetaUtils.hasLore(it) && ItemMetaUtils.getLoreArray(it)[0].equalsIgnoreCase("§6Mole Item")) {
+						event.getDrops().remove(it);
+					}
+				}
 			}
 			for (Player p2 : Bukkit.getOnlinePlayers()) {
 				p2.playSound(p.getLocation(), Sound.AMBIENCE_THUNDER, 1000, 2);
