@@ -190,6 +190,9 @@ public class UltraHC extends JavaPlugin {
 					if (Option.Scenario.getString().equalsIgnoreCase("Mole")) {
 						for (Team t : ts.teams.values()) {
 							OfflinePlayer[] ps = t.getPlayers().toArray(new OfflinePlayer[0]);
+							if (ps.length == 0) {
+								continue;
+							}
 							OfflinePlayer mole = ps[rand.nextInt(ps.length)];
 							
 							MoleListener.setAsMole(mole);
