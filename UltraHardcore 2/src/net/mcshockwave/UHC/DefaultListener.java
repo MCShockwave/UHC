@@ -635,9 +635,10 @@ public class DefaultListener implements Listener {
 			event.setFormat("§c[§lOP§c]§r " + event.getFormat());
 		}
 
-		if (UltraHC.specs.contains(p.getName()) && (p.isOp() && event.getMessage().startsWith("$") || !p.isOp())) {
+		if (UltraHC.specs.contains(p.getName()) && (p.isOp() && event.getMessage().startsWith("*") || !p.isOp())) {
 			event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
-			event.setMessage("§7" + event.getMessage().replaceFirst("$", ""));
+			event.setMessage("§7" + event.getMessage());
+			event.setMessage(event.getMessage().replaceFirst("*", ""));
 			for (Player p2 : UltraHC.getAlive()) {
 				event.getRecipients().remove(p2);
 			}
