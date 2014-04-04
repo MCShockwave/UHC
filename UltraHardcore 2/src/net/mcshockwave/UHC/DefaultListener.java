@@ -4,6 +4,7 @@ import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
 import net.mcshockwave.UHC.Commands.VoteCommand;
 import net.mcshockwave.UHC.HoF.HallOfFame;
+import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
@@ -308,6 +309,11 @@ public class DefaultListener implements Listener {
 				for (Player p2 : Bukkit.getOnlinePlayers()) {
 					h.show(p2);
 				}
+			}
+			if (Option.Scenario.getString().equalsIgnoreCase("Mole")) {
+				boolean mole = MoleListener.isMole(p.getName());
+
+				Bukkit.broadcastMessage("§aThis player was " + (mole ? "§ca mole" : "§bnot a mole"));
 			}
 			for (Player p2 : Bukkit.getOnlinePlayers()) {
 				p2.playSound(p.getLocation(), Sound.AMBIENCE_THUNDER, 1000, 2);
@@ -770,7 +776,7 @@ public class DefaultListener implements Listener {
 
 		if (t instanceof Player) {
 			Player p = (Player) t;
-			
+
 			if (!UltraHC.started) {
 				event.setTarget(null);
 				return;

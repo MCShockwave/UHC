@@ -145,15 +145,11 @@ public class MoleListener implements Listener, CommandExecutor {
 		moles.put(UltraHC.score.getPlayerTeam(mole), mole.getName());
 
 		if (mole.isOnline()) {
-			mole.getPlayer().sendMessage(molePre + "You are a mole! Type /mole for a list of commands.");
+			mole.getPlayer().sendMessage(molePre + "§lYou are a mole! Type /mole for a list of commands.");
 		}
 	}
 
 	public static void onStart() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			setAsMole(p);
-		}
-
 		ender = Bukkit.createInventory(null, 27, "Mole Chest");
 
 		for (Team t : UltraHC.ts.teams.values()) {
