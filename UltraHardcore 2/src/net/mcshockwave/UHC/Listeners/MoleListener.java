@@ -129,7 +129,10 @@ public class MoleListener implements Listener, CommandExecutor {
 	public static Inventory getInv() {
 		Inventory i = Bukkit.createInventory(null, 9, "Mole Kit");
 
-		ItemStack[] items = { new ItemStack(Material.TNT, 4), new ItemStack(Material.POTION, 3, (short) 16460) };
+		ItemStack[] items = { new ItemStack(Material.TNT, 4), new ItemStack(Material.STONE_PLATE, 2),
+				new ItemStack(Material.POTION, 3, (short) 16460), new ItemStack(Material.MONSTER_EGG, 3, (short) 54),
+				new ItemStack(Material.MONSTER_EGG, 3, (short) 52), new ItemStack(Material.MONSTER_EGG, 3, (short) 51),
+				new ItemStack(Material.MONSTER_EGG, 3, (short) 50) };
 		i.addItem(items);
 
 		return i;
