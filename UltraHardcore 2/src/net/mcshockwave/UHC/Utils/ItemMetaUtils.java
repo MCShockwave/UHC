@@ -86,15 +86,11 @@ public class ItemMetaUtils {
 
 	public static ItemStack setLore(ItemStack it, String... lore) {
 		ItemMeta m = it.getItemMeta();
-		if (lore.length != 1 || !lore[0].equalsIgnoreCase("")) {
-			ArrayList<String> lo = new ArrayList<String>();
-			for (String s : lore) {
-				lo.add(s);
-			}
-			m.setLore(lo);
-		} else {
-			m.setLore(null);
+		ArrayList<String> s = new ArrayList<String>();
+		for (String l : lore) {
+			s.add(ChatColor.GRAY + l);
 		}
+		m.setLore(s);
 		it.setItemMeta(m);
 		return it;
 	}

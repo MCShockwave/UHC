@@ -116,7 +116,7 @@ public class DefaultListener implements Listener {
 			}
 
 			List<Material> mats = Arrays.asList(new Material[] { Material.WATER, Material.STATIONARY_WATER,
-					Material.LAVA, Material.STATIONARY_LAVA });
+					Material.LAVA, Material.STATIONARY_LAVA, Material.CACTUS });
 
 			if (mats.contains(b.getType())) {
 				int s = 4;
