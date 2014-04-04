@@ -119,7 +119,8 @@ public class MoleListener implements Listener, CommandExecutor {
 				p.sendMessage("§8----- §a[Moles] §8-----");
 				for (Player p2 : getAllTrueMoles()) {
 					Team t = UltraHC.score.getPlayerTeam(p2);
-					p.sendMessage("§b" + p2.getName() + " - " + t.getPrefix() + t.getName() + t.getSuffix());
+					p.sendMessage("§b" + p2.getName() + " - "
+							+ (t == null ? "§c[§lDEAD§c]" : t.getPrefix() + t.getName() + t.getSuffix()));
 				}
 			}
 		}
