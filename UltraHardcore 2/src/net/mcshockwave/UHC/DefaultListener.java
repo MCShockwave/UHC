@@ -340,7 +340,7 @@ public class DefaultListener implements Listener {
 					}, 1);
 				}
 			}
-			if (Option.Scenario.getString().equalsIgnoreCase("Team_DM")) {
+			if (Option.Scenario.getString().equalsIgnoreCase("Team DM")) {
 				event.getDrops().clear();
 			}
 		}
@@ -457,6 +457,11 @@ public class DefaultListener implements Listener {
 			Projectile arrow = (Projectile) de;
 			Player d = (Player) arrow.getShooter();
 			Player p = (Player) ee;
+			
+			if (UltraHC.getAlive().contains(p) && UltraHC.getAlive().contains(d) && UltraHC.started && Option.No_Kill_Time.getInt() > UltraHC.count.getTotalMins()) {
+				event.setCancelled(true);
+				d.sendMessage("§cKilling is disabled until " + Option.No_Kill_Time.getInt() + " minutes in!");
+			}
 
 			Vector velocity = arrow.getVelocity();
 			Class<? extends Projectile> pc = arrow.getClass();

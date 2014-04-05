@@ -106,6 +106,7 @@ public enum Scenarios {
 			Option.Damage_Indicators.setBoolean(true);
 			Option.Head_on_Fence.setBoolean(false);
 			Option.UHC_Mode.setBoolean(false);
+			Option.Hologram_on_Death.setBoolean(true);
 		}
 	}
 

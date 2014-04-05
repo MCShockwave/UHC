@@ -65,7 +65,8 @@ public enum Option {
 		5,
 		3,
 		2,
-		1),
+		1,
+		0),
 	Mark_Time(
 		Material.PAPER,
 		0,
