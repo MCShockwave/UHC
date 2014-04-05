@@ -340,6 +340,9 @@ public class DefaultListener implements Listener {
 					}, 1);
 				}
 			}
+			if (Option.Scenario.getString().equalsIgnoreCase("Team_DM")) {
+				event.getDrops().clear();
+			}
 		}
 	}
 

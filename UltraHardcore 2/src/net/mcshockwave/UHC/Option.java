@@ -27,7 +27,8 @@ public enum Option {
 		"Triple Ores",
 		"Hallucinations",
 		"Barebones",
-		"Mole"),
+		"Mole",
+		"Team DM"),
 	Spectating(
 		Material.THIN_GLASS,
 		0,
