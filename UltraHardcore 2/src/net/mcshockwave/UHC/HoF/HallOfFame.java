@@ -22,7 +22,10 @@ public enum HallOfFame {
 		"FFA::Barebones"),
 	Num7(
 		"matthew010411 and osi12345678",
-		"RTo2::Triple Ores");
+		"RTo2::Triple Ores"),
+	Num8(
+		"matthew010411, ShockeryFlame, dashdude, NEONpooP, GreenDoomsDay (Mole)",
+		"RTo5::Mole");
 
 	private String	scenario;
 	public String	name;

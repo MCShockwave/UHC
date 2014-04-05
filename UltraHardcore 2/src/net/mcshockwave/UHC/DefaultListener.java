@@ -316,7 +316,8 @@ public class DefaultListener implements Listener {
 				Bukkit.broadcastMessage("§aThis player was " + (mole ? "§ca mole" : "§bnot a mole"));
 
 				for (ItemStack it : event.getDrops().toArray(new ItemStack[0])) {
-					if (ItemMetaUtils.hasLore(it) && ItemMetaUtils.getLoreArray(it)[0].equalsIgnoreCase("§6Mole Item")) {
+					if (ItemMetaUtils.hasLore(it)
+							&& ItemMetaUtils.getLoreArray(it)[0].equalsIgnoreCase("§7§6Mole Item")) {
 						event.getDrops().remove(it);
 					}
 				}
@@ -636,12 +637,11 @@ public class DefaultListener implements Listener {
 		}
 
 		if (UltraHC.specs.contains(p.getName()) && (p.isOp() && event.getMessage().startsWith("*") || !p.isOp())) {
-			event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
-			event.setMessage("§7" + event.getMessage());
-			event.setMessage(event.getMessage().replaceFirst("*", ""));
+			event.setMessage("§7" + event.getMessage().replaceAll("*", ""));
 			for (Player p2 : UltraHC.getAlive()) {
 				event.getRecipients().remove(p2);
 			}
+			event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
 		}
 	}
 
