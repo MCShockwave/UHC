@@ -418,7 +418,7 @@ public class DefaultListener implements Listener {
 						}
 						HoloAPI.getManager().createSimpleHologram(
 								LocUtils.addRand(p.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
-								"§c§l-" + (damage) + " HP");
+								"§c§l-" + (damage * 5) + "%");
 					}
 				}, 1l);
 			}
@@ -536,13 +536,24 @@ public class DefaultListener implements Listener {
 				&& Option.Damage_Indicators.getBoolean()
 				&& (Option.UHC_Mode.getBoolean() && event.getRegainReason() != RegainReason.SATIATED || !Option.UHC_Mode
 						.getBoolean()) && event.getAmount() < 100) {
-			HoloAPI.getManager().createSimpleHologram(
-					LocUtils.addRand(e.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
-					"§a§l+" + event.getAmount() + " HP");
+			final Player p = (Player) e;
+			final double health = p.getHealth();
+			Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+				public void run() {
+					double healthEnd = p.getHealth();
+					double regain = healthEnd - health;
+					regain = (double) Math.round(regain * 10) / 10;
+					if (regain <= 0) {
+						return;
+					}
+					HoloAPI.getManager().createSimpleHologram(
+							LocUtils.addRand(p.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
+							"§a§l+" + (regain * 5) + "%");
+				}
+			}, 1l);
 		}
 	}
 
-	// @SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player p = event.getPlayer();
