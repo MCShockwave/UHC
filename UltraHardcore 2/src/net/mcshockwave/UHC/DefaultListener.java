@@ -457,8 +457,9 @@ public class DefaultListener implements Listener {
 			Projectile arrow = (Projectile) de;
 			Player d = (Player) arrow.getShooter();
 			Player p = (Player) ee;
-			
-			if (UltraHC.getAlive().contains(p) && UltraHC.getAlive().contains(d) && UltraHC.started && Option.No_Kill_Time.getInt() > UltraHC.count.getTotalMins()) {
+
+			if (UltraHC.getAlive().contains(p) && UltraHC.getAlive().contains(d) && UltraHC.started
+					&& Option.No_Kill_Time.getInt() > UltraHC.count.getTotalMins()) {
 				event.setCancelled(true);
 				d.sendMessage("§cKilling is disabled until " + Option.No_Kill_Time.getInt() + " minutes in!");
 			}
@@ -728,10 +729,22 @@ public class DefaultListener implements Listener {
 			ItemMenu m = new ItemMenu("Hall of Fame", HallOfFame.values().length);
 
 			for (int i = 0; i < HallOfFame.values().length; i++) {
-				HallOfFame hof = HallOfFame.values()[i];
+				final HallOfFame hof = HallOfFame.values()[i];
+				String title = getColorsHOF(hof.name);
+				String line2 = "";
+				if (title.contains("//")) {
+					String[] spl = title.split("//");
+					title = spl[0];
+					line2 = "§e" + spl[1];
+				}
 				Button h = new Button(false, Material.SKULL_ITEM, 1, (hof.name.contains(" and ") && !hof.getTeams()
-						.contains("FFA")) ? 0 : 1, getColorsHOF(hof.name), "§3Game #" + hof.getNum(), "§7Teams: §o"
+						.contains("FFA")) ? 0 : 1, title, line2, "§3Game #" + hof.getNum(), "§7Teams: §o"
 						+ hof.getTeams(), "§bScenario: §o" + hof.getScenario());
+				h.setOnClick(new ButtonRunnable() {
+					public void run(Player p, InventoryClickEvent event) {
+						p.sendMessage("§7Match link for Game #" + hof.getNum() + ": §e" + hof.match);
+					}
+				});
 				m.addButton(h, i);
 			}
 
@@ -742,12 +755,12 @@ public class DefaultListener implements Listener {
 	public String getColorsHOF(String name) {
 		name = "§e" + name;
 
-		if (name.contains("and")) {
+		if (name.contains(" and ")) {
 			name = name.replaceAll(" and ", " §7and§e ");
 		}
 
 		if (name.contains(",")) {
-			name = name.replaceAll(", ", "§7,§e ");
+			name = name.replaceAll(",", "§7,§e");
 		}
 
 		return name;
