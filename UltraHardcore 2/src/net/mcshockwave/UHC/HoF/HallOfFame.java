@@ -1,68 +1,71 @@
 package net.mcshockwave.UHC.HoF;
 
-public enum HallOfFame {
+import net.mcshockwave.UHC.Menu.ItemMenu;
+import net.mcshockwave.UHC.Menu.ItemMenu.Button;
+import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 
-	Num1(
-		"andrewbaseball99",
-		"FFA::No Hunger",
-		"http://redd.it/211pzv"),
-	Num2(
-		"oXTheBigOneXo and Yerru",
-		"To2::Linked",
-		"http://redd.it/219x5j"),
-	Num3(
-		"Nyzian",
-		"FFA::Hallucinations",
-		"http://redd.it/21kk2l"),
-	Num4(
-		"MooshroomCrafter and Epiktuu",
-		"FFA One Ally::Triple Ores",
-		"http://redd.it/21vru1"),
-	Num5(
-		"Blaxcraft, Dianab0522, Offical_Sam,// and TnTToy",
-		"RTo4::Vanilla",
-		"http://redd.it/21wfbc"),
-	Num6(
-		"1bennettc",
-		"FFA::Barebones",
-		"http://redd.it/21zo1i"),
-	Num7(
-		"matthew010411 and osi12345678",
-		"RTo2::Triple Ores",
-		"http://redd.it/222cy6"),
-	Num8(
-		"matthew010411, ShockeryFlame, dashdude,// NEONpooP, and GreenDoomsDay (Mole)",
-		"RTo5::Mole",
-		"http://redd.it/22565d"),
-	Num9(
-		"JamieTheElite",
-		"FFA::Barebones",
-		"http://redd.it/22agw3");
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
-	private String	scenario;
-	public String	name;
-	public String match;
+import java.util.ArrayList;
 
-	private HallOfFame(String players, String scen, String matchLink) {
-		scenario = scen;
-		name = players;
-		match = matchLink;
-	}
+public class HallOfFame {
 
-	public int getNum() {
-		for (int i = 0; i < values().length; i++) {
-			if (values()[i] == this) {
-				return i + 1;
-			}
+	public static HOFEntry[] getEntries() {
+		ArrayList<HOFEntry> ret = new ArrayList<>();
+
+		ArrayList<String> winners = new ArrayList<>();
+		ArrayList<String> scen = new ArrayList<>();
+		ArrayList<String> teams = new ArrayList<>();
+		ArrayList<String> reddit = new ArrayList<>();
+
+		for (int i = 0; i < winners.size(); i++) {
+			ret.add(new HOFEntry(i + 1, winners.get(i), scen.get(i), teams.get(i), reddit.get(i)));
 		}
-		return 0;
+
+		return ret.toArray(new HOFEntry[0]);
 	}
 
-	public String getTeams() {
-		return scenario.split("::")[0];
+	public static ItemMenu getMenu() {
+		HOFEntry[] en = getEntries();
+		ItemMenu m = new ItemMenu("Hall of Fame", en.length);
+
+		for (int i = 0; i < en.length; i++) {
+			final HOFEntry hof = en[i];
+			String title = getColorsHOF(hof.winner);
+			String line2 = "";
+			if (title.contains("//")) {
+				String[] spl = title.split("//");
+				title = spl[0];
+				line2 = "§e" + spl[1];
+			}
+			Button h = new Button(false, Material.SKULL_ITEM, 1,
+					(hof.winner.contains(" and ") && !hof.teams.contains("FFA")) ? 0 : 1, title, line2, "§3Game #"
+							+ hof.game, "§7Teams: §o" + hof.teams, "§bScenario: §o" + hof.scen);
+			h.setOnClick(new ButtonRunnable() {
+				public void run(Player p, InventoryClickEvent event) {
+					p.sendMessage("§7Match link for Game #" + hof.game + ": §e" + hof.reddit);
+				}
+			});
+			m.addButton(h, i);
+		}
+
+		return m;
 	}
 
-	public String getScenario() {
-		return scenario.split("::")[1];
+	public static String getColorsHOF(String name) {
+		name = "§e" + name;
+
+		if (name.contains(" and ")) {
+			name = name.replaceAll(" and ", " §7and§e ");
+		}
+
+		if (name.contains(",")) {
+			name = name.replaceAll(",", "§7,§e");
+		}
+
+		return name;
 	}
+
 }
