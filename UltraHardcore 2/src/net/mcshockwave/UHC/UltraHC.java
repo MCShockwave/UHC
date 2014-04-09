@@ -97,6 +97,8 @@ public class UltraHC extends JavaPlugin {
 				.setIngredient('H', new ItemStack(Material.SKULL_ITEM, 1, (short) 3).getData()));
 
 		saveDefaultConfig();
+		
+		SQLTable.enable();
 	}
 
 	public void onDisable() {
