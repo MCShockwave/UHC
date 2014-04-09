@@ -384,4 +384,14 @@ public class UltraHC extends JavaPlugin {
 		return Bukkit.getPluginManager().isPluginEnabled("MCShockwave");
 	}
 
+	public static void addPlayer(String name) {
+		while (UltraHC.specs.contains(name)) {
+			UltraHC.specs.remove(name);
+		}
+		while (UltraHC.players.contains(name)) {
+			UltraHC.players.remove(name);
+		}
+		UltraHC.players.add(name);
+	}
+
 }

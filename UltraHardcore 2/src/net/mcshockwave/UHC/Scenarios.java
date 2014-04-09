@@ -5,6 +5,7 @@ import net.mcshockwave.UHC.Listeners.CruxListener;
 import net.mcshockwave.UHC.Listeners.HallucinationHandler;
 import net.mcshockwave.UHC.Listeners.LinkedListener;
 import net.mcshockwave.UHC.Listeners.MoleListener;
+import net.mcshockwave.UHC.Listeners.ResurrectListener;
 import net.mcshockwave.UHC.Listeners.TripleListener;
 
 import org.bukkit.entity.Player;
@@ -25,7 +26,8 @@ public enum Scenarios {
 	Barebones(
 		new BarebonesListener()),
 	Mole(new MoleListener()),
-	Team_DM();
+	Team_DM,
+	Resurrect(new ResurrectListener());
 
 	public Listener	l	= null;
 

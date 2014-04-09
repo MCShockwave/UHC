@@ -80,13 +80,7 @@ public class CommandUHC implements CommandExecutor {
 				}
 			}
 			if (args[0].equalsIgnoreCase("addplayer")) {
-				while (UltraHC.specs.contains(args[1])) {
-					UltraHC.specs.remove(args[1]);
-				}
-				while (UltraHC.players.contains(args[1])) {
-					UltraHC.players.remove(args[1]);
-				}
-				UltraHC.players.add(args[1]);
+				UltraHC.addPlayer(args[1]);
 				p.sendMessage("§c" + args[1] + " removed from spectators and added to players");
 			}
 			if (args[0].equalsIgnoreCase("listSpecs")) {
@@ -111,7 +105,7 @@ public class CommandUHC implements CommandExecutor {
 			}
 			if (args[0].equalsIgnoreCase("sethealth")) {
 				Player set = Bukkit.getPlayer(args[1]);
-				
+
 				set.setHealth(Double.parseDouble(args[2]));
 			}
 		}
