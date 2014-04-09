@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC.HoF;
 
+import net.mcshockwave.UHC.SQLTable;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
@@ -15,10 +16,10 @@ public class HallOfFame {
 	public static HOFEntry[] getEntries() {
 		ArrayList<HOFEntry> ret = new ArrayList<>();
 
-		ArrayList<String> winners = new ArrayList<>();
-		ArrayList<String> scen = new ArrayList<>();
-		ArrayList<String> teams = new ArrayList<>();
-		ArrayList<String> reddit = new ArrayList<>();
+		ArrayList<String> winners = SQLTable.Hall_Of_Fame.getAll("Winners");
+		ArrayList<String> scen = SQLTable.Hall_Of_Fame.getAll("Scenario");
+		ArrayList<String> teams = SQLTable.Hall_Of_Fame.getAll("Teams");
+		ArrayList<String> reddit = SQLTable.Hall_Of_Fame.getAll("Reddit");
 
 		for (int i = 0; i < winners.size(); i++) {
 			ret.add(new HOFEntry(i + 1, winners.get(i), scen.get(i), teams.get(i), reddit.get(i)));
