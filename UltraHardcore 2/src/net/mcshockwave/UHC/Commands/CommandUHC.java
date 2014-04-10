@@ -3,6 +3,7 @@ package net.mcshockwave.UHC.Commands;
 import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.Scenarios;
 import net.mcshockwave.UHC.UltraHC;
+import net.mcshockwave.UHC.Listeners.ResurrectListener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -82,6 +83,10 @@ public class CommandUHC implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("addplayer")) {
 				UltraHC.addPlayer(args[1]);
 				p.sendMessage("§c" + args[1] + " removed from spectators and added to players");
+			}
+			if (args[0].equalsIgnoreCase("remresur")) {
+				ResurrectListener.resu.remove(args[1]);
+				p.sendMessage("§c" + args[1] + " removed from Resurrect list");
 			}
 			if (args[0].equalsIgnoreCase("listSpecs")) {
 				p.sendMessage(UltraHC.specs.toArray(new String[0]));

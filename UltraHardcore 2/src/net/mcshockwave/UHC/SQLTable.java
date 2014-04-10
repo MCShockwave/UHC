@@ -1,5 +1,8 @@
 package net.mcshockwave.UHC;
 
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -23,12 +26,30 @@ public enum SQLTable {
 
 	public static Statement		stmt	= null;
 	public static Connection	con		= null;
+	
+	public static BukkitTask bt = null;
 
 	public static void enable() {
 		try {
+			if (bt != null) {
+				bt.cancel();
+			}
+			
 			con = DriverManager.getConnection("jdbc:mysql://" + SqlIP + ":3306/" + SqlName, SqlUser, new StringBuffer(
 					SqlPass).reverse().toString());
 			stmt = (Statement) con.createStatement();
+			
+			bt = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new Runnable() {
+				public void run() {
+					try {
+						if (stmt.isClosed()) {
+							enable();
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			}, 12000, 6000);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
