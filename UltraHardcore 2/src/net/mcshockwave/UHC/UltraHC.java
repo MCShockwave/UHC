@@ -37,6 +37,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import com.dsh105.holoapi.HoloAPI;
 import com.dsh105.holoapi.api.Hologram;
 import com.sk89q.worldedit.CuboidClipboard;
@@ -97,8 +103,25 @@ public class UltraHC extends JavaPlugin {
 				.setIngredient('H', new ItemStack(Material.SKULL_ITEM, 1, (short) 3).getData()));
 
 		saveDefaultConfig();
-		
+
 		SQLTable.enable();
+
+		if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
+			ProtocolManager pm = ProtocolLibrary.getProtocolManager();
+			PacketAdapter pa = null;
+			if (pa == null) {
+				pa = new PacketAdapter(this, ListenerPriority.NORMAL,
+						PacketType.Play.Server.LOGIN) {
+					@Override
+					public void onPacketSending(PacketEvent event) {
+						if (event.getPacketType() == PacketType.Play.Server.LOGIN) {
+							event.getPacket().getBooleans().write(0, true);
+						}
+					}
+				};
+			}
+			pm.addPacketListener(pa);
+		}
 	}
 
 	public void onDisable() {
@@ -188,7 +211,7 @@ public class UltraHC extends JavaPlugin {
 
 				if (isM && c == Option.No_Kill_Time.getInt()) {
 					Bukkit.broadcastMessage("§aKilling is now allowed!");
-					
+
 					if (Option.Scenario.getString().equalsIgnoreCase("Mole")) {
 						for (Team t : ts.teams.values()) {
 							OfflinePlayer[] ps = t.getPlayers().toArray(new OfflinePlayer[0]);
@@ -196,7 +219,7 @@ public class UltraHC extends JavaPlugin {
 								continue;
 							}
 							OfflinePlayer mole = ps[rand.nextInt(ps.length)];
-							
+
 							MoleListener.setAsMole(mole);
 						}
 					}

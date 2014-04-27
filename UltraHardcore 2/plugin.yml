@@ -3,7 +3,7 @@ version: 2.0
 main: net.mcshockwave.UHC.UltraHC
 author: Blaxcraft
 depend: [WorldEdit, HoloAPI]
-softdepend: [MCShockwave]
+softdepend: [MCShockwave, ProtocolLib]
 commands:
    uhc:
    team:
