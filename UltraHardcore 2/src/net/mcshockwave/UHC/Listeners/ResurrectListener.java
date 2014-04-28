@@ -24,11 +24,12 @@ public class ResurrectListener implements Listener {
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Block b = event.getBlock();
+		Block toPlace = event.getBlockPlaced();
 		Block u = b.getRelative(0, -1, 0);
 		Player p = event.getPlayer();
 
 		if (b.getType() == Material.SKULL) {
-			Skull s = (Skull) b.getState();
+			Skull s = (Skull) toPlace.getState();
 			String name = s.getOwner();
 
 			if (u.getType() == Material.GOLD_BLOCK) {
