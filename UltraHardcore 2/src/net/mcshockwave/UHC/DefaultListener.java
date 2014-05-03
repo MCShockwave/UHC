@@ -406,6 +406,8 @@ public class DefaultListener implements Listener {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 10, 100));
 			}
 
+			UltraHC.updateHealthFor(p);
+
 			if (Option.Damage_Indicators.getBoolean()) {
 				final double health = p.getHealth();
 				Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
@@ -526,10 +528,12 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
 		Entity e = event.getEntity();
-		if (e instanceof Player && Option.UHC_Mode.getBoolean()) {
-			if (event.getRegainReason() == RegainReason.SATIATED) {
+		if (e instanceof Player) {
+			Player p = (Player) e;
+			if (event.getRegainReason() == RegainReason.SATIATED && Option.UHC_Mode.getBoolean()) {
 				event.setCancelled(true);
 			}
+			UltraHC.updateHealthFor(p);
 		}
 
 		if (e instanceof Player

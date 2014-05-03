@@ -92,6 +92,8 @@ public class UltraHC extends JavaPlugin {
 
 		score = Bukkit.getScoreboardManager().getMainScoreboard();
 
+		registerHealthScoreboard();
+
 		ts = new TeamSystem(score);
 
 		for (Team t : score.getTeams()) {
@@ -110,8 +112,7 @@ public class UltraHC extends JavaPlugin {
 			ProtocolManager pm = ProtocolLibrary.getProtocolManager();
 			PacketAdapter pa = null;
 			if (pa == null) {
-				pa = new PacketAdapter(this, ListenerPriority.NORMAL,
-						PacketType.Play.Server.LOGIN) {
+				pa = new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.LOGIN) {
 					@Override
 					public void onPacketSending(PacketEvent event) {
 						if (event.getPacketType() == PacketType.Play.Server.LOGIN) {
@@ -121,6 +122,44 @@ public class UltraHC extends JavaPlugin {
 				};
 			}
 			pm.addPacketListener(pa);
+		}
+	}
+
+	public static void registerHealthScoreboard() {
+		if (score.getObjective("Health") != null) {
+			health = score.registerNewObjective("Health", "dummy");
+			health.setDisplayName(" / 100");
+			health.setDisplaySlot(DisplaySlot.BELOW_NAME);
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				health.getScore(p).setScore(100);
+			}
+		}
+		if (score.getObjective("HealthList") != null) {
+			healthList = score.registerNewObjective("HealthList", "dummy");
+			healthList.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				healthList.getScore(p).setScore(100);
+			}
+		}
+	}
+
+	public static void updateHealthFor(final Player p) {
+		Bukkit.getScheduler().runTaskLater(ins, new Runnable() {
+			public void run() {
+				OfflinePlayer op = p;
+				if (p.getName().length() > DefaultListener.maxLength) {
+					op = Bukkit.getOfflinePlayer(p.getPlayerListName());
+				}
+
+				healthList.getScore(op).setScore(getRoundedHealth(p.getHealth()));
+				health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
+			}
+		}, 1);
+	}
+
+	public static void updateHealth() {
+		for (Player p : getAlive()) {
+			updateHealthFor(p);
 		}
 	}
 
@@ -162,19 +201,6 @@ public class UltraHC extends JavaPlugin {
 			}
 
 			players.add(p.getName());
-		}
-
-		health = score.registerNewObjective("Health", "dummy");
-		health.setDisplayName(" / 100");
-		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			health.getScore(p).setScore(20);
-		}
-
-		healthList = score.registerNewObjective("HealthList", "dummy");
-		healthList.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			healthList.getScore(p).setScore(20);
 		}
 
 		stats = score.registerNewObjective("UHCStats", "dummy");
@@ -232,16 +258,6 @@ public class UltraHC extends JavaPlugin {
 				if (isM && c == Option.Meet_Up_Time.getInt()) {
 					Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z:0)");
 					mutime.setScore(0);
-				}
-
-				for (Player p : getAlive()) {
-					OfflinePlayer op = p;
-					if (p.getName().length() > DefaultListener.maxLength) {
-						op = Bukkit.getOfflinePlayer(p.getPlayerListName());
-					}
-
-					healthList.getScore(op).setScore(getRoundedHealth(p.getHealth()));
-					health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
 				}
 
 				// if (isM && c == Option.Border_Time.getInt()) {
