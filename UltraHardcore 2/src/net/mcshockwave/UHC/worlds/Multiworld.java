@@ -1,11 +1,17 @@
 package net.mcshockwave.UHC.worlds;
 
+import net.mcshockwave.UHC.Utils.CustomSignUtils.CustomSign;
+import net.mcshockwave.UHC.Utils.CustomSignUtils.SignRunnable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 
@@ -50,10 +56,18 @@ public class Multiworld {
 
 	public static void loadAll() {
 		for (WorldCreator wc : worlds) {
-			wc.createWorld();
+			final World w = wc.createWorld();
+
+			CustomSign wsign = new CustomSign("§8[Teleport]", "§2" + wc.name(), "", "Click to TP", "[World]",
+					wc.name(), "", "");
+			wsign.onClick(new SignRunnable() {
+				public void run(Player p, Sign s, PlayerInteractEvent e) {
+					p.teleport(w.getSpawnLocation().add(0.5, 1, 0.5));
+				}
+			});
 		}
 	}
-	
+
 	public static boolean isInUHCWorld(Location l) {
 		return isUHCWorld(l.getWorld());
 	}

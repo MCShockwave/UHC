@@ -2,12 +2,14 @@ package net.mcshockwave.UHC;
 
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
+import net.mcshockwave.UHC.Commands.CommandUHC;
 import net.mcshockwave.UHC.Commands.VoteCommand;
 import net.mcshockwave.UHC.HoF.HallOfFame;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
+import net.mcshockwave.UHC.Utils.BlockFace2DVector;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 import net.mcshockwave.UHC.Utils.LocUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
@@ -22,7 +24,6 @@ import org.bukkit.Sound;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Chest;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -56,7 +57,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -105,9 +105,14 @@ public class DefaultListener implements Listener {
 			Location spawn = Multiworld.getLobby().getSpawnLocation();
 
 			p.teleport(spawn);
+			p.setHealth(20);
+			p.setFoodLevel(20);
+			p.setSaturation(10f);
+			UltraHC.updateHealthFor(p);
 
 			if (!UltraHC.isMCShockwaveEnabled()) {
 				p.getInventory().clear();
+				p.getInventory().setArmorContents(new ItemStack[4]);
 				p.getInventory().addItem(
 						ItemMetaUtils.setLore(
 								ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "§e§lHall of Fame"),
@@ -193,7 +198,7 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
 		event.setMaxPlayers(UltraHC.maxPlayers);
-		String sta = UltraHC.started ? "§4[Started]"
+		String sta = CommandUHC.kitMOTD ? "§a[Kit PVP]" : UltraHC.started ? "§4[Started]"
 				: (Bukkit.getOnlinePlayers().length >= UltraHC.maxPlayers) ? "§4[Full]"
 						: Bukkit.hasWhitelist() ? "§4[Whitelisted]" : "§a[Joinable]";
 		event.setMotd("§cMCShockwave §7UHC §8- " + sta);
@@ -252,7 +257,7 @@ public class DefaultListener implements Listener {
 		final Player p = event.getPlayer();
 
 		if (!UltraHC.started) {
-			if (UltraHC.score.getPlayerTeam(p) != null) {
+			if (UltraHC.isMCShockwaveEnabled() && UltraHC.score.getPlayerTeam(p) != null) {
 				UltraHC.score.getPlayerTeam(p).removePlayer(p);
 			}
 		} else {
@@ -277,11 +282,16 @@ public class DefaultListener implements Listener {
 	public void onPlayerKick(PlayerKickEvent event) {
 		if (event.getReason().contains("Kicked")) {
 			UltraHC.onDeath(event.getPlayer());
+			Bukkit.broadcastMessage("§c" + event.getPlayer().getName()
+					+ " was killed for getting kicked for reason: §r\n" + event.getReason());
 		}
 	}
 
-	public static final BlockFace[]	radial	= { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST,
-			BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
+	public static BlockFace getCardinalDirection(Entity entity) {
+		double yaw = entity.getLocation().getYaw();
+		yaw = Math.toRadians(yaw);
+		return BlockFace2DVector.getClosest(yaw);
+	}
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -298,7 +308,7 @@ public class DefaultListener implements Listener {
 				Skull he = (Skull) sk.getState();
 				he.setSkullType(SkullType.PLAYER);
 				he.setOwner(p.getName());
-				he.setRotation(radial[Math.round(p.getLocation().getYaw() / 45f) & 0x7]);
+				he.setRotation(getCardinalDirection(p));
 				he.update(true);
 			} else {
 				event.getDrops().add(
@@ -379,15 +389,22 @@ public class DefaultListener implements Listener {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		Player p = event.getPlayer();
 
-		event.setRespawnLocation(Multiworld.getLobby().getSpawnLocation());
+		if (p.getWorld() == Multiworld.getKit()) {
+			event.setRespawnLocation(Multiworld.getKit().getSpawnLocation());
+		} else
+			event.setRespawnLocation(Multiworld.getLobby().getSpawnLocation());
 
-		if (!UltraHC.specs.contains(p.getName())) {
+		if (UltraHC.started && !UltraHC.specs.contains(p.getName())) {
 			UltraHC.onDeath(p);
 		}
 	}
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
+		if (event.getEntity().getWorld() == Multiworld.getKit()) {
+			return;
+		}
+
 		if (!UltraHC.started) {
 			event.setCancelled(true);
 		}
@@ -429,8 +446,10 @@ public class DefaultListener implements Listener {
 
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
-		if (UltraHC.specs.contains(event.getEntity().getName())) {
+		if (!UltraHC.started && event.getEntity().getWorld() != Multiworld.getKit()
+				|| UltraHC.specs.contains(event.getEntity().getName())) {
 			event.setFoodLevel(20);
+			((Player) event.getEntity()).setSaturation(10f);
 			event.getEntity().setHealth(event.getEntity().getMaxHealth());
 		}
 	}
@@ -439,6 +458,10 @@ public class DefaultListener implements Listener {
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		Entity ee = event.getEntity();
 		Entity de = event.getDamager();
+
+		if (ee.getWorld() == Multiworld.getKit()) {
+			return;
+		}
 
 		if (de instanceof Player) {
 			// Player p = (Player) ee;s
@@ -509,6 +532,11 @@ public class DefaultListener implements Listener {
 			event.setCancelled(true);
 		}
 		Block b = event.getBlock();
+		if (b.getWorld() == Multiworld.getKit()) {
+			event.setCancelled(false);
+			return;
+		}
+
 		if (b.getType() == Material.SOUL_SAND) {
 			if (rand.nextInt(10) == 0) {
 				event.setCancelled(true);
@@ -522,6 +550,12 @@ public class DefaultListener implements Listener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (!UltraHC.started && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 			event.setCancelled(true);
+		}
+
+		Block b = event.getBlock();
+		if (b.getWorld() == Multiworld.getKit()) {
+			event.setCancelled(false);
+			return;
 		}
 	}
 
@@ -556,78 +590,6 @@ public class DefaultListener implements Listener {
 				}
 			}, 1l);
 		}
-	}
-
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event) {
-		Player p = event.getPlayer();
-		// Location l = p.getLocation();
-		if (!UltraHC.started) {
-			p.setFoodLevel(20);
-			p.setSaturation(2F);
-			// int startRadius = 75;
-			// if (l.getX() > startRadius || l.getX() < -startRadius || l.getZ()
-			// > startRadius || l.getZ() < -startRadius) {
-			// p.teleport(new Location(p.getWorld(), 0,
-			// p.getWorld().getHighestBlockYAt(0, 0), 0));
-			// }
-		}
-		// else {
-		// int radius = UltraHC.borderSize.getScore();
-		// int softRadius = radius + 20;
-		// if (!UltraHC.specs.contains(p.getName())) {
-		// if (l.getX() > softRadius || l.getX() < -softRadius || l.getZ() >
-		// softRadius || l.getZ() < -softRadius) {
-		// if (rand.nextInt(10) == 1) {
-		// p.sendMessage(ChatColor.RED +
-		// "You are out of the border! Turn back to spare your life!");
-		// p.playSound(p.getLocation(), Sound.ENDERDRAGON_HIT, 1, 0);
-		// p.damage(Option.UHC_Mode.getBoolean() ? 0.5 : 2);
-		// }
-		// } else if (l.getX() > radius || l.getX() < -radius || l.getZ() >
-		// radius || l.getZ() < -radius) {
-		// if (rand.nextInt(10) == 1) {
-		// p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1, 0);
-		// }
-		// }
-		// }
-		// int partR = radius - 20;
-		// if (UltraHC.started) {
-		// if (l.getX() > partR || l.getX() < -partR || l.getZ() > partR ||
-		// l.getZ() < -partR) {
-		// int part = 16;
-		// for (int x = l.getBlockX() - part; x < l.getBlockX() + part; x++) {
-		// for (int y = l.getBlockY() - part; y < l.getBlockY() + part; y++) {
-		// for (int z = l.getBlockZ() - part; z < l.getBlockZ() + part; z++) {
-		// if ((Math.abs(x) == radius && Math.abs(z) < radius || Math.abs(z) ==
-		// radius
-		// && Math.abs(x) < radius)
-		// && rand.nextInt(50) == 0) {
-		// p.playEffect(new Location(p.getWorld(), x, y, z),
-		// Effect.MOBSPAWNER_FLAMES, 0);
-		// }
-		// }
-		// }
-		// }
-		// }
-		// if (l.getX() > radius || l.getX() < -radius || l.getZ() > radius ||
-		// l.getZ() < -radius) {
-		// int part = 16;
-		// for (int x = l.getBlockX() - part; x < l.getBlockX() + part; x++) {
-		// for (int y = l.getBlockY() - part; y < l.getBlockY() + part; y++) {
-		// for (int z = l.getBlockZ() - part; z < l.getBlockZ() + part; z++) {
-		// if ((Math.abs(x) == softRadius && Math.abs(z) < softRadius ||
-		// Math.abs(z) == softRadius
-		// && Math.abs(x) < softRadius)
-		// && rand.nextInt(50) == 0) {
-		// p.playEffect(new Location(p.getWorld(), x, y, z), Effect.SMOKE, 0);
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -707,17 +669,18 @@ public class DefaultListener implements Listener {
 		if (UltraHC.specs.contains(p.getName()) && p.getGameMode() != GameMode.CREATIVE) {
 			event.setCancelled(true);
 
-			if (a == Action.RIGHT_CLICK_BLOCK && b.getType() == Material.CHEST) {
-				Chest c = (Chest) b.getState();
-
-				p.openInventory(c.getBlockInventory());
+			if (a == Action.RIGHT_CLICK_BLOCK) {
+				if (b.getType() == Material.CHEST) {
+					event.setCancelled(false);
+					return;
+				}
 			}
 		}
 
 		if (UltraHC.specs.contains(p.getName()) && a == Action.LEFT_CLICK_AIR
 				&& (it == null || it.getType() == Material.AIR)) {
 			final ArrayList<Player> al = UltraHC.getAlive();
-			ItemMenu m = new ItemMenu("Alive Players", (al.size() + 8) / 9 * 9);
+			ItemMenu m = new ItemMenu("Alive Players", al.size());
 
 			int i = 0;
 			for (Player p2 : al) {

@@ -27,6 +27,8 @@ import com.sk89q.worldedit.regions.Region;
 
 public class CommandUHC implements CommandExecutor {
 
+	public static boolean	kitMOTD	= false;
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
@@ -126,6 +128,12 @@ public class CommandUHC implements CommandExecutor {
 
 				set.setSpawnLocation(x, y, z);
 				p.sendMessage(String.format("§aSet spawn to x%s y%s z%s in world \"%s\"", x, y, z, set.getName()));
+			}
+			
+			if (args[0].equalsIgnoreCase("motd")) {
+				kitMOTD = !kitMOTD;
+				
+				p.sendMessage("§aKit MOTD is now " + kitMOTD);
 			}
 		}
 		return true;

@@ -9,6 +9,7 @@ import net.mcshockwave.UHC.Commands.SilenceCommand;
 import net.mcshockwave.UHC.Commands.VoteCommand;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenuListener;
+import net.mcshockwave.UHC.Utils.CustomSignUtils.CustomSignListener;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
 
@@ -77,11 +78,12 @@ public class UltraHC extends JavaPlugin {
 
 	public void onEnable() {
 		ins = this;
-		
+
 		Multiworld.loadAll();
 
 		Bukkit.getPluginManager().registerEvents(new DefaultListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMenuListener(), this);
+		Bukkit.getPluginManager().registerEvents(new CustomSignListener(), this);
 
 		getCommand("uhc").setExecutor(new CommandUHC());
 		getCommand("team").setExecutor(new CommandTeam());
@@ -129,19 +131,23 @@ public class UltraHC extends JavaPlugin {
 
 	public static void registerHealthScoreboard() {
 		if (score.getObjective("Health") != null) {
-			health = score.registerNewObjective("Health", "dummy");
-			health.setDisplayName(" / 100");
-			health.setDisplaySlot(DisplaySlot.BELOW_NAME);
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				health.getScore(p).setScore(100);
-			}
+			score.getObjective("Health").unregister();
 		}
 		if (score.getObjective("HealthList") != null) {
-			healthList = score.registerNewObjective("HealthList", "dummy");
-			healthList.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				healthList.getScore(p).setScore(100);
-			}
+			score.getObjective("HealthList").unregister();
+		}
+
+		health = score.registerNewObjective("Health", "dummy");
+		health.setDisplayName(" / 100");
+		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
+		}
+
+		healthList = score.registerNewObjective("HealthList", "dummy");
+		healthList.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			healthList.getScore(p).setScore(getRoundedHealth(p.getHealth()));
 		}
 	}
 
@@ -153,8 +159,12 @@ public class UltraHC extends JavaPlugin {
 					op = Bukkit.getOfflinePlayer(p.getPlayerListName());
 				}
 
-				healthList.getScore(op).setScore(getRoundedHealth(p.getHealth()));
-				health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
+				try {
+					healthList.getScore(op).setScore(getRoundedHealth(p.getHealth()));
+					health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
+				} catch (Exception e) {
+					registerHealthScoreboard();
+				}
 			}
 		}, 1);
 	}
