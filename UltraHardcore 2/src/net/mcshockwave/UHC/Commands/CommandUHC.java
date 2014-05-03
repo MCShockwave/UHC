@@ -36,10 +36,10 @@ public class CommandUHC implements CommandExecutor {
 			}
 
 			if (args[0].equalsIgnoreCase("start")) {
-				UltraHC.start(p.getWorld());
+				UltraHC.start();
 			}
 			if (args[0].equalsIgnoreCase("stop")) {
-				UltraHC.stop(p.getWorld());
+				UltraHC.stop();
 			}
 			if (args[0].equalsIgnoreCase("option")) {
 				Option.getGlobalMenu().open(p);

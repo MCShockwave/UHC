@@ -5,6 +5,7 @@ import net.mcshockwave.UHC.UltraHC;
 import net.mcshockwave.UHC.Utils.PacketUtils;
 import net.mcshockwave.UHC.Utils.PacketUtils.ParticleEffect;
 import net.mcshockwave.UHC.Utils.SchedulerUtils;
+import net.mcshockwave.UHC.worlds.Multiworld;
 import net.minecraft.util.com.google.common.collect.Lists;
 
 import org.bukkit.Bukkit;
@@ -74,7 +75,7 @@ public class CruxListener implements Listener {
 			for (Team t : UltraHC.ts.teams.values()) {
 				Location tl = t.getPlayers().toArray(new OfflinePlayer[0])[0].getPlayer().getLocation();
 				Location cl = tl.clone().add(5, 0, 0);
-				cl.setY(cl.getWorld().getHighestBlockYAt(cl.getBlockX(), cl.getBlockZ()) + 1);
+				cl.setY(Multiworld.getUHC().getHighestBlockYAt(cl.getBlockX(), cl.getBlockZ()) + 1);
 				UltraHC.loadSchematic(UltraHC.cruxSchemName, cl);
 
 				for (int x = -2; x < 2; x++) {
@@ -104,7 +105,7 @@ public class CruxListener implements Listener {
 			for (Player p : UltraHC.getAlive()) {
 				Location l = p.getLocation();
 				l = l.add(5, 0, 0);
-				l.setY(l.getWorld().getHighestBlockYAt(l.getBlockX(), l.getBlockZ()) + 1);
+				l.setY(Multiworld.getUHC().getHighestBlockYAt(l.getBlockX(), l.getBlockZ()) + 1);
 				UltraHC.loadSchematic(UltraHC.cruxSchemName, l);
 
 				for (int x = -2; x < 2; x++) {
@@ -363,11 +364,11 @@ public class CruxListener implements Listener {
 				n = new HologramFactory(UltraHC.ins).withLocation(h.getDefaultLocation())
 						.withText(h.getLines()[0], ownPre + t.getName()).build();
 			}
-			
+
 			h.clearAllPlayerViews();
 			HoloAPI.getManager().stopTracking(h);
 			HoloAPI.getManager().clearFromFile(h);
-			
+
 			for (Player p2 : Bukkit.getOnlinePlayers()) {
 				n.show(p2);
 			}

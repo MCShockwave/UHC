@@ -10,6 +10,7 @@ import net.mcshockwave.UHC.Commands.VoteCommand;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenuListener;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
+import net.mcshockwave.UHC.worlds.Multiworld;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,7 +19,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -164,10 +164,10 @@ public class UltraHC extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		stop(Bukkit.getOnlinePlayers()[0].getWorld());
+		stop();
 	}
 
-	public static void start(final World w) {
+	public static void start() {
 		if (started)
 			return;
 		started = true;
@@ -224,9 +224,9 @@ public class UltraHC extends JavaPlugin {
 						+ count.getTimeString());
 
 				if (Option.Eternal_Daylight.getBoolean()) {
-					w.setTime(5000);
+					Multiworld.getUHC().setTime(5000);
 				} else {
-					w.setTime(count.runCount * 20);
+					Multiworld.getUHC().setTime(count.runCount * 20);
 				}
 
 				long c = count.runCountMin + 1;
@@ -275,8 +275,8 @@ public class UltraHC extends JavaPlugin {
 		});
 		count.start();
 
-		w.setGameRuleValue("doDaylightCycle", !Option.Eternal_Daylight.getBoolean() + "");
-		w.setTime(0);
+		Multiworld.getUHC().setGameRuleValue("doDaylightCycle", !Option.Eternal_Daylight.getBoolean() + "");
+		Multiworld.getUHC().setTime(0);
 
 		if (Option.getScenario().l != null) {
 			Bukkit.getPluginManager().registerEvents(Option.getScenario().l, ins);
@@ -293,7 +293,7 @@ public class UltraHC extends JavaPlugin {
 		return (int) h;
 	}
 
-	public static void stop(World w) {
+	public static void stop() {
 		if (!started)
 			return;
 		started = false;
@@ -370,8 +370,8 @@ public class UltraHC extends JavaPlugin {
 			while (!goodSpawn) {
 				int x = rand.nextInt(spreadDistance) - rand.nextInt(spreadDistance);
 				int z = rand.nextInt(spreadDistance) - rand.nextInt(spreadDistance);
-				int y = p.getWorld().getHighestBlockYAt(x, z);
-				Location l = new Location(p.getWorld(), x, y, z);
+				int y = Multiworld.getUHC().getHighestBlockYAt(x, z);
+				Location l = new Location(Multiworld.getUHC(), x, y, z);
 				Material m = l.add(0, -1, 0).getBlock().getType();
 				boolean noHazard = true;
 				for (Material no : nospawn) {

@@ -10,6 +10,7 @@ import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 import net.mcshockwave.UHC.Utils.LocUtils;
+import net.mcshockwave.UHC.worlds.Multiworld;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -76,11 +77,9 @@ import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -103,9 +102,9 @@ public class DefaultListener implements Listener {
 		Player p = event.getPlayer();
 
 		if (!UltraHC.started) {
-			Block b = p.getWorld().getHighestBlockAt(0, 0).getRelative(BlockFace.DOWN);
+			Location spawn = Multiworld.getLobby().getSpawnLocation();
 
-			p.teleport(b.getLocation().clone().add(0, 2, 0));
+			p.teleport(spawn);
 
 			if (!UltraHC.isMCShockwaveEnabled()) {
 				p.getInventory().clear();
@@ -115,17 +114,19 @@ public class DefaultListener implements Listener {
 								"§bClick to view"));
 			}
 
-			List<Material> mats = Arrays.asList(new Material[] { Material.WATER, Material.STATIONARY_WATER,
-					Material.LAVA, Material.STATIONARY_LAVA, Material.CACTUS });
-
-			if (mats.contains(b.getType())) {
-				int s = 4;
-				for (int x = -s; x < s; x++) {
-					for (int z = -s; z < s; z++) {
-						b.getWorld().getBlockAt(x, b.getLocation().getBlockY(), z).setType(Material.GRASS);
-					}
-				}
-			}
+			// List<Material> mats = Arrays.asList(new Material[] {
+			// Material.WATER, Material.STATIONARY_WATER,
+			// Material.LAVA, Material.STATIONARY_LAVA, Material.CACTUS });
+			//
+			// if (mats.contains(b.getType())) {
+			// int s = 4;
+			// for (int x = -s; x < s; x++) {
+			// for (int z = -s; z < s; z++) {
+			// b.getWorld().getBlockAt(x, b.getLocation().getBlockY(),
+			// z).setType(Material.GRASS);
+			// }
+			// }
+			// }
 		} else if (UltraHC.specs.contains(p.getName())) {
 			p.setAllowFlight(true);
 
@@ -334,7 +335,7 @@ public class DefaultListener implements Listener {
 										+ getRoundedDistance(p3.getLocation(), p.getLocation())
 										+ " blocks away from you");
 							} else {
-								p3.sendMessage("§cThe player died in a different dimension");
+								p3.sendMessage("§cThe player died in a different world");
 							}
 						}
 					}, 1);
@@ -378,8 +379,7 @@ public class DefaultListener implements Listener {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		Player p = event.getPlayer();
 
-		Block b = p.getWorld().getHighestBlockAt(0, 0);
-		event.setRespawnLocation(b.getLocation().add(0, 2, 0));
+		event.setRespawnLocation(Multiworld.getLobby().getSpawnLocation());
 
 		if (!UltraHC.specs.contains(p.getName())) {
 			UltraHC.onDeath(p);
@@ -561,14 +561,16 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player p = event.getPlayer();
-		Location l = p.getLocation();
+		// Location l = p.getLocation();
 		if (!UltraHC.started) {
 			p.setFoodLevel(20);
 			p.setSaturation(2F);
-			int startRadius = 75;
-			if (l.getX() > startRadius || l.getX() < -startRadius || l.getZ() > startRadius || l.getZ() < -startRadius) {
-				p.teleport(new Location(p.getWorld(), 0, p.getWorld().getHighestBlockYAt(0, 0), 0));
-			}
+			// int startRadius = 75;
+			// if (l.getX() > startRadius || l.getX() < -startRadius || l.getZ()
+			// > startRadius || l.getZ() < -startRadius) {
+			// p.teleport(new Location(p.getWorld(), 0,
+			// p.getWorld().getHighestBlockYAt(0, 0), 0));
+			// }
 		}
 		// else {
 		// int radius = UltraHC.borderSize.getScore();
@@ -661,7 +663,7 @@ public class DefaultListener implements Listener {
 		}
 
 		if (UltraHC.specs.contains(p.getName()) && (p.isOp() && event.getMessage().startsWith("*") || !p.isOp())) {
-			event.setMessage("§7" + event.getMessage().replaceAll("*", ""));
+			event.setMessage("§7" + event.getMessage().replaceFirst("*", ""));
 			for (Player p2 : UltraHC.getAlive()) {
 				event.getRecipients().remove(p2);
 			}
