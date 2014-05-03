@@ -312,13 +312,18 @@ public class UltraHC extends JavaPlugin {
 		Bukkit.broadcastMessage("§a§lGame has been stopped!");
 		count.stop();
 
-		HandlerList.unregisterAll(Option.getScenario().l);
+		if (Option.getScenario().l != null) {
+			HandlerList.unregisterAll(Option.getScenario().l);
+		}
 		Option.getScenario().onStop();
 		for (Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
 			h.clearAllPlayerViews();
 			HoloAPI.getManager().stopTracking(h);
 			HoloAPI.getManager().clearFromFile(h);
 		}
+		
+		players.clear();
+		specs.clear();
 
 		try {
 			health.unregister();
