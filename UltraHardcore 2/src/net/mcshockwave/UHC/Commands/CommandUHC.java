@@ -4,6 +4,7 @@ import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.Scenarios;
 import net.mcshockwave.UHC.UltraHC;
 import net.mcshockwave.UHC.Listeners.ResurrectListener;
+import net.mcshockwave.UHC.worlds.Multiworld;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -134,6 +135,17 @@ public class CommandUHC implements CommandExecutor {
 				kitMOTD = !kitMOTD;
 				
 				p.sendMessage("§aKit MOTD is now " + kitMOTD);
+			}
+			
+			if (args[0].equalsIgnoreCase("restart")) {
+				UltraHC.deleteWorld(Multiworld.getUHC());
+				UltraHC.deleteWorld(Multiworld.getNether());
+				
+				for (Player p2 : Bukkit.getOnlinePlayers()) {
+					p2.kickPlayer("§e§lServer Restarting");
+				}
+				
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 			}
 		}
 		return true;

@@ -20,6 +20,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -321,7 +322,7 @@ public class UltraHC extends JavaPlugin {
 			HoloAPI.getManager().stopTracking(h);
 			HoloAPI.getManager().clearFromFile(h);
 		}
-		
+
 		players.clear();
 		specs.clear();
 
@@ -415,6 +416,33 @@ public class UltraHC extends JavaPlugin {
 		}
 
 		inv.setArmorContents(acon);
+	}
+
+	public static void deleteWorld(String w) {
+		if (Bukkit.unloadWorld(w, false)) {
+			System.out.println("Unloaded world");
+		} else {
+			System.err.println("Couldn't unload world");
+		}
+		if (delete(new File(w))) {
+			System.out.println("Deleted world!");
+		} else {
+			System.err.println("Couldn't delete world");
+		}
+	}
+
+	public static void deleteWorld(World w) {
+		deleteWorld(w.getName());
+	}
+
+	public static boolean delete(File file) {
+		if (file.isDirectory())
+			for (File subfile : file.listFiles())
+				if (!delete(subfile))
+					return false;
+		if (!file.delete())
+			return false;
+		return true;
 	}
 
 	public static void loadSchematic(String name, Location l) {
