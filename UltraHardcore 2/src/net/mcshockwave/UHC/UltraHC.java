@@ -77,6 +77,8 @@ public class UltraHC extends JavaPlugin {
 
 	public void onEnable() {
 		ins = this;
+		
+		Multiworld.loadAll();
 
 		Bukkit.getPluginManager().registerEvents(new DefaultListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMenuListener(), this);
