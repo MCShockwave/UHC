@@ -7,6 +7,7 @@ import net.mcshockwave.UHC.Listeners.ResurrectListener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -112,6 +113,19 @@ public class CommandUHC implements CommandExecutor {
 				Player set = Bukkit.getPlayer(args[1]);
 
 				set.setHealth(Double.parseDouble(args[2]));
+			}
+
+			if (args[0].equalsIgnoreCase("world")) {
+				World w = Bukkit.getWorld(args[1]);
+				p.teleport(w.getSpawnLocation());
+			}
+			if (args[0].equalsIgnoreCase("spawn")) {
+				World set = p.getWorld();
+				Location to = p.getLocation();
+				int x = to.getBlockX(), y = to.getBlockY(), z = to.getBlockZ();
+
+				set.setSpawnLocation(x, y, z);
+				p.sendMessage(String.format("§aSet spawn to x%s y%s z%s in world \"%s\"", x, y, z, set.getName()));
 			}
 		}
 		return true;
