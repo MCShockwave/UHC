@@ -24,6 +24,7 @@ public class BanningCommands implements CommandExecutor {
 					for (int i = 1; i < args.length; i++) {
 						reason += " " + args[i];
 					}
+					reason = reason.replaceFirst(" ", "");
 
 					BanManager.setBanned(toBan, -1, reason, sender.getName());
 					Bukkit.broadcastMessage("§e" + toBan + " was banned by " + sender.getName()
@@ -47,6 +48,7 @@ public class BanningCommands implements CommandExecutor {
 					for (int i = 2; i < args.length; i++) {
 						reason += " " + args[i];
 					}
+					reason = reason.replaceFirst(" ", "");
 
 					BanManager.setBanned(toBan, games, reason, sender.getName());
 					Bukkit.broadcastMessage("§e" + toBan + " was banned by " + sender.getName() + " for " + games
@@ -69,7 +71,7 @@ public class BanningCommands implements CommandExecutor {
 
 						sender.sendMessage("§aIncremented all bans by " + gms + " games");
 						if (unbList.size() > 0) {
-							sender.sendMessage("§eUnbanned: " + unb);
+							sender.sendMessage("§eUnbanned:" + unb);
 						}
 					}
 
