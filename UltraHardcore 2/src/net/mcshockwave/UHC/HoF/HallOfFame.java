@@ -41,9 +41,8 @@ public class HallOfFame {
 				title = spl[0];
 				line2 = "§e" + spl[1];
 			}
-			Button h = new Button(false, Material.SKULL_ITEM, 1,
-					(hof.winner.contains(" and ") && !hof.teams.contains("FFA")) ? 0 : 1, title, line2, "§3Game #"
-							+ hof.game, "§7Teams: §o" + hof.teams, "§bScenario: §o" + hof.scen);
+			Button h = new Button(false, Material.SKULL_ITEM, 1, hof.teams.contains("FFA") ? 1 : 0, title, line2,
+					"§3Game #" + hof.game, "§7Teams: §o" + hof.teams, "§bScenario: §o" + hof.scen);
 			h.setOnClick(new ButtonRunnable() {
 				public void run(Player p, InventoryClickEvent event) {
 					p.sendMessage("§7Match link for Game #" + hof.game + ": §e" + hof.reddit);
