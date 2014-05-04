@@ -528,7 +528,8 @@ public class DefaultListener implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (!UltraHC.started && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+		if (!UltraHC.started && event.getPlayer().getGameMode() != GameMode.CREATIVE
+				|| UltraHC.specs.contains(event.getPlayer().getName())) {
 			event.setCancelled(true);
 		}
 		Block b = event.getBlock();
@@ -548,7 +549,8 @@ public class DefaultListener implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!UltraHC.started && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+		if (!UltraHC.started && event.getPlayer().getGameMode() != GameMode.CREATIVE
+				|| UltraHC.specs.contains(event.getPlayer().getName())) {
 			event.setCancelled(true);
 		}
 
