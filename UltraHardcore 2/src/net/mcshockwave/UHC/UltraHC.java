@@ -96,6 +96,7 @@ public class UltraHC extends JavaPlugin {
 		getCommand("gameban").setExecutor(new BanningCommands());
 		getCommand("permban").setExecutor(new BanningCommands());
 		getCommand("incrban").setExecutor(new BanningCommands());
+		getCommand("uhcunban").setExecutor(new BanningCommands());
 
 		score = Bukkit.getScoreboardManager().getMainScoreboard();
 

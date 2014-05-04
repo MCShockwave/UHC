@@ -1,12 +1,15 @@
 package net.mcshockwave.UHC.Commands;
 
 import net.mcshockwave.UHC.BanManager;
+import net.mcshockwave.UHC.SQLTable;
 import net.mcshockwave.UHC.Utils.ListUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import java.util.ArrayList;
 
 public class BanningCommands implements CommandExecutor {
 
@@ -50,8 +53,9 @@ public class BanningCommands implements CommandExecutor {
 
 					if (c.equalsIgnoreCase("add")) {
 						int gms = Integer.parseInt(args[1]);
-						BanManager.incrGames(gms);
+						ArrayList<String> unb = BanManager.incrGames(gms);
 						sender.sendMessage("§aIncremented all bans by " + gms + " games");
+						sender.sendMessage("§eUnbanned " + ListUtils.arrayToString(unb.toArray(), true));
 					}
 
 					if (c.equalsIgnoreCase("get")) {
@@ -66,6 +70,14 @@ public class BanningCommands implements CommandExecutor {
 						sender.sendMessage("§eBan Reason for player " + name + ":");
 						sender.sendMessage(reason);
 					}
+				}
+			}
+
+			if (label.equalsIgnoreCase("uhcunban")) {
+				if (args.length > 0) {
+					String unban = args[0];
+					SQLTable.Bans.del("Username", unban);
+					Bukkit.broadcastMessage("§a" + sender.getName() + " unbanned " + unban);
 				}
 			}
 

@@ -2,6 +2,8 @@ package net.mcshockwave.UHC;
 
 import org.bukkit.Bukkit;
 
+import java.util.ArrayList;
+
 public class BanManager {
 
 	private static SQLTable	bt	= SQLTable.Bans;
@@ -16,7 +18,7 @@ public class BanManager {
 		}
 		return false;
 	}
-	
+
 	public static String getBanReason(String by, String reason, int games) {
 		if (games == -1) {
 			return String.format("§aBanned by %s: §f%s §b[Permanent]", by, reason);
@@ -38,18 +40,29 @@ public class BanManager {
 		}
 
 		bt.add("Username", name, "Games", "" + games, "Reason", reason, "BannedBy", by);
-		
+
 		if (Bukkit.getPlayer(name) != null) {
 			Bukkit.getPlayer(name).kickPlayer(getBanReason(by, reason, games));
 		}
 	}
 
-	public static void incrGames(int games) {
+	public static ArrayList<String> incrGames(int games) {
+		ArrayList<String> ret = new ArrayList<>();
 		for (String s : bt.getAll("Username")) {
 			int gs = bt.getInt("Username", s, "Games");
+			if (gs == -1) {
+				continue;
+			}
+			
+			gs += games;
 
-			bt.set("Games", "" + (gs + games), "Username", s);
+			if (gs == 0) {
+				bt.del("Username", s);
+				ret.add(s);
+			} else
+				bt.set("Games", "" + gs, "Username", s);
 		}
+		return ret;
 	}
 
 }
