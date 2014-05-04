@@ -45,8 +45,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.dsh105.holoapi.HoloAPI;
-import com.dsh105.holoapi.api.Hologram;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
@@ -319,11 +317,11 @@ public class UltraHC extends JavaPlugin {
 			HandlerList.unregisterAll(Option.getScenario().l);
 		}
 		Option.getScenario().onStop();
-		for (Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
-			h.clearAllPlayerViews();
-			HoloAPI.getManager().stopTracking(h);
-			HoloAPI.getManager().clearFromFile(h);
-		}
+		// for (Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
+		// h.clearAllPlayerViews();
+		// HoloAPI.getManager().stopTracking(h);
+		// HoloAPI.getManager().clearFromFile(h);
+		// }
 
 		players.clear();
 		specs.clear();

@@ -11,7 +11,6 @@ import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.Utils.BlockFace2DVector;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
-import net.mcshockwave.UHC.Utils.LocUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
 
 import org.bukkit.Bukkit;
@@ -87,10 +86,6 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.WordUtils;
-
-import com.dsh105.holoapi.HoloAPI;
-import com.dsh105.holoapi.api.Hologram;
-import com.dsh105.holoapi.api.HologramFactory;
 
 public class DefaultListener implements Listener {
 
@@ -307,13 +302,15 @@ public class DefaultListener implements Listener {
 				event.getDrops().add(
 						ItemMetaUtils.setHeadName(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), p.getName()));
 			}
-			if (Option.Hologram_on_Death.getBoolean()) {
-				Hologram h = new HologramFactory(UltraHC.ins).withLocation(p.getLocation().add(0.5, 1.75, 0.5))
-						.withText("§c§lR.I.P.", event.getDeathMessage()).build();
-				for (Player p2 : Bukkit.getOnlinePlayers()) {
-					h.show(p2);
-				}
-			}
+			// if (Option.Hologram_on_Death.getBoolean()) {
+			// Hologram h = new
+			// HologramFactory(UltraHC.ins).withLocation(p.getLocation().add(0.5,
+			// 1.75, 0.5))
+			// .withText("§c§lR.I.P.", event.getDeathMessage()).build();
+			// for (Player p2 : Bukkit.getOnlinePlayers()) {
+			// h.show(p2);
+			// }
+			// }
 			if (Option.Scenario.getString().equalsIgnoreCase("Mole")) {
 				boolean mole = MoleListener.isMole(p.getName());
 
@@ -418,22 +415,23 @@ public class DefaultListener implements Listener {
 
 			UltraHC.updateHealthFor(p);
 
-			if (Option.Damage_Indicators.getBoolean()) {
-				final double health = p.getHealth();
-				Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
-					public void run() {
-						double healthEnd = p.getHealth();
-						double damage = health - healthEnd;
-						damage = (double) Math.round(damage * 10) / 10;
-						if (damage <= 0) {
-							return;
-						}
-						HoloAPI.getManager().createSimpleHologram(
-								LocUtils.addRand(p.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
-								"§c§l-" + (damage * 5) + "%");
-					}
-				}, 1l);
-			}
+			// if (Option.Damage_Indicators.getBoolean()) {
+			// final double health = p.getHealth();
+			// Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+			// public void run() {
+			// double healthEnd = p.getHealth();
+			// double damage = health - healthEnd;
+			// damage = (double) Math.round(damage * 10) / 10;
+			// if (damage <= 0) {
+			// return;
+			// }
+			// HoloAPI.getManager().createSimpleHologram(
+			// LocUtils.addRand(p.getLocation().clone().add(0.5, 1, 0.5), 1, 0,
+			// 1), 1, true,
+			// "§c§l-" + (damage * 5) + "%");
+			// }
+			// }, 1l);
+			// }
 		}
 	}
 
@@ -564,27 +562,29 @@ public class DefaultListener implements Listener {
 			}
 			UltraHC.updateHealthFor(p);
 		}
-
-		if (e instanceof Player
-				&& Option.Damage_Indicators.getBoolean()
-				&& (Option.UHC_Mode.getBoolean() && event.getRegainReason() != RegainReason.SATIATED || !Option.UHC_Mode
-						.getBoolean()) && event.getAmount() < 100) {
-			final Player p = (Player) e;
-			final double health = p.getHealth();
-			Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
-				public void run() {
-					double healthEnd = p.getHealth();
-					double regain = healthEnd - health;
-					regain = (double) Math.round(regain * 10) / 10;
-					if (regain <= 0) {
-						return;
-					}
-					HoloAPI.getManager().createSimpleHologram(
-							LocUtils.addRand(p.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1), 1, true,
-							"§a§l+" + (regain * 5) + "%");
-				}
-			}, 1l);
-		}
+		
+		// if (e instanceof Player
+		// && Option.Damage_Indicators.getBoolean()
+		// && (Option.UHC_Mode.getBoolean() && event.getRegainReason() !=
+		// RegainReason.SATIATED || !Option.UHC_Mode
+		// .getBoolean()) && event.getAmount() < 100) {
+		// final Player p = (Player) e;
+		// final double health = p.getHealth();
+		// Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+		// public void run() {
+		// double healthEnd = p.getHealth();
+		// double regain = healthEnd - health;
+		// regain = (double) Math.round(regain * 10) / 10;
+		// if (regain <= 0) {
+		// return;
+		// }
+		// HoloAPI.getManager().createSimpleHologram(
+		// LocUtils.addRand(p.getLocation().clone().add(0.5, 1, 0.5), 1, 0, 1),
+		// 1, true,
+		// "§a§l+" + (regain * 5) + "%");
+		// }
+		// }, 1l);
+		// }
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

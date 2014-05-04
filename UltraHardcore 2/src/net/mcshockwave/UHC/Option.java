@@ -139,10 +139,10 @@ public enum Option {
 		Material.SKULL_ITEM,
 		0,
 		true),
-	Hologram_on_Death(
-		Material.NAME_TAG,
-		0,
-		false),
+	// Hologram_on_Death(
+	// Material.NAME_TAG,
+	// 0,
+	// false),
 	Golden_Heads(
 		Material.SKULL_ITEM,
 		3,
@@ -159,10 +159,10 @@ public enum Option {
 		Material.NETHERRACK,
 		0,
 		true),
-	Damage_Indicators(
-		Material.REDSTONE,
-		0,
-		false),
+	// Damage_Indicators(
+	// Material.REDSTONE,
+	// 0,
+	// false),
 	UHC_Mode(
 		Material.GOLD_INGOT,
 		0,

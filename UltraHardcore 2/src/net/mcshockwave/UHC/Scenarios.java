@@ -105,10 +105,8 @@ public enum Scenarios {
 			Option.Mark_Time.setInt(5);
 			Option.No_Kill_Time.setInt(1);
 			Option.Spread_Radius.setInt(250);
-			Option.Damage_Indicators.setBoolean(true);
 			Option.Head_on_Fence.setBoolean(false);
 			Option.UHC_Mode.setBoolean(false);
-			Option.Hologram_on_Death.setBoolean(true);
 		}
 	}
 
