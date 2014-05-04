@@ -93,7 +93,7 @@ public class UltraHC extends JavaPlugin {
 		getCommand("options").setExecutor(new CommandOption());
 		getCommand("mole").setExecutor(new MoleListener());
 		getCommand("mc").setExecutor(new MoleChatCommand());
-		getCommand("tempban").setExecutor(new BanningCommands());
+		getCommand("gameban").setExecutor(new BanningCommands());
 		getCommand("permban").setExecutor(new BanningCommands());
 		getCommand("incrban").setExecutor(new BanningCommands());
 

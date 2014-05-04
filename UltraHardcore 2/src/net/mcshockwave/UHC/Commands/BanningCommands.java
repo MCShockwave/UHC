@@ -25,7 +25,7 @@ public class BanningCommands implements CommandExecutor {
 				}
 			}
 
-			if (label.equalsIgnoreCase("tempban")) {
+			if (label.equalsIgnoreCase("gameban")) {
 				if (args.length > 1) {
 					String toBan = args[0];
 					String gameString = args[1];
@@ -33,7 +33,7 @@ public class BanningCommands implements CommandExecutor {
 					try {
 						games = Integer.parseInt(gameString);
 					} catch (Exception e) {
-						sender.sendMessage("§cSyntax: /tempban {name} {games} {reason}");
+						sender.sendMessage("§cSyntax: /gameban {name} {games} {reason}");
 						return false;
 					}
 					String reason = ListUtils.arrayToString(ListUtils.subarray(args, 2));
