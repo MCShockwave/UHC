@@ -2,7 +2,6 @@ package net.mcshockwave.UHC.Commands;
 
 import net.mcshockwave.UHC.BanManager;
 import net.mcshockwave.UHC.SQLTable;
-import net.mcshockwave.UHC.Utils.ListUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -20,7 +19,11 @@ public class BanningCommands implements CommandExecutor {
 			if (label.equalsIgnoreCase("permban")) {
 				if (args.length > 0) {
 					String toBan = args[0];
-					String reason = ListUtils.arrayToString(ListUtils.subarray(args, 1));
+					String reason = "";
+
+					for (int i = 1; i < args.length; i++) {
+						reason += " " + args[i];
+					}
 
 					BanManager.setBanned(toBan, -1, reason, sender.getName());
 					Bukkit.broadcastMessage("§e" + toBan + " was banned by " + sender.getName()
@@ -39,7 +42,11 @@ public class BanningCommands implements CommandExecutor {
 						sender.sendMessage("§cSyntax: /gameban {name} {games} {reason}");
 						return false;
 					}
-					String reason = ListUtils.arrayToString(ListUtils.subarray(args, 2));
+					String reason = "";
+
+					for (int i = 2; i < args.length; i++) {
+						reason += " " + args[i];
+					}
 
 					BanManager.setBanned(toBan, games, reason, sender.getName());
 					Bukkit.broadcastMessage("§e" + toBan + " was banned by " + sender.getName() + " for " + games
@@ -53,9 +60,17 @@ public class BanningCommands implements CommandExecutor {
 
 					if (c.equalsIgnoreCase("add")) {
 						int gms = Integer.parseInt(args[1]);
-						ArrayList<String> unb = BanManager.incrGames(gms);
+						ArrayList<String> unbList = BanManager.incrGames(gms);
+						String unb = "";
+
+						for (int i = 0; i < unbList.size(); i++) {
+							unb += " " + unbList.get(i);
+						}
+
 						sender.sendMessage("§aIncremented all bans by " + gms + " games");
-						sender.sendMessage("§eUnbanned " + ListUtils.arrayToString(unb.toArray(), true));
+						if (unbList.size() > 0) {
+							sender.sendMessage("§eUnbanned: " + unb);
+						}
 					}
 
 					if (c.equalsIgnoreCase("get")) {
