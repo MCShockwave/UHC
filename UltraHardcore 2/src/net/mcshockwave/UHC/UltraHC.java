@@ -371,7 +371,7 @@ public class UltraHC extends JavaPlugin {
 	public static void spreadPlayers(int spreadDistance) {
 		Material[] nospawn = { Material.STATIONARY_WATER, Material.WATER, Material.STATIONARY_LAVA, Material.LAVA,
 				Material.CACTUS };
-		if (spreadDistance == -1) {
+		if (spreadDistance <= -1) {
 			spreadDistance = 1000;
 		}
 		ArrayList<Player> spread = new ArrayList<Player>();
@@ -392,6 +392,9 @@ public class UltraHC extends JavaPlugin {
 				Location l = new Location(Multiworld.getUHC(), x, y, z);
 				Material m = l.add(0, -1, 0).getBlock().getType();
 				boolean noHazard = true;
+				if (l.getBlockY() < 48) {
+					noHazard = false;
+				}
 				for (Material no : nospawn) {
 					if (m == no) {
 						noHazard = false;
