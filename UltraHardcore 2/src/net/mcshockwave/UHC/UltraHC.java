@@ -154,6 +154,7 @@ public class UltraHC extends JavaPlugin {
 
 	public static void updateHealthFor(final Player p) {
 		Bukkit.getScheduler().runTaskLater(ins, new Runnable() {
+			@SuppressWarnings("deprecation")
 			public void run() {
 				OfflinePlayer op = p;
 				if (p.getName().length() > DefaultListener.maxLength) {
@@ -180,6 +181,7 @@ public class UltraHC extends JavaPlugin {
 		stop();
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void start() {
 		if (started)
 			return;

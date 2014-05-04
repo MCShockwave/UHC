@@ -81,6 +81,7 @@ public class TeamSystem {
 
 	HashMap<ChatColor, BukkitTask>	liTa	= new HashMap<>();
 
+	@SuppressWarnings("deprecation")
 	public void setScores() {
 		for (ChatColor c : colors) {
 			if (isEnabled(c)) {
