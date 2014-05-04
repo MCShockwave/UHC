@@ -44,7 +44,7 @@ public class BanningCommands implements CommandExecutor {
 				}
 			}
 
-			if (label.equalsIgnoreCase("incrbans")) {
+			if (label.equalsIgnoreCase("incrban")) {
 				if (args.length > 0) {
 					String c = args[0];
 
