@@ -59,6 +59,7 @@ public class BanningCommands implements CommandExecutor {
 
 						if (!BanManager.isBanned(name)) {
 							sender.sendMessage("§cPlayer is not banned");
+							return true;
 						}
 
 						String reason = BanManager.getBanReason(name);

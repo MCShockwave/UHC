@@ -196,6 +196,10 @@ public class DefaultListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		final Player p = event.getPlayer();
 
+		if (BanManager.isBanned(p.getName())) {
+			event.disallow(Result.KICK_BANNED, BanManager.getBanReason(p.getName()));
+		}
+
 		if (UltraHC.maxPlayers <= Bukkit.getOnlinePlayers().length) {
 			event.disallow(Result.KICK_FULL, "§cServer full!");
 		}
@@ -562,7 +566,7 @@ public class DefaultListener implements Listener {
 			}
 			UltraHC.updateHealthFor(p);
 		}
-		
+
 		// if (e instanceof Player
 		// && Option.Damage_Indicators.getBoolean()
 		// && (Option.UHC_Mode.getBoolean() && event.getRegainReason() !=
@@ -788,7 +792,7 @@ public class DefaultListener implements Listener {
 			if (!UltraHC.isMCShockwaveEnabled()) {
 				p.getInventory().addItem(UltraHC.getHOF());
 			}
-			
+
 			p.teleport(Multiworld.getLobby().getSpawnLocation());
 		}
 	}
