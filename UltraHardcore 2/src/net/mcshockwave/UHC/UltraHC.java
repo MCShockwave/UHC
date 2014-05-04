@@ -447,6 +447,21 @@ public class UltraHC extends JavaPlugin {
 		return true;
 	}
 
+	public static void resetPlayer(Player p) {
+		p.setHealth(20);
+		p.setFoodLevel(20);
+		p.setSaturation(10f);
+		UltraHC.updateHealthFor(p);
+
+		p.getInventory().clear();
+		p.getInventory().setArmorContents(new ItemStack[4]);
+	}
+
+	public static ItemStack getHOF() {
+		return ItemMetaUtils.setLore(ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "§e§lHall of Fame"),
+				"§bClick to view");
+	}
+
 	public static void loadSchematic(String name, Location l) {
 		File f = new File(ins.getDataFolder(), name + ".schematic");
 

@@ -57,6 +57,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -103,20 +104,12 @@ public class DefaultListener implements Listener {
 
 		if (!UltraHC.started) {
 			Location spawn = Multiworld.getLobby().getSpawnLocation();
-
 			p.teleport(spawn);
-			p.setHealth(20);
-			p.setFoodLevel(20);
-			p.setSaturation(10f);
-			UltraHC.updateHealthFor(p);
+
+			UltraHC.resetPlayer(p);
 
 			if (!UltraHC.isMCShockwaveEnabled()) {
-				p.getInventory().clear();
-				p.getInventory().setArmorContents(new ItemStack[4]);
-				p.getInventory().addItem(
-						ItemMetaUtils.setLore(
-								ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "§e§lHall of Fame"),
-								"§bClick to view"));
+				p.getInventory().addItem(UltraHC.getHOF());
 			}
 
 			// List<Material> mats = Arrays.asList(new Material[] {
@@ -781,6 +774,22 @@ public class DefaultListener implements Listener {
 		if (UltraHC.specs.contains(event.getWhoClicked().getName())
 				&& event.getWhoClicked().getGameMode() != GameMode.CREATIVE) {
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent event) {
+		Player p = event.getPlayer();
+		Location to = event.getTo();
+
+		if (to.getWorld() == Multiworld.getLobby() && to.getY() < 55 && p.getGameMode() != GameMode.CREATIVE) {
+			UltraHC.resetPlayer(p);
+
+			if (!UltraHC.isMCShockwaveEnabled()) {
+				p.getInventory().addItem(UltraHC.getHOF());
+			}
+			
+			p.teleport(Multiworld.getLobby().getSpawnLocation());
 		}
 	}
 
