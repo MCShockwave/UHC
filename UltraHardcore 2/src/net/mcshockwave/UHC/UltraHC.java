@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC;
 
+import net.mcshockwave.UHC.Commands.BanningCommands;
 import net.mcshockwave.UHC.Commands.CommandOption;
 import net.mcshockwave.UHC.Commands.CommandTeam;
 import net.mcshockwave.UHC.Commands.CommandUHC;
@@ -92,6 +93,9 @@ public class UltraHC extends JavaPlugin {
 		getCommand("options").setExecutor(new CommandOption());
 		getCommand("mole").setExecutor(new MoleListener());
 		getCommand("mc").setExecutor(new MoleChatCommand());
+		getCommand("tempban").setExecutor(new BanningCommands());
+		getCommand("permban").setExecutor(new BanningCommands());
+		getCommand("incrban").setExecutor(new BanningCommands());
 
 		score = Bukkit.getScoreboardManager().getMainScoreboard();
 

@@ -17,3 +17,6 @@ commands:
       aliases: [opt, option]
    mole:
    mc:
+   tempban:
+   permban:
+   incrban:

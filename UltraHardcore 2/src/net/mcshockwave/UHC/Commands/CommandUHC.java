@@ -147,6 +147,12 @@ public class CommandUHC implements CommandExecutor {
 				
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 			}
+			
+			if (args[0].equalsIgnoreCase("spread")) {
+				int rad = Integer.parseInt(args[1]);
+				
+				UltraHC.spreadPlayers(rad);
+			}
 		}
 		return true;
 	}

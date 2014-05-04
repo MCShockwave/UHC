@@ -14,7 +14,8 @@ import java.util.LinkedHashMap;
 public enum SQLTable {
 	Settings,
 	Stats,
-	Hall_Of_Fame;
+	Hall_Of_Fame,
+	Bans;
 
 	public static String		SqlIP	= "127.0.0.1";
 	public static String		SqlName	= "vahost_38";
