@@ -329,12 +329,6 @@ public class UltraHC extends JavaPlugin {
 		players.clear();
 		specs.clear();
 
-		try {
-			health.unregister();
-			healthList.unregister();
-			stats.unregister();
-		} catch (Exception e) {
-		}
 		playersLeft = null;
 	}
 

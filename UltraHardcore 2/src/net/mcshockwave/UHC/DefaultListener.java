@@ -503,7 +503,9 @@ public class DefaultListener implements Listener {
 				d = (Player) de;
 			}
 			if (d != null) {
-				if (!UltraHC.nts.friendlyfire && UltraHC.nts.getTeam(p.getName()) == UltraHC.nts.getTeam(d.getName())) {
+				if (!UltraHC.nts.friendlyfire && UltraHC.nts.getTeam(p.getName()) != null
+						&& UltraHC.nts.getTeam(d.getName()) != null
+						&& UltraHC.nts.getTeam(p.getName()) == UltraHC.nts.getTeam(d.getName())) {
 					event.setCancelled(true);
 				}
 			}
