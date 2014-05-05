@@ -2,6 +2,7 @@ package net.mcshockwave.UHC;
 
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
+import net.mcshockwave.UHC.NumberedTeamSystem.NumberTeam;
 import net.mcshockwave.UHC.Commands.CommandUHC;
 import net.mcshockwave.UHC.Commands.VoteCommand;
 import net.mcshockwave.UHC.HoF.HallOfFame;
@@ -59,7 +60,6 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -73,7 +73,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -81,7 +80,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -91,7 +89,7 @@ public class DefaultListener implements Listener {
 
 	Random				rand		= new Random();
 
-	public static int	maxLength	= 10;
+	public static int	maxLength	= 9;
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
@@ -149,15 +147,15 @@ public class DefaultListener implements Listener {
 			}
 		}
 
+		if (UltraHC.nts.getTeam(p.getName()) != null) {
+			p.setScoreboard(UltraHC.nts.getTeam(p.getName()).sc);
+		}
+
 		if (UltraHC.specs.contains(p.getName())) {
 			int len = p.getName().length();
 			p.setPlayerListName("\u2718" + (len >= 16 ? p.getName().substring(0, 15) : p.getName()));
 		} else if (p.getName().length() > maxLength) {
-			String sname = getShortName(p);
-			if (UltraHC.score.getPlayerTeam(p) != null) {
-				sname = UltraHC.score.getPlayerTeam(p).getPrefix() + sname;
-			}
-			p.setPlayerListName(sname);
+			p.setPlayerListName(getShortName(p));
 		}
 	}
 
@@ -244,31 +242,28 @@ public class DefaultListener implements Listener {
 
 	// HashMap<String, BukkitTask> logOut = new HashMap<>();
 
-	@EventHandler
-	public void onPlayerLeave(PlayerQuitEvent event) {
-		final Player p = event.getPlayer();
-
-		if (!UltraHC.started) {
-			if (UltraHC.isMCShockwaveEnabled() && UltraHC.score.getPlayerTeam(p) != null) {
-				UltraHC.score.getPlayerTeam(p).removePlayer(p);
-			}
-		} else {
-			// if (!UltraHC.specs.contains(p.getName())) {
-			// BukkitTask bt = new BukkitRunnable() {
-			// public void run() {
-			// logOut.remove(p.getName());
-			// Bukkit.broadcastMessage("§c" + p.getName() +
-			// " was logged out too long!");
-			// p.getLocation().getChunk().load();
-			// UltraHC.players.remove(p.getName());
-			// UltraHC.onDeath(p);
-			// }
-			// }.runTaskLater(UltraHC.ins, 12000);
-			//
-			// logOut.put(p.getName(), bt);
-			// }
-		}
-	}
+	// @EventHandler
+	// public void onPlayerLeave(PlayerQuitEvent event) {
+	// final Player p = event.getPlayer();
+	//
+	// if (UltraHC.started) {
+	// } else {
+	// // if (!UltraHC.specs.contains(p.getName())) {
+	// // BukkitTask bt = new BukkitRunnable() {
+	// // public void run() {
+	// // logOut.remove(p.getName());
+	// // Bukkit.broadcastMessage("§c" + p.getName() +
+	// // " was logged out too long!");
+	// // p.getLocation().getChunk().load();
+	// // UltraHC.players.remove(p.getName());
+	// // UltraHC.onDeath(p);
+	// // }
+	// // }.runTaskLater(UltraHC.ins, 12000);
+	// //
+	// // logOut.put(p.getName(), bt);
+	// // }
+	// }
+	// }
 
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
@@ -290,7 +285,32 @@ public class DefaultListener implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		final Player p = event.getEntity();
 
+		String dm = event.getDeathMessage();
+		dm = event.getDeathMessage().substring(0, dm.lastIndexOf(" using "));
+		event.setDeathMessage(dm);
+
+		if (UltraHC.nts.isTeamGame()) {
+			event.setDeathMessage("");
+
+			for (Player p2 : Bukkit.getOnlinePlayers()) {
+				NumberTeam pt2 = UltraHC.nts.getTeam(p2.getName());
+				NumberTeam pt = UltraHC.nts.getTeam(p.getName());
+
+				String cdm = dm + "";
+				cdm = cdm.replaceFirst(p.getName(), (pt == pt2 ? "§a" : "§c") + "[" + pt.id + "] §f" + p.getName());
+
+				if (p.getKiller() != null) {
+					NumberTeam kt = UltraHC.nts.getTeam(p.getKiller().getName());
+					cdm = cdm.replaceFirst(p.getKiller().getName(), (kt == pt2 ? "§a" : "§c") + "[" + kt.id + "] §f"
+							+ p.getName());
+				}
+
+				p2.sendMessage(cdm);
+			}
+		}
+
 		if (UltraHC.started && UltraHC.getAlive().contains(p)) {
+
 			if (Option.Head_on_Fence.getBoolean() && p.getLocation().getBlock().getType() == Material.AIR
 					&& p.getLocation().getBlock().getRelative(BlockFace.UP).getType() == Material.AIR) {
 				p.getLocation().getBlock().setType(Material.NETHER_FENCE);
@@ -472,6 +492,23 @@ public class DefaultListener implements Listener {
 			}
 		}
 
+		if (ee instanceof Player) {
+			Player p = (Player) ee;
+
+			Player d = null;
+			if (de instanceof Projectile && ((Projectile) de).getShooter() instanceof Player) {
+				d = (Player) ((Projectile) de).getShooter();
+			}
+			if (de instanceof Player) {
+				d = (Player) de;
+			}
+			if (d != null) {
+				if (!UltraHC.nts.friendlyfire && UltraHC.nts.getTeam(p.getName()) == UltraHC.nts.getTeam(d.getName())) {
+					event.setCancelled(true);
+				}
+			}
+		}
+
 		// spec blocking
 		if (ee instanceof Player && de instanceof Projectile) {
 			Projectile arrow = (Projectile) de;
@@ -606,16 +643,16 @@ public class DefaultListener implements Listener {
 			event.setMessage("§7" + event.getMessage().replaceFirst("!", ""));
 
 			for (Player p2 : Bukkit.getOnlinePlayers()) {
-				if (UltraHC.score.getPlayerTeam(p) == UltraHC.score.getPlayerTeam(p2)) {
+				if (UltraHC.nts.getTeam(p.getName()) == UltraHC.nts.getTeam(p.getName())) {
 					event.getRecipients().add(p2);
 				}
 			}
 		}
 
-		if (UltraHC.ts.isTeamGame() && !UltraHC.isMCShockwaveEnabled()) {
-			Team t = UltraHC.score.getPlayerTeam(p);
+		if (UltraHC.nts.isTeamGame() && !UltraHC.isMCShockwaveEnabled()) {
+			NumberTeam t = UltraHC.nts.getTeam(p.getName());
 			if (t != null) {
-				event.setFormat("<" + t.getPrefix() + "%s" + t.getSuffix() + "> " + event.getMessage());
+				event.setFormat("<§e[" + t.id + "] §f%s> " + event.getMessage());
 			}
 		}
 
@@ -683,8 +720,11 @@ public class DefaultListener implements Listener {
 
 			int i = 0;
 			for (Player p2 : al) {
-				Button bu = new Button(true, Material.WOOL, 1, getWoolDura(p2), getTeamPre(p2) + p2.getName(),
-						"Click to teleport");
+				int am = 1;
+				if (UltraHC.nts.isTeamGame() && UltraHC.nts.getTeam(p.getName()) != null) {
+					am = UltraHC.nts.getTeam(p.getName()).id;
+				}
+				Button bu = new Button(true, Material.WOOL, am, 0, getTeamPre(p2) + p2.getName(), "Click to teleport");
 				bu.onClick = new ButtonRunnable() {
 					public void run(Player c, InventoryClickEvent event) {
 						Player tp = Bukkit.getPlayer(ChatColor.stripColor(ItemMetaUtils.getItemName(event
@@ -721,20 +761,6 @@ public class DefaultListener implements Listener {
 		}
 
 		return name;
-	}
-
-	public short getWoolDura(Player p) {
-		for (Entry<ChatColor, Team> e : UltraHC.ts.teams.entrySet()) {
-			if (e.getValue().hasPlayer(p)) {
-				// return respective chatcolor wool data
-				for (int i = 0; i < TeamSystem.colors.length; i++) {
-					if (e.getKey() == TeamSystem.colors[i]) {
-						return TeamSystem.woolData[i];
-					}
-				}
-			}
-		}
-		return 0;
 	}
 
 	public String getTeamPre(Player p) {

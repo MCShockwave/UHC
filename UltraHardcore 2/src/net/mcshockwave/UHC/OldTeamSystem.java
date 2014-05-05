@@ -16,11 +16,10 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.HashMap;
-import java.util.Random;
 
 import org.apache.commons.lang.WordUtils;
 
-public class TeamSystem {
+public class OldTeamSystem {
 
 	public Scoreboard					s;
 	public HashMap<ChatColor, Team>		teams;
@@ -31,7 +30,7 @@ public class TeamSystem {
 			ChatColor.DARK_AQUA, ChatColor.DARK_PURPLE, ChatColor.BLUE, ChatColor.DARK_GREEN, ChatColor.RED };
 	public static final short[]			woolData	= { 0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14 };
 
-	public TeamSystem(Scoreboard s) {
+	public OldTeamSystem(Scoreboard s) {
 		this.s = s;
 		this.teams = new HashMap<>();
 		this.scores = new HashMap<>();
@@ -72,7 +71,7 @@ public class TeamSystem {
 		m.addButton(b, m.i.getSize() - 1);
 		b.setOnClick(new ButtonRunnable() {
 			public void run(Player p, InventoryClickEvent event) {
-				TeamSystem.spreadPlayers();
+				// TeamSystem.spreadPlayers();
 			}
 		});
 
@@ -333,32 +332,30 @@ public class TeamSystem {
 		return "";
 	}
 
-	public static void spreadPlayers() {
-		Random rand = new Random();
-		Team u = UltraHC.score.registerNewTeam("Undefined");
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			u.addPlayer(p);
-		}
-		do {
-			for (Team t : UltraHC.score.getTeams()) {
-				if (u.getPlayers().size() > 0) {
-					boolean done = false;
-					do {
-						Player p = Bukkit.getOnlinePlayers()[rand.nextInt(Bukkit.getOnlinePlayers().length)];
-						if (u.getPlayers().contains(p)) {
-							u.removePlayer(p);
-							t.addPlayer(p);
-							if (p.getName().length() > DefaultListener.maxLength) {
-								p.setPlayerListName(t.getPrefix() + DefaultListener.getShortName(p));
-							}
-							done = true;
-						}
-					} while (!done);
-				}
-			}
-		} while (u.getPlayers().size() > 0);
-		u.unregister();
-	}
+	// public static void spreadPlayers() {
+	// Random rand = new Random();
+	// List<Player> undef = Arrays.asList(Bukkit.getOnlinePlayers());
+	// do {
+	// for (Team t : UltraHC.nts.teams) {
+	// if (undef.size() > 0) {
+	// boolean done = false;
+	// do {
+	// Player p =
+	// Bukkit.getOnlinePlayers()[rand.nextInt(Bukkit.getOnlinePlayers().length)];
+	// if (u.getPlayers().contains(p)) {
+	// u.removePlayer(p);
+	// t.addPlayer(p);
+	// if (p.getName().length() > DefaultListener.maxLength) {
+	// p.setPlayerListName(t.getPrefix() + DefaultListener.getShortName(p));
+	// }
+	// done = true;
+	// }
+	// } while (!done);
+	// }
+	// }
+	// } while (u.getPlayers().size() > 0);
+	// u.unregister();
+	// }
 
 	public ItemMenu getTeamSelector(Player p) {
 		ItemMenu m = new ItemMenu(p.getName() + " - Teams", colors.length + (9 - (colors.length % 9)));

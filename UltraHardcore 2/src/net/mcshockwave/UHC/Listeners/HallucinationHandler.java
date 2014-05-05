@@ -1,15 +1,14 @@
 package net.mcshockwave.UHC.Listeners;
 
-import net.mcshockwave.UHC.Utils.LocUtils;
+import net.mcshockwave.UHC.NumberedTeamSystem.NumberTeam;
 import net.mcshockwave.UHC.UltraHC;
+import net.mcshockwave.UHC.Utils.LocUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -36,11 +35,11 @@ public class HallucinationHandler {
 						l = LocUtils.addRand(p.getLocation(), 50, 25, 50).add(0, -25, 0);
 					}
 
-					if (UltraHC.ts.isTeamGame()) {
-						Team t = UltraHC.score.getPlayerTeam(p);
-						for (OfflinePlayer op : t.getPlayers()) {
-							if (op.isOnline()) {
-								ef.play(p.getPlayer(), l);
+					if (UltraHC.nts.isTeamGame()) {
+						NumberTeam t = UltraHC.nts.getTeam(p.getName());
+						for (String op : t.getPlayers()) {
+							if (Bukkit.getPlayer(op) != null) {
+								ef.play(Bukkit.getPlayer(op), l);
 							}
 						}
 					} else {

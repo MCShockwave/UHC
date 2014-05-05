@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC.Listeners;
 
+import net.mcshockwave.UHC.NumberedTeamSystem.NumberTeam;
 import net.mcshockwave.UHC.UltraHC;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
@@ -28,7 +29,7 @@ public class MoleListener implements Listener, CommandExecutor {
 
 	public static final String					molePre	= "§a[Mole] §7";
 
-	public static HashMap<Team, String>			moles	= new HashMap<>();
+	public static HashMap<Integer, String>		moles	= new HashMap<>();
 	public static HashMap<String, Inventory>	moleKit	= new HashMap<>();
 	public static Inventory						ender	= null;
 
@@ -119,9 +120,9 @@ public class MoleListener implements Listener, CommandExecutor {
 			if (cm.equalsIgnoreCase("list")) {
 				p.sendMessage("§8----- §a[Moles] §8-----");
 				for (Player p2 : getAllTrueMoles()) {
-					Team t = UltraHC.score.getPlayerTeam(p2);
+					NumberTeam t = UltraHC.nts.getTeam(p2.getName());
 					p.sendMessage("§b" + p2.getName() + " - "
-							+ (t == null ? "§c[§lDEAD§c]" : t.getPrefix() + t.getName() + t.getSuffix()));
+							+ (t == null || UltraHC.specs.contains(p2.getName()) ? "§c[§lDEAD§c]" : "§e[" + t.id + "]"));
 				}
 			}
 		}
@@ -146,7 +147,7 @@ public class MoleListener implements Listener, CommandExecutor {
 		moleKit.remove(mole.getName());
 		moleKit.put(mole.getName(), getInv());
 
-		moles.put(UltraHC.score.getPlayerTeam(mole), mole.getName());
+		moles.put(UltraHC.nts.getTeam(mole.getName()).id, mole.getName());
 
 		if (mole.isOnline()) {
 			mole.getPlayer().sendMessage(molePre + "§lYou are a mole! Type /mole for a list of commands.");
@@ -156,9 +157,7 @@ public class MoleListener implements Listener, CommandExecutor {
 	public static void onStart() {
 		ender = Bukkit.createInventory(null, 27, "Mole Chest");
 
-		for (Team t : UltraHC.ts.teams.values()) {
-			t.setAllowFriendlyFire(true);
-		}
+		UltraHC.nts.friendlyfire = true;
 	}
 
 	@EventHandler

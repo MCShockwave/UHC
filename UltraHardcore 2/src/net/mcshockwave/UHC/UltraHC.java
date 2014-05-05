@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC;
 
+import net.mcshockwave.UHC.NumberedTeamSystem.NumberTeam;
 import net.mcshockwave.UHC.Commands.BanningCommands;
 import net.mcshockwave.UHC.Commands.CommandOption;
 import net.mcshockwave.UHC.Commands.CommandTeam;
@@ -34,7 +35,6 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,27 +54,27 @@ import com.sk89q.worldedit.schematic.SchematicFormat;
 
 public class UltraHC extends JavaPlugin {
 
-	public static UltraHC			ins;
+	public static UltraHC				ins;
 
-	public static boolean			started			= false;
+	public static boolean				started			= false;
 
-	public static Counter			count			= null;
+	public static Counter				count			= null;
 
-	public static Scoreboard		score			= null;
-	public static Objective			health			= null, healthList = null, stats = null;
-	public static Score				playersLeft		= null, mutime = null;
+	public static Scoreboard			scb				= null;
+	public static Objective				health			= null, healthList = null, stats = null;
+	public static Score					playersLeft		= null, mutime = null;
 	// borderSize = null;
 
-	public static ArrayList<String>	specs			= new ArrayList<>();
-	public static ArrayList<String>	players			= new ArrayList<>();
+	public static ArrayList<String>		specs			= new ArrayList<>();
+	public static ArrayList<String>		players			= new ArrayList<>();
 
-	public static TeamSystem		ts;
+	public static ItemStack[]			startCon		= null, startACon;
 
-	public static ItemStack[]		startCon		= null, startACon;
+	public static String				cruxSchemName	= "cruxSpawn";
 
-	public static String			cruxSchemName	= "cruxSpawn";
+	public static boolean				chatSilenced	= false;
 
-	public static boolean			chatSilenced	= false;
+	public static NumberedTeamSystem	nts;
 
 	public void onEnable() {
 		ins = this;
@@ -98,15 +98,11 @@ public class UltraHC extends JavaPlugin {
 		getCommand("incrban").setExecutor(new BanningCommands());
 		getCommand("uhcunban").setExecutor(new BanningCommands());
 
-		score = Bukkit.getScoreboardManager().getMainScoreboard();
+		scb = Bukkit.getScoreboardManager().getMainScoreboard();
 
 		registerHealthScoreboard();
 
-		ts = new TeamSystem(score);
-
-		for (Team t : score.getTeams()) {
-			ts.teams.put(ChatColor.getByChar(t.getPrefix().charAt(1)), t);
-		}
+		nts = new NumberedTeamSystem(scb);
 
 		Bukkit.addRecipe(new ShapedRecipe(ItemMetaUtils.setItemName(new ItemStack(Material.GOLDEN_APPLE),
 				ChatColor.GOLD + "Golden Head")).shape("III", "IHI", "III").setIngredient('I', Material.GOLD_INGOT)
@@ -134,21 +130,21 @@ public class UltraHC extends JavaPlugin {
 	}
 
 	public static void registerHealthScoreboard() {
-		if (score.getObjective("Health") != null) {
-			score.getObjective("Health").unregister();
+		if (scb.getObjective("Health") != null) {
+			scb.getObjective("Health").unregister();
 		}
-		if (score.getObjective("HealthList") != null) {
-			score.getObjective("HealthList").unregister();
+		if (scb.getObjective("HealthList") != null) {
+			scb.getObjective("HealthList").unregister();
 		}
 
-		health = score.registerNewObjective("Health", "dummy");
+		health = scb.registerNewObjective("Health", "dummy");
 		health.setDisplayName(" / 100");
 		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
 		}
 
-		healthList = score.registerNewObjective("HealthList", "dummy");
+		healthList = scb.registerNewObjective("HealthList", "dummy");
 		healthList.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			healthList.getScore(p).setScore(getRoundedHealth(p.getHealth()));
@@ -221,7 +217,7 @@ public class UltraHC extends JavaPlugin {
 			players.add(p.getName());
 		}
 
-		stats = score.registerNewObjective("UHCStats", "dummy");
+		stats = scb.registerNewObjective("UHCStats", "dummy");
 		stats.setDisplayName("§c" + Option.getScenario().name().replace('_', ' ') + " §60:00:00");
 		stats.setDisplaySlot(DisplaySlot.SIDEBAR);
 
@@ -257,14 +253,14 @@ public class UltraHC extends JavaPlugin {
 					Bukkit.broadcastMessage("§aKilling is now allowed!");
 
 					if (Option.Scenario.getString().equalsIgnoreCase("Mole")) {
-						for (Team t : ts.teams.values()) {
-							OfflinePlayer[] ps = t.getPlayers().toArray(new OfflinePlayer[0]);
-							if (ps.length == 0) {
+						for (NumberTeam nt : nts.teams) {
+							ArrayList<String> ps = nt.players;
+							if (ps.size() == 0) {
 								continue;
 							}
-							OfflinePlayer mole = ps[rand.nextInt(ps.length)];
+							String mole = ps.get(rand.nextInt(ps.size()));
 
-							MoleListener.setAsMole(mole);
+							MoleListener.setAsMole(Bukkit.getOfflinePlayer(mole));
 						}
 					}
 				}
@@ -300,8 +296,6 @@ public class UltraHC extends JavaPlugin {
 			Bukkit.getPluginManager().registerEvents(Option.getScenario().l, ins);
 		}
 		Option.getScenario().onStart();
-
-		ts.setScores();
 	}
 
 	public static int getRoundedHealth(double h) {
@@ -338,7 +332,6 @@ public class UltraHC extends JavaPlugin {
 		} catch (Exception e) {
 		}
 		playersLeft = null;
-		ts.scores.clear();
 	}
 
 	public static ArrayList<Player> getAlive() {
@@ -361,12 +354,6 @@ public class UltraHC extends JavaPlugin {
 		}, 600l);
 
 		playersLeft.setScore(getAlive().size());
-
-		if (UltraHC.score.getPlayerTeam(p) != null) {
-			UltraHC.score.getPlayerTeam(p).removePlayer(p);
-		}
-
-		ts.setScores();
 	}
 
 	public static Random	rand		= new Random();
@@ -383,8 +370,8 @@ public class UltraHC extends JavaPlugin {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			boolean goodSpawn = false;
 			for (Player p2 : spread) {
-				Team t = score.getPlayerTeam(p);
-				Team t2 = score.getPlayerTeam(p2);
+				NumberTeam t = nts.getTeam(p.getName());
+				NumberTeam t2 = nts.getTeam(p2.getName());
 				if (t != null && t2 != null && t == t2) {
 					p.teleport(p2);
 					goodSpawn = true;

@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC.Listeners;
 
+import net.mcshockwave.UHC.NumberedTeamSystem.NumberTeam;
 import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.UltraHC;
 
@@ -13,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,17 +22,13 @@ import java.util.Map.Entry;
 
 public class LinkedListener implements Listener {
 
-	public static HashMap<Team, Integer>	startSize	= new HashMap<>();
+	public static HashMap<Integer, Integer>	startSize	= new HashMap<>();
 
 	public static void onStart() {
-		UltraHC.ts.setScores();
-
-		Scoreboard s = Bukkit.getScoreboardManager().getMainScoreboard();
-
-		for (Team t : s.getTeams()) {
-			startSize.put(t, t.getSize());
+		for (NumberTeam t : UltraHC.nts.teams) {
+			startSize.put(t.id, t.getPlayers().size());
 		}
-		
+
 		Bukkit.broadcastMessage("§aAll teams linked");
 	}
 
@@ -51,11 +47,11 @@ public class LinkedListener implements Listener {
 		return ret;
 	}
 
-	public static Entry<Team, Integer> getTeamEntry(Player p) {
+	public static Entry<Integer, Integer> getTeamEntry(Player p) {
 		Scoreboard s = Bukkit.getScoreboardManager().getMainScoreboard();
 
-		for (Entry<Team, Integer> e : startSize.entrySet()) {
-			if (s.getPlayerTeam(p) == e.getKey()) {
+		for (Entry<Integer, Integer> e : startSize.entrySet()) {
+			if (s.getPlayerTeam(p) == UltraHC.nts.getFromId(e.getKey())) {
 				return e;
 			}
 		}

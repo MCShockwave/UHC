@@ -49,7 +49,7 @@ public class CommandUHC implements CommandExecutor {
 				Option.getGlobalMenu().open(p);
 			}
 			if (args[0].equalsIgnoreCase("teams")) {
-				UltraHC.ts.getMenu().open(p);
+				UltraHC.nts.getMenu(p, true).open(p);
 			}
 			if (args[0].equalsIgnoreCase("setKit")) {
 				final PlayerInventory inv = p.getInventory();

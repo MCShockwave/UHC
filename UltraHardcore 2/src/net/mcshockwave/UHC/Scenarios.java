@@ -25,9 +25,11 @@ public enum Scenarios {
 	Hallucinations(),
 	Barebones(
 		new BarebonesListener()),
-	Mole(new MoleListener()),
+	Mole(
+		new MoleListener()),
 	Team_DM,
-	Resurrect(new ResurrectListener());
+	Resurrect(
+		new ResurrectListener());
 
 	public Listener	l	= null;
 
@@ -64,9 +66,9 @@ public enum Scenarios {
 
 		if (this == Mini_UHC) {
 			Option.Better_Arrows.setBoolean(true);
-//			Option.Border_Radius.setInt(250);
-//			Option.Border_Rate.setInt(2);
-//			Option.Border_Time.setInt(15);
+			// Option.Border_Radius.setInt(250);
+			// Option.Border_Rate.setInt(2);
+			// Option.Border_Time.setInt(15);
 			Option.Meet_Up_Time.setInt(15);
 			Option.Mark_Time.setInt(5);
 			Option.No_Kill_Time.setInt(2);
@@ -75,8 +77,8 @@ public enum Scenarios {
 
 		if (this == OP_Enchants) {
 			Option.Better_Arrows.setBoolean(true);
-//			Option.Border_Radius.setInt(250);
-//			Option.Border_Time.setInt(15);
+			// Option.Border_Radius.setInt(250);
+			// Option.Border_Time.setInt(15);
 			Option.Meet_Up_Time.setInt(15);
 			Option.Mark_Time.setInt(5);
 			Option.No_Kill_Time.setInt(3);
@@ -84,23 +86,23 @@ public enum Scenarios {
 		}
 
 		if (this == Crux) {
-//			Option.Border_Rate.setInt(1);
-//			Option.Border_Time.setInt(180);
+			// Option.Border_Rate.setInt(1);
+			// Option.Border_Time.setInt(180);
 			Option.Hunger.setBoolean(true);
 			Option.Spread_Radius.setInt(1000);
 			Option.Death_Distance.setBoolean(false);
 		}
 
 		if (this == Triple_Ores) {
-//			Option.Border_Time.setInt(30);
+			// Option.Border_Time.setInt(30);
 			Option.Meet_Up_Time.setInt(30);
 		}
-		
+
 		if (this == Team_DM) {
 			Option.Better_Arrows.setBoolean(true);
-//			Option.Border_Radius.setInt(250);
-//			Option.Border_Rate.setInt(2);
-//			Option.Border_Time.setInt(15);
+			// Option.Border_Radius.setInt(250);
+			// Option.Border_Rate.setInt(2);
+			// Option.Border_Time.setInt(15);
 			Option.Meet_Up_Time.setInt(15);
 			Option.Mark_Time.setInt(5);
 			Option.No_Kill_Time.setInt(1);
@@ -112,7 +114,7 @@ public enum Scenarios {
 
 	public void onStart() {
 		if (this == Crux) {
-			CruxListener.onStartGame();
+			// CruxListener.onStartGame();
 		}
 		if (this == Linked) {
 			LinkedListener.onStart();
@@ -132,9 +134,9 @@ public enum Scenarios {
 
 	public void onStop() {
 		if (this == Crux) {
-			CruxListener.part.cancel();
-			CruxListener.cruxi.clear();
-			CruxListener.cruxh.clear();
+			// CruxListener.part.cancel();
+			// CruxListener.cruxi.clear();
+			// CruxListener.cruxh.clear();
 		}
 		if (this == Linked) {
 			LinkedListener.startSize.clear();

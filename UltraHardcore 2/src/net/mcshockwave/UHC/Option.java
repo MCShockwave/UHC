@@ -22,7 +22,7 @@ public enum Option {
 		"UHC",
 		"Mini UHC",
 		"OP Enchants",
-		"Crux",
+		// "Crux",
 		"Linked",
 		"Triple Ores",
 		"Hallucinations",

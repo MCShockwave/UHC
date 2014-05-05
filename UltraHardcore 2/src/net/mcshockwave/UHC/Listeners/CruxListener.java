@@ -1,42 +1,10 @@
 package net.mcshockwave.UHC.Listeners;
 
-import net.mcshockwave.UHC.Option;
-import net.mcshockwave.UHC.UltraHC;
-import net.mcshockwave.UHC.Utils.PacketUtils;
-import net.mcshockwave.UHC.Utils.PacketUtils.ParticleEffect;
-import net.mcshockwave.UHC.Utils.SchedulerUtils;
-import net.mcshockwave.UHC.worlds.Multiworld;
-import net.minecraft.util.com.google.common.collect.Lists;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Team;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
-import com.dsh105.holoapi.HoloAPI;
-import com.dsh105.holoapi.api.Hologram;
-import com.dsh105.holoapi.api.HologramFactory;
 
 public class CruxListener implements Listener {
 
+	/* TODO Fix this
 	public static HashMap<Block, String>			cruxi	= new HashMap<>();
 	public static HashMap<Block, Hologram>			cruxh	= new HashMap<>();
 	public static HashMap<String, Integer>			id		= new HashMap<>();
@@ -450,4 +418,5 @@ public class CruxListener implements Listener {
 			p.sendMessage("§c§lCaptured Crux");
 		}
 	}
+	*/
 }
