@@ -166,7 +166,9 @@ public class NumberedTeamSystem {
 
 		public void addPlayer(String name) {
 			for (NumberTeam nt : teams.toArray(new NumberTeam[0])) {
-				nt.removePlayer(name);
+				if (nt.getPlayers().contains(name)) {
+					nt.removePlayer(name);
+				}
 			}
 
 			players.add(name);
