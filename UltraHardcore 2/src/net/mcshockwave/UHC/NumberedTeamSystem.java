@@ -91,7 +91,7 @@ public class NumberedTeamSystem {
 			for (Score f : from.getScores(op)) {
 				if (to.getObjective(f.getObjective().getName()) != null) {
 					Objective t = to.getObjective(f.getObjective().getName());
-					
+
 					if (t.getScore(op).getScore() != f.getScore()) {
 						t.getScore(op).setScore(f.getScore());
 					}
@@ -134,7 +134,9 @@ public class NumberedTeamSystem {
 	}
 
 	public NumberTeam createTeam(String pass, String owner) {
-		return new NumberTeam(pass, owner);
+		NumberTeam nt = new NumberTeam(pass, owner);
+		teams.add(nt);
+		return nt;
 	}
 
 	public NumberTeam getFromId(int id) {
@@ -159,13 +161,11 @@ public class NumberedTeamSystem {
 			this.owner = owner;
 			players = new ArrayList<>();
 
-			teams.add(this);
-
 			sc = Bukkit.getScoreboardManager().getNewScoreboard();
 		}
 
 		public void addPlayer(String name) {
-			for (NumberTeam nt : teams) {
+			for (NumberTeam nt : teams.toArray(new NumberTeam[0])) {
 				nt.removePlayer(name);
 			}
 
@@ -182,7 +182,7 @@ public class NumberedTeamSystem {
 			if (Bukkit.getPlayer(name) != null) {
 				Bukkit.getPlayer(name).setScoreboard(s);
 			}
-			
+
 			if (players.size() < 1) {
 				teams.remove(this);
 			}
@@ -226,7 +226,7 @@ public class NumberedTeamSystem {
 		public ArrayList<String> getPlayers() {
 			return players;
 		}
-		
+
 		public String[] getPlayersArray() {
 			return players.toArray(new String[0]);
 		}
