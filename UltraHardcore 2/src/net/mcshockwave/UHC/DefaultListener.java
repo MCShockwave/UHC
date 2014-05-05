@@ -643,7 +643,7 @@ public class DefaultListener implements Listener {
 			event.setMessage("§7" + event.getMessage().replaceFirst("!", ""));
 
 			for (Player p2 : Bukkit.getOnlinePlayers()) {
-				if (UltraHC.nts.getTeam(p.getName()) == UltraHC.nts.getTeam(p.getName())) {
+				if (UltraHC.nts.getTeam(p.getName()) == UltraHC.nts.getTeam(p2.getName())) {
 					event.getRecipients().add(p2);
 				}
 			}

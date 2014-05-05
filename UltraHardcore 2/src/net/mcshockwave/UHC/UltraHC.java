@@ -103,6 +103,10 @@ public class UltraHC extends JavaPlugin {
 		registerHealthScoreboard();
 
 		nts = new NumberedTeamSystem(scb);
+		
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			p.setScoreboard(scb);
+		}
 
 		Bukkit.addRecipe(new ShapedRecipe(ItemMetaUtils.setItemName(new ItemStack(Material.GOLDEN_APPLE),
 				ChatColor.GOLD + "Golden Head")).shape("III", "IHI", "III").setIngredient('I', Material.GOLD_INGOT)

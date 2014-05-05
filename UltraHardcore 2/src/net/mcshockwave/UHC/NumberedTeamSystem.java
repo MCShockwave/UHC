@@ -182,6 +182,10 @@ public class NumberedTeamSystem {
 			if (Bukkit.getPlayer(name) != null) {
 				Bukkit.getPlayer(name).setScoreboard(s);
 			}
+			
+			if (players.size() < 1) {
+				teams.remove(this);
+			}
 		}
 
 		public ArrayList<Player> getOnlinePlayers() {
