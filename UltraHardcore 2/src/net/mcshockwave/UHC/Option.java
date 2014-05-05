@@ -178,11 +178,7 @@ public enum Option {
 		3,
 		2,
 		1,
-		0),
-	Team_Passwords(
-		Material.TRIPWIRE_HOOK,
-		0,
-		true);
+		0);
 
 	public String		name;
 

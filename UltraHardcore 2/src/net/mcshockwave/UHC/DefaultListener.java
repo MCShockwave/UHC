@@ -634,6 +634,22 @@ public class DefaultListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		final Player p = event.getPlayer();
 
+		if (NumberedTeamSystem.enteringPassword.containsKey(p)) {
+			NumberTeam nt = NumberedTeamSystem.enteringPassword.get(p);
+
+			if (nt.password.equals(event.getMessage())) {
+				nt.addPlayer(p.getName());
+				p.sendMessage("§aJoined team " + nt.id + "!");
+			} else {
+				p.sendMessage("§cInvalid password: '" + event.getMessage() + "'");
+				p.sendMessage("§eRemember, passwords are cAsE sEnsITiVE!");
+			}
+
+			NumberedTeamSystem.enteringPassword.remove(p);
+			event.setCancelled(true);
+			return;
+		}
+
 		if (UltraHC.chatSilenced && !p.isOp()) {
 			p.sendMessage("§cChat is silenced!");
 			event.setCancelled(true);

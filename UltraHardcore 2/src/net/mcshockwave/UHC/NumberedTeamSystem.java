@@ -3,6 +3,7 @@ package net.mcshockwave.UHC;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
+import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,16 +17,19 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NumberedTeamSystem {
 
-	public boolean					friendlyfire	= false;
+	public static HashMap<Player, NumberTeam>	enteringPassword	= new HashMap<>();
 
-	public Scoreboard				s;
+	public boolean								friendlyfire		= false;
 
-	public ArrayList<NumberTeam>	teams			= new ArrayList<>();
+	public Scoreboard							s;
 
-	public BukkitTask				updater			= null;
+	public ArrayList<NumberTeam>				teams				= new ArrayList<>();
+
+	public BukkitTask							updater				= null;
 
 	public NumberedTeamSystem(Scoreboard s) {
 		this.s = s;
@@ -63,6 +67,14 @@ public class NumberedTeamSystem {
 				ntt.setAllowFriendlyFire(friendlyfire);
 			}
 
+			if (s.getTeam("T" + nt.id) == null) {
+				Team t = s.registerNewTeam("T" + nt.id);
+				t.setAllowFriendlyFire(true);
+				t.setCanSeeFriendlyInvisibles(false);
+				t.setPrefix("§e[" + nt.id + "]§f");
+				t.setSuffix("§r");
+			}
+
 			updatePlayersForTeam(nt);
 		}
 	}
@@ -82,6 +94,24 @@ public class NumberedTeamSystem {
 				if (!t.hasPlayer(op)) {
 					t.addPlayer(op);
 				}
+			}
+			for (String s : tou.players) {
+				OfflinePlayer op = Bukkit.getOfflinePlayer(s);
+				if (!nt.players.contains(s) && t.hasPlayer(op)) {
+					t.removePlayer(op);
+				}
+			}
+		}
+
+		Team st = s.getTeam("T" + tou.id);
+		for (OfflinePlayer op : st.getPlayers()) {
+			if (!tou.getPlayers().contains(op.getName())) {
+				st.removePlayer(op);
+			}
+		}
+		for (Player p : tou.getOnlinePlayers()) {
+			if (!st.hasPlayer(p)) {
+				st.addPlayer(p);
 			}
 		}
 	}
@@ -105,15 +135,40 @@ public class NumberedTeamSystem {
 
 		int teamlimit = Option.Team_Limit.getInt();
 
-		for (NumberTeam nt : teams) {
-			int data = getTeam(p.getName()) == nt ? 4 : nt.players.size() >= teamlimit ? 14 : 5;
+		for (final NumberTeam nt : teams) {
+			int data = getTeam(p.getName()) == nt ? 4 : nt.players.size() >= teamlimit ? 14 : nt.password == null ? 5
+					: 13;
 
 			Button b = new Button(false, Material.WOOL, nt.id, data, "Team #" + nt.id, "", "§eOwner: " + nt.owner,
 					"Players: " + nt.players.size() + " / " + teamlimit, "§aOnline Players: "
-							+ nt.getOnlinePlayers().size());
+							+ nt.getOnlinePlayers().size(), "", nt.password == null ? "§aClick to join"
+							: "§cPassword Protected");
 			m.addButton(b, nt.id - 1);
 			if (edit) {
 				m.addSubMenu(nt.getSubMenu(), b, true);
+			} else {
+				b.setOnClick(new ButtonRunnable() {
+					public void run(final Player p, InventoryClickEvent event) {
+						if (nt.players.size() > Option.Team_Limit.getInt()) {
+							p.sendMessage("§cTeam is full!");
+							return;
+						}
+						if (nt.password == null) {
+							nt.addPlayer(p.getName());
+						} else {
+							enteringPassword.put(p, nt);
+							p.sendMessage("§6Please enter the password for team " + nt.id);
+							Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+								public void run() {
+									if (enteringPassword.containsKey(p) && enteringPassword.get(p) == nt) {
+										p.sendMessage("§6You did not enter the password for team " + nt.id);
+										enteringPassword.remove(p);
+									}
+								}
+							}, 600l);
+						}
+					}
+				});
 			}
 		}
 
@@ -176,6 +231,14 @@ public class NumberedTeamSystem {
 			if (Bukkit.getPlayer(name) != null) {
 				Bukkit.getPlayer(name).setScoreboard(sc);
 			}
+
+			messageAll("§6" + name + " joined your team");
+		}
+
+		public void messageAll(String msg) {
+			for (Player p : getOnlinePlayers()) {
+				p.sendMessage(msg);
+			}
 		}
 
 		public void removePlayer(String name) {
@@ -185,8 +248,17 @@ public class NumberedTeamSystem {
 				Bukkit.getPlayer(name).setScoreboard(s);
 			}
 
+			messageAll("§6" + name + " left your team");
+			
 			if (players.size() < 1) {
 				teams.remove(this);
+				return;
+			}
+
+			if (name.equalsIgnoreCase(owner)) {
+				String newOwner = players.get(0);
+				messageAll("§6The owner of the team left, the new owner is " + newOwner);
+				owner = newOwner;
 			}
 		}
 
@@ -219,6 +291,16 @@ public class NumberedTeamSystem {
 							getMenu(p, true).open(p);
 						}
 					}, 1l);
+				}
+			});
+
+			Button pass = new Button(false, Material.TRIPWIRE_HOOK, 1, 0, "Password", "Click to see password", "",
+					"Pass: §kPASSWORD");
+			m.addButton(pass, 7);
+			pass.setOnClick(new ButtonRunnable() {
+				public void run(Player p, InventoryClickEvent event) {
+					event.setCurrentItem(ItemMetaUtils.setLore(event.getCurrentItem(), "Click to see password", "",
+							"Pass: " + password));
 				}
 			});
 
