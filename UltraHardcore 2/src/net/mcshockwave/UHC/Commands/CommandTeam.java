@@ -3,6 +3,7 @@ package net.mcshockwave.UHC.Commands;
 import net.mcshockwave.UHC.NumberedTeamSystem.NumberTeam;
 import net.mcshockwave.UHC.UltraHC;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +15,7 @@ public class CommandTeam implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
 		if (sender instanceof Player) {
-			Player p = (Player) sender;
+			final Player p = (Player) sender;
 
 			if (args.length > 0) {
 				String c = args[0];
@@ -31,7 +32,12 @@ public class CommandTeam implements CommandExecutor {
 						nt = UltraHC.nts.createTeam(null, p.getName());
 					}
 
-					nt.addPlayer(p.getName());
+					final NumberTeam fnt = nt;
+					Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+						public void run() {
+							fnt.addPlayer(p.getName());
+						}
+					}, 4l);
 
 					p.sendMessage("§aCreated team with ID " + nt.id
 							+ (nt.password == null ? "" : " and password " + nt.password));
