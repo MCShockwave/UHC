@@ -17,7 +17,7 @@ public class CommandTeam implements CommandExecutor {
 			Player p = (Player) sender;
 
 			if (args.length > 0) {
-				String c = args[1];
+				String c = args[0];
 
 				if (c.equalsIgnoreCase("list")) {
 					UltraHC.nts.getMenu(p, false).open(p);
