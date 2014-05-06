@@ -6,6 +6,7 @@ import net.mcshockwave.UHC.Listeners.HallucinationHandler;
 import net.mcshockwave.UHC.Listeners.LinkedListener;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Listeners.ResurrectListener;
+import net.mcshockwave.UHC.Listeners.SwitchListener;
 import net.mcshockwave.UHC.Listeners.TripleListener;
 
 import org.bukkit.entity.Player;
@@ -29,7 +30,9 @@ public enum Scenarios {
 		new MoleListener()),
 	Team_DM,
 	Resurrect(
-		new ResurrectListener());
+		new ResurrectListener()),
+	Switcheroo(
+		new SwitchListener());
 
 	public Listener	l	= null;
 
@@ -65,7 +68,6 @@ public enum Scenarios {
 		}
 
 		if (this == Mini_UHC) {
-			Option.Better_Arrows.setBoolean(true);
 			// Option.Border_Radius.setInt(250);
 			// Option.Border_Rate.setInt(2);
 			// Option.Border_Time.setInt(15);
@@ -76,7 +78,6 @@ public enum Scenarios {
 		}
 
 		if (this == OP_Enchants) {
-			Option.Better_Arrows.setBoolean(true);
 			// Option.Border_Radius.setInt(250);
 			// Option.Border_Time.setInt(15);
 			Option.Meet_Up_Time.setInt(15);
@@ -99,7 +100,6 @@ public enum Scenarios {
 		}
 
 		if (this == Team_DM) {
-			Option.Better_Arrows.setBoolean(true);
 			// Option.Border_Radius.setInt(250);
 			// Option.Border_Rate.setInt(2);
 			// Option.Border_Time.setInt(15);

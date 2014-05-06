@@ -176,7 +176,9 @@ public class DefaultListener implements Listener {
 		if (event.getEntityType() == EntityType.GHAST) {
 			event.getDrops().clear();
 			event.getDrops().add(new ItemStack(Material.GOLD_INGOT, rand.nextInt(8) + 1));
-			event.getDrops().add(new ItemStack(Material.BLAZE_ROD, rand.nextInt(2) + 1));
+			if (Option.Strength_Potions.getBoolean()) {
+				event.getDrops().add(new ItemStack(Material.BLAZE_ROD, rand.nextInt(2) + 1));
+			}
 		}
 	}
 
@@ -529,14 +531,14 @@ public class DefaultListener implements Listener {
 	public void onCraftItem(PrepareItemCraftEvent event) {
 		Recipe r = event.getRecipe();
 		CraftingInventory ci = event.getInventory();
-		if (r.getResult().getType() == Material.ARROW && Option.Better_Arrows.getBoolean()) {
-			ci.setResult(new ItemStack(Material.ARROW));
-		}
 		if (r.getResult().getType() == Material.GOLDEN_APPLE && ItemMetaUtils.hasCustomName(r.getResult())
 				&& !Option.Golden_Heads.getBoolean()) {
 			ci.setResult(new ItemStack(Material.AIR));
 		}
 		if (r.getResult().getType() == Material.GOLDEN_APPLE && r.getResult().getDurability() == 1) {
+			ci.setResult(new ItemStack(Material.AIR));
+		}
+		if (r.getResult().getType() == Material.BLAZE_POWDER && !Option.Strength_Potions.getBoolean()) {
 			ci.setResult(new ItemStack(Material.AIR));
 		}
 	}
@@ -617,9 +619,9 @@ public class DefaultListener implements Listener {
 
 		if (NumberedTeamSystem.enteringPassword.containsKey(p)) {
 			NumberTeam nt = NumberedTeamSystem.enteringPassword.get(p);
-			
+
 			if (UltraHC.started || !Option.Team_Commands.getBoolean()) {
-				
+
 			}
 
 			if (nt.password.equals(event.getMessage())) {

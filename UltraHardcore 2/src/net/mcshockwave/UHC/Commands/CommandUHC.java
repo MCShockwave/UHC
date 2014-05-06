@@ -138,10 +138,17 @@ public class CommandUHC implements CommandExecutor {
 				p.sendMessage(String.format("§aSet spawn to x%s y%s z%s in world \"%s\"", x, y, z, set.getName()));
 			}
 
-			if (args[0].equalsIgnoreCase("motd")) {
+			if (args[0].equalsIgnoreCase("kitmode")) {
 				kitMOTD = !kitMOTD;
+				
+				if (kitMOTD) {
+					UltraHC.maxPlayers = 20;
+					Bukkit.setWhitelist(false);
+				} else {
+					Bukkit.setWhitelist(true);
+				}
 
-				p.sendMessage("§aKit MOTD is now " + kitMOTD);
+				p.sendMessage("§aKit mode is now " + kitMOTD);
 			}
 
 			if (args[0].equalsIgnoreCase("restart")) {
@@ -167,6 +174,13 @@ public class CommandUHC implements CommandExecutor {
 						.a("{\"text\":\"\",\"extra\":[{\"text\":\"" + startTime + "\",\"color\""
 								+ ":\"aqua\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + startTime
 								+ "\"}}]}"), true));
+			}
+
+			if (args[0].equalsIgnoreCase("lobbyall")) {
+				for (Player p2 : Bukkit.getOnlinePlayers()) {
+					UltraHC.resetPlayer(p2);
+					p2.teleport(Multiworld.getLobby().getSpawnLocation());
+				}
 			}
 		}
 		return true;

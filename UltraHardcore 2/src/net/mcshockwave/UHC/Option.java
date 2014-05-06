@@ -29,7 +29,8 @@ public enum Option {
 		"Barebones",
 		"Mole",
 		"Team DM",
-		"Resurrect"),
+		"Resurrect",
+		"Switcheroo"),
 	Spectating(
 		Material.THIN_GLASS,
 		0,
@@ -83,6 +84,8 @@ public enum Option {
 	Meet_Up_Time(
 		Material.BEDROCK,
 		0,
+		120,
+		90,
 		60,
 		60,
 		45,
@@ -123,10 +126,6 @@ public enum Option {
 	// 3,
 	// 2,
 	// 1),
-	Better_Arrows(
-		Material.ARROW,
-		0,
-		false),
 	Hunger(
 		Material.APPLE,
 		0,
@@ -159,6 +158,10 @@ public enum Option {
 		Material.NETHERRACK,
 		0,
 		true),
+	Strength_Potions(
+		Material.BLAZE_POWDER,
+		0,
+		false),
 	// Damage_Indicators(
 	// Material.REDSTONE,
 	// 0,
@@ -178,7 +181,7 @@ public enum Option {
 		3,
 		2,
 		1,
-		0),
+		4),
 	Max_Teams(
 		Material.WOOL,
 		0,

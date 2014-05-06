@@ -447,7 +447,7 @@ public class NumberedTeamSystem {
 					Player p = noteam.get(rand.nextInt(noteam.size()));
 
 					nt.addPlayer(p.getName());
-					
+
 					noteam.remove(p);
 				}
 			}
@@ -500,7 +500,7 @@ public class NumberedTeamSystem {
 		ItemMenu m = new ItemMenu("Randomize", 9);
 
 		Button rmt = new Button(true, Material.DIAMOND, 1, 0, "Randomize:", "Spread players based",
-				"on max number of teams");
+				"on max number of teams", "", "Current max teams: " + Option.Max_Teams.getInt());
 		m.addButton(rmt, 2);
 		rmt.setOnClick(new ButtonRunnable() {
 			public void run(Player p, InventoryClickEvent event) {
@@ -508,7 +508,8 @@ public class NumberedTeamSystem {
 			}
 		});
 
-		Button rtl = new Button(true, Material.EMERALD, 1, 0, "Randomize:", "Spread players based", "on team limit");
+		Button rtl = new Button(true, Material.EMERALD, 1, 0, "Randomize:", "Spread players based", "on team limit",
+				"", "Current team limit: " + Option.Team_Limit.getInt());
 		m.addButton(rtl, 4);
 		rtl.setOnClick(new ButtonRunnable() {
 			public void run(Player p, InventoryClickEvent event) {
@@ -517,7 +518,7 @@ public class NumberedTeamSystem {
 		});
 
 		Button rrm = new Button(true, Material.GOLD_INGOT, 1, 0, "Randomize:", "Spread remaining players",
-				"onto created teams");
+				"onto created teams", "", "Created teams: " + teams.size());
 		m.addButton(rrm, 6);
 		rrm.setOnClick(new ButtonRunnable() {
 			public void run(Player p, InventoryClickEvent event) {
