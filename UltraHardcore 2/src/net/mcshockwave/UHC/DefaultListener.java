@@ -177,9 +177,7 @@ public class DefaultListener implements Listener {
 		if (event.getEntityType() == EntityType.GHAST) {
 			event.getDrops().clear();
 			event.getDrops().add(new ItemStack(Material.GOLD_INGOT, rand.nextInt(8) + 1));
-			if (Option.Strength_Potions.getBoolean()) {
-				event.getDrops().add(new ItemStack(Material.BLAZE_ROD, rand.nextInt(2) + 1));
-			}
+			event.getDrops().add(new ItemStack(Material.BLAZE_ROD, rand.nextInt(2) + 1));
 		}
 	}
 
