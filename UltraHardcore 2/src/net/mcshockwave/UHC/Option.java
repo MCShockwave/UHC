@@ -178,7 +178,34 @@ public enum Option {
 		3,
 		2,
 		1,
-		0);
+		0),
+	Max_Teams(
+		Material.WOOL,
+		0,
+		64,
+		64,
+		32,
+		16,
+		15,
+		14,
+		13,
+		12,
+		11,
+		10,
+		9,
+		8,
+		7,
+		6,
+		5,
+		4,
+		3,
+		2,
+		1,
+		0),
+	Team_Commands(
+		Material.WOOL,
+		0,
+		false);
 
 	public String		name;
 
@@ -259,9 +286,19 @@ public enum Option {
 		boolVal = b;
 	}
 
+	public int getValLength() {
+		if (getType() == Integer.class) {
+			return intVals.length;
+		} else if (getType() == String.class) {
+			return stringVals.length;
+		} else {
+			return 2;
+		}
+	}
+
 	public Object[] getVals() {
 		if (getType() == Integer.class) {
-			return Arrays.asList(intVals).toArray();
+			return Arrays.asList(intVals).toArray(new Object[0]);
 		} else if (getType() == String.class) {
 			return stringVals;
 		} else {
@@ -270,7 +307,7 @@ public enum Option {
 	}
 
 	public ItemMenu getMenu() {
-		ItemMenu m = new ItemMenu(name, getVals().length + 1);
+		ItemMenu m = new ItemMenu(name, getValLength() + 1);
 
 		if (getType() == Integer.class) {
 			for (int i = 0; i < intVals.length; i++) {

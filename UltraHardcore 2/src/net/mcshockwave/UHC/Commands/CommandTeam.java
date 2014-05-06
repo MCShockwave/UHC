@@ -21,12 +21,26 @@ public class CommandTeam implements CommandExecutor {
 			if (args.length > 0) {
 				String c = args[0];
 
+				if (p.isOp()) {
+					if (c.equalsIgnoreCase("clearteams")) {
+						for (NumberTeam nt : UltraHC.nts.teams.toArray(new NumberTeam[0])) {
+							UltraHC.nts.removeTeam(nt);
+						}
+						return true;
+					}
+
+					if (c.equalsIgnoreCase("random")) {
+						UltraHC.nts.getRandomMenu().open(p);
+						return true;
+					}
+				}
+
 				if (c.equalsIgnoreCase("list")) {
 					UltraHC.nts.getMenu(p, false).open(p);
 					return true;
 				}
 
-				if (UltraHC.started) {
+				if ((UltraHC.started || !Option.Team_Commands.getBoolean()) && !p.isOp()) {
 					p.sendMessage("§cThat is not enabled right now!");
 					return true;
 				}
@@ -37,7 +51,7 @@ public class CommandTeam implements CommandExecutor {
 						return false;
 					}
 
-					if (UltraHC.nts.teams.size() > 63) {
+					if (UltraHC.nts.teams.size() >= Option.Max_Teams.getInt()) {
 						p.sendMessage("§cToo many teams have been created!");
 						return false;
 					}
@@ -90,7 +104,7 @@ public class CommandTeam implements CommandExecutor {
 						if (Bukkit.getPlayer(args[1]) != null) {
 							Bukkit.getPlayer(args[1]).sendMessage("§6You are now the owner of team " + nt.id);
 						}
-						nt.owner = args[1];
+						nt.setOwner(args[1]);
 					}
 
 					if (c.equalsIgnoreCase("kick")) {

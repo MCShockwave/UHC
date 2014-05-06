@@ -5,6 +5,8 @@ import net.mcshockwave.UHC.Scenarios;
 import net.mcshockwave.UHC.UltraHC;
 import net.mcshockwave.UHC.Listeners.ResurrectListener;
 import net.mcshockwave.UHC.worlds.Multiworld;
+import net.minecraft.server.v1_7_R2.ChatSerializer;
+import net.minecraft.server.v1_7_R2.PacketPlayOutChat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -40,7 +43,11 @@ public class CommandUHC implements CommandExecutor {
 			}
 
 			if (args[0].equalsIgnoreCase("start")) {
-				UltraHC.start();
+				if (args.length == 1) {
+					UltraHC.start(0);
+				} else {
+					UltraHC.start(Integer.parseInt(args[1]));
+				}
 			}
 			if (args[0].equalsIgnoreCase("stop")) {
 				UltraHC.stop();
@@ -130,28 +137,36 @@ public class CommandUHC implements CommandExecutor {
 				set.setSpawnLocation(x, y, z);
 				p.sendMessage(String.format("§aSet spawn to x%s y%s z%s in world \"%s\"", x, y, z, set.getName()));
 			}
-			
+
 			if (args[0].equalsIgnoreCase("motd")) {
 				kitMOTD = !kitMOTD;
-				
+
 				p.sendMessage("§aKit MOTD is now " + kitMOTD);
 			}
-			
+
 			if (args[0].equalsIgnoreCase("restart")) {
 				for (Player p2 : Bukkit.getOnlinePlayers()) {
 					p2.kickPlayer("§e§lServer Restarting");
 				}
-				
+
 				UltraHC.deleteWorld(Multiworld.getUHC());
 				UltraHC.deleteWorld(Multiworld.getNether());
-				
+
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 			}
-			
+
 			if (args[0].equalsIgnoreCase("spread")) {
 				int rad = Integer.parseInt(args[1]);
-				
+
 				UltraHC.spreadPlayers(rad);
+			}
+
+			if (args[0].equalsIgnoreCase("starttime")) {
+				long startTime = UltraHC.count.startTime;
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(ChatSerializer
+						.a("{\"text\":\"\",\"extra\":[{\"text\":\"" + startTime + "\",\"color\""
+								+ ":\"aqua\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + startTime
+								+ "\"}}]}"), true));
 			}
 		}
 		return true;

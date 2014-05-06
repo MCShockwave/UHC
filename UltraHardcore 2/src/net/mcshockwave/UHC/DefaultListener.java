@@ -72,7 +72,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -286,28 +285,10 @@ public class DefaultListener implements Listener {
 		final Player p = event.getEntity();
 
 		String dm = event.getDeathMessage();
-		dm = event.getDeathMessage().substring(0, dm.lastIndexOf(" using "));
-		event.setDeathMessage(dm);
-
-		if (UltraHC.nts.isTeamGame()) {
-			event.setDeathMessage("");
-
-			for (Player p2 : Bukkit.getOnlinePlayers()) {
-				NumberTeam pt2 = UltraHC.nts.getTeam(p2.getName());
-				NumberTeam pt = UltraHC.nts.getTeam(p.getName());
-
-				String cdm = dm + "";
-				cdm = cdm.replaceFirst(p.getName(), (pt == pt2 ? "§a" : "§c") + "[" + pt.id + "] §f" + p.getName());
-
-				if (p.getKiller() != null) {
-					NumberTeam kt = UltraHC.nts.getTeam(p.getKiller().getName());
-					cdm = cdm.replaceFirst(p.getKiller().getName(), (kt == pt2 ? "§a" : "§c") + "[" + kt.id + "] §f"
-							+ p.getName());
-				}
-
-				p2.sendMessage(cdm);
-			}
+		if (dm.contains(" using ")) {
+			dm = event.getDeathMessage().substring(0, dm.lastIndexOf(" using "));
 		}
+		event.setDeathMessage(dm);
 
 		if (UltraHC.started && UltraHC.getAlive().contains(p)) {
 
@@ -636,6 +617,10 @@ public class DefaultListener implements Listener {
 
 		if (NumberedTeamSystem.enteringPassword.containsKey(p)) {
 			NumberTeam nt = NumberedTeamSystem.enteringPassword.get(p);
+			
+			if (UltraHC.started || !Option.Team_Commands.getBoolean()) {
+				
+			}
 
 			if (nt.password.equals(event.getMessage())) {
 				nt.addPlayer(p.getName());
@@ -742,7 +727,7 @@ public class DefaultListener implements Listener {
 				if (UltraHC.nts.isTeamGame() && UltraHC.nts.getTeam(p.getName()) != null) {
 					am = UltraHC.nts.getTeam(p.getName()).id;
 				}
-				Button bu = new Button(true, Material.WOOL, am, 0, getTeamPre(p2) + p2.getName(), "Click to teleport");
+				Button bu = new Button(true, Material.WOOL, am, 0, p2.getName(), "Click to teleport");
 				bu.onClick = new ButtonRunnable() {
 					public void run(Player c, InventoryClickEvent event) {
 						Player tp = Bukkit.getPlayer(ChatColor.stripColor(ItemMetaUtils.getItemName(event
@@ -779,15 +764,6 @@ public class DefaultListener implements Listener {
 		}
 
 		return name;
-	}
-
-	public String getTeamPre(Player p) {
-		Scoreboard s = Bukkit.getScoreboardManager().getMainScoreboard();
-
-		if (s.getPlayerTeam(p) != null) {
-			return s.getPlayerTeam(p).getPrefix();
-		} else
-			return "";
 	}
 
 	@EventHandler

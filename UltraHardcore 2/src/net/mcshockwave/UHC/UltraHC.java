@@ -103,7 +103,7 @@ public class UltraHC extends JavaPlugin {
 		registerHealthScoreboard();
 
 		nts = new NumberedTeamSystem(scb);
-		
+
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			p.setScoreboard(scb);
 		}
@@ -185,13 +185,17 @@ public class UltraHC extends JavaPlugin {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void start() {
+	public static void start(long time) {
+		boolean resuming = time > 0;
+
 		if (started)
 			return;
 		started = true;
-		Bukkit.broadcastMessage("§c§lGame started!");
+		Bukkit.broadcastMessage("§c§lGame " + (resuming ? "§c§lresuming" : "§c§lstarted") + "!");
 
-		spreadPlayers(Option.Spread_Radius.getInt());
+		if (!resuming) {
+			spreadPlayers(Option.Spread_Radius.getInt());
+		}
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Chunk c = p.getLocation().getChunk();
@@ -208,12 +212,14 @@ public class UltraHC extends JavaPlugin {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 10));
 			}
 
-			p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 620, 10));
-			p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 620, 10));
+			if (!resuming) {
+				p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 620, 10));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 620, 10));
+			}
 
 			if (startCon != null) {
 				UltraHC.setInventory(p, startCon, startACon);
-			} else {
+			} else if (!resuming) {
 				p.getInventory().clear();
 				p.getInventory().setArmorContents(null);
 			}
@@ -292,6 +298,9 @@ public class UltraHC extends JavaPlugin {
 			}
 		});
 		count.start();
+		if (resuming) {
+			count.startTime = time;
+		}
 
 		Multiworld.getUHC().setGameRuleValue("doDaylightCycle", !Option.Eternal_Daylight.getBoolean() + "");
 		Multiworld.getUHC().setTime(0);
@@ -330,6 +339,8 @@ public class UltraHC extends JavaPlugin {
 		specs.clear();
 
 		playersLeft = null;
+		
+		stats.unregister();
 	}
 
 	public static ArrayList<Player> getAlive() {

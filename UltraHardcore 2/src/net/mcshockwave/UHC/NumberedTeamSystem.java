@@ -6,6 +6,7 @@ import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class NumberedTeamSystem {
 
@@ -38,7 +40,25 @@ public class NumberedTeamSystem {
 			public void run() {
 				updateScoreboard();
 			}
-		}, 1l, 1l);
+		}, 0l, 1l);
+
+		for (final Team t : s.getTeams()) {
+			if (t.getName().startsWith("T") && t.getPlayers().size() > 0) {
+				int id = Integer.parseInt(t.getName().replaceFirst("T", ""));
+				String owner = t.getPlayers().toArray(new OfflinePlayer[0])[0].getName();
+
+				final NumberTeam nt = new NumberTeam(id, null, owner);
+				for (final OfflinePlayer op : t.getPlayers()) {
+					Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+						public void run() {
+							nt.addPlayer(op.getName());
+						}
+					}, 5l);
+				}
+				teams.add(nt);
+			}
+		}
+		updateScoreboard();
 	}
 
 	public void updateScoreboard() {
@@ -80,8 +100,16 @@ public class NumberedTeamSystem {
 	}
 
 	private void cloneObjective(Objective n, Objective cl) {
-		n.setDisplayName(cl.getDisplayName());
-		n.setDisplaySlot(cl.getDisplaySlot());
+		if (!n.getDisplayName().equals(cl.getDisplayName()))
+			n.setDisplayName(cl.getDisplayName());
+		if (n.getDisplaySlot() != cl.getDisplaySlot())
+			n.setDisplaySlot(cl.getDisplaySlot());
+	}
+
+	private void updatePlayersForAllTeams() {
+		for (NumberTeam nt : teams) {
+			updatePlayersForTeam(nt);
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -93,6 +121,9 @@ public class NumberedTeamSystem {
 				OfflinePlayer op = Bukkit.getOfflinePlayer(s);
 				if (!t.hasPlayer(op)) {
 					t.addPlayer(op);
+					if (op.isOnline() && !ChatColor.stripColor(op.getPlayer().getPlayerListName()).equals(op.getName())) {
+						t.addPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(op.getPlayer().getPlayerListName())));
+					}
 				}
 			}
 			for (String s : tou.players) {
@@ -112,6 +143,9 @@ public class NumberedTeamSystem {
 		for (Player p : tou.getOnlinePlayers()) {
 			if (!st.hasPlayer(p)) {
 				st.addPlayer(p);
+				if (!ChatColor.stripColor(p.getPlayerListName()).equals(p.getName())) {
+					st.addPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(p.getPlayerListName())));
+				}
 			}
 		}
 	}
@@ -131,7 +165,7 @@ public class NumberedTeamSystem {
 	}
 
 	public ItemMenu getMenu(Player p, boolean edit) {
-		ItemMenu m = new ItemMenu("Teams", teams.size());
+		ItemMenu m = new ItemMenu("Teams" + (edit ? " - Editing" : ""), teams.size());
 
 		int teamlimit = Option.Team_Limit.getInt();
 
@@ -139,20 +173,36 @@ public class NumberedTeamSystem {
 			int data = getTeam(p.getName()) == nt ? 4 : nt.players.size() >= teamlimit ? 14 : nt.password == null ? 5
 					: 13;
 
-			Button b = new Button(false, Material.WOOL, nt.id, data, "Team #" + nt.id, "", "§eOwner: " + nt.owner,
-					"Players: " + nt.players.size() + " / " + teamlimit, "§aOnline Players: "
-							+ nt.getOnlinePlayers().size(), "", nt.password == null ? "§aClick to join"
-							: "§cPassword Protected");
+			Button b = new Button(false, Material.WOOL, nt.id, data, "Team #" + nt.id,
+					nt.password == null ? "§aClick to join" : "§cPassword Protected", "§eOwner: " + nt.owner,
+					"§aOnline Players: " + nt.getOnlinePlayers().size(), "", "§bPlayers: (max "
+							+ Option.Team_Limit.getInt() + ")");
+			ArrayList<String> lore = (ArrayList<String>) ItemMetaUtils.getLoreList(b.button);
+			for (String s : nt.players) {
+				String pre = (Bukkit.getPlayer(s) == null ? "§c" : "§a") + (nt.owner.equals(s) ? "§o" : "");
+				lore.add(pre + s);
+			}
+			ItemMetaUtils.setLore(b.button, lore.toArray(new String[0]));
 			m.addButton(b, nt.id - 1);
 			if (edit) {
 				m.addSubMenu(nt.getSubMenu(), b, true);
 			} else {
 				b.setOnClick(new ButtonRunnable() {
 					public void run(final Player p, InventoryClickEvent event) {
-						if (nt.players.size() > Option.Team_Limit.getInt()) {
+						if (UltraHC.started || !Option.Team_Commands.getBoolean()) {
+							p.sendMessage("§cThat is not enabled right now!");
+							return;
+						}
+
+						if (nt.players.contains(p.getName())) {
+							return;
+						}
+
+						if (nt.players.size() + 1 > Option.Team_Limit.getInt()) {
 							p.sendMessage("§cTeam is full!");
 							return;
 						}
+
 						if (nt.password == null) {
 							nt.addPlayer(p.getName());
 						} else {
@@ -194,6 +244,16 @@ public class NumberedTeamSystem {
 		return nt;
 	}
 
+	public void removeTeam(NumberTeam nt) {
+		for (Player p : nt.getOnlinePlayers()) {
+			p.setScoreboard(s);
+		}
+		updatePlayersForTeam(nt);
+		teams.remove(nt);
+		nt.players.clear();
+		s.getTeam("T" + nt.id).unregister();
+	}
+
 	public NumberTeam getFromId(int id) {
 		for (NumberTeam nt : teams) {
 			if (nt.id == id) {
@@ -210,8 +270,17 @@ public class NumberedTeamSystem {
 		public Scoreboard	sc;
 		public Team			t;
 
+		public NumberTeam(int id, String pass, String owner) {
+			this.id = id;
+			init(pass, owner);
+		}
+
 		NumberTeam(String pass, String owner) {
 			id = getValidId();
+			init(pass, owner);
+		}
+
+		public void init(String pass, String owner) {
 			password = pass;
 			this.owner = owner;
 			players = new ArrayList<>();
@@ -233,6 +302,10 @@ public class NumberedTeamSystem {
 			}
 
 			messageAll("§6" + name + " joined your team");
+
+			if (owner == null) {
+				owner = name;
+			}
 		}
 
 		public void messageAll(String msg) {
@@ -245,13 +318,17 @@ public class NumberedTeamSystem {
 			players.remove(name);
 
 			if (Bukkit.getPlayer(name) != null) {
-				Bukkit.getPlayer(name).setScoreboard(s);
+				Player p = Bukkit.getPlayer(name);
+				p.setScoreboard(s);
+				t.removePlayer(p);
 			}
 
+			updatePlayersForAllTeams();
+
 			messageAll("§6" + name + " left your team");
-			
+
 			if (players.size() < 1) {
-				teams.remove(this);
+				removeTeam(this);
 				return;
 			}
 
@@ -283,6 +360,9 @@ public class NumberedTeamSystem {
 			delete.setOnClick(new ButtonRunnable() {
 				public void run(final Player p, InventoryClickEvent event) {
 					teams.remove(team);
+					if (s.getTeam("T" + id) != null) {
+						s.getTeam("T" + id).unregister();
+					}
 					p.sendMessage("§cDeleted team #" + team.id);
 
 					p.closeInventory();
@@ -314,6 +394,17 @@ public class NumberedTeamSystem {
 		public String[] getPlayersArray() {
 			return players.toArray(new String[0]);
 		}
+
+		public void setOwner(String name) {
+			String old = owner;
+			owner = name;
+			players.set(0, owner);
+			players.add(old);
+		}
+
+		public boolean isFull() {
+			return players.size() + 1 > Option.Team_Limit.getInt();
+		}
 	}
 
 	public int getValidId() {
@@ -338,6 +429,103 @@ public class NumberedTeamSystem {
 
 	public boolean isTeamGame() {
 		return teams.size() > 0;
+	}
+
+	Random	rand	= new Random();
+
+	public void randomize(int num, boolean isTeamSize, boolean remaining) {
+		if (remaining) {
+			ArrayList<Player> noteam = new ArrayList<>();
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				if (getTeam(p.getName()) == null) {
+					noteam.add(p);
+				}
+			}
+
+			for (NumberTeam nt : teams) {
+				if (!nt.isFull()) {
+					Player p = noteam.get(rand.nextInt(noteam.size()));
+
+					nt.addPlayer(p.getName());
+					
+					noteam.remove(p);
+				}
+			}
+		} else {
+			int tcount = 0;
+			int numPlayers = Bukkit.getOnlinePlayers().length;
+
+			if (isTeamSize) {
+				tcount = (int) Math.ceil(numPlayers / num);
+				Option.Team_Limit.setInt(num);
+			} else {
+				tcount = num;
+				Option.Team_Limit.setInt((int) Math.ceil(numPlayers / tcount));
+			}
+			Option.Max_Teams.setInt(tcount);
+
+			// clear teams
+			for (NumberTeam nt : UltraHC.nts.teams.toArray(new NumberTeam[0])) {
+				UltraHC.nts.removeTeam(nt);
+			}
+
+			// create teams
+			for (int i = 0; i < tcount; i++) {
+				createTeam(null, null);
+			}
+
+			// put players on teams
+			ArrayList<Player> undef = new ArrayList<>();
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				undef.add(p);
+			}
+
+			int tid = 1;
+			while (undef.size() > 0) {
+				Player p = undef.get(rand.nextInt(undef.size()));
+
+				NumberTeam addTo = getFromId(tid);
+				addTo.addPlayer(p.getName());
+				undef.remove(p);
+
+				tid++;
+				if (tid > teams.size()) {
+					tid = 1;
+				}
+			}
+		}
+	}
+
+	public ItemMenu getRandomMenu() {
+		ItemMenu m = new ItemMenu("Randomize", 9);
+
+		Button rmt = new Button(true, Material.DIAMOND, 1, 0, "Randomize:", "Spread players based",
+				"on max number of teams");
+		m.addButton(rmt, 2);
+		rmt.setOnClick(new ButtonRunnable() {
+			public void run(Player p, InventoryClickEvent event) {
+				randomize(Option.Max_Teams.getInt(), false, false);
+			}
+		});
+
+		Button rtl = new Button(true, Material.EMERALD, 1, 0, "Randomize:", "Spread players based", "on team limit");
+		m.addButton(rtl, 4);
+		rtl.setOnClick(new ButtonRunnable() {
+			public void run(Player p, InventoryClickEvent event) {
+				randomize(Option.Team_Limit.getInt(), true, false);
+			}
+		});
+
+		Button rrm = new Button(true, Material.GOLD_INGOT, 1, 0, "Randomize:", "Spread remaining players",
+				"onto created teams");
+		m.addButton(rrm, 6);
+		rrm.setOnClick(new ButtonRunnable() {
+			public void run(Player p, InventoryClickEvent event) {
+				randomize(0, false, true);
+			}
+		});
+
+		return m;
 	}
 
 }
