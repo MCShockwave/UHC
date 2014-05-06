@@ -16,6 +16,7 @@ import net.mcshockwave.UHC.worlds.Multiworld;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -543,6 +544,7 @@ public class DefaultListener implements Listener {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (!UltraHC.started && event.getPlayer().getGameMode() != GameMode.CREATIVE
@@ -560,6 +562,26 @@ public class DefaultListener implements Listener {
 				event.setCancelled(true);
 				b.setType(Material.AIR);
 				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.NETHER_STALK));
+			}
+		}
+
+		if (Option.Increased_Apples.getBoolean()) {
+			if (b.getType() == Material.LEAVES || b.getType() == Material.LEAVES_2) {
+				if (rand.nextInt(5) == 0) {
+					event.setCancelled(true);
+					b.setType(Material.AIR);
+					b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType(), b.getData());
+					b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.APPLE));
+				}
+			}
+		}
+
+		if (Option.Increased_Flint.getBoolean() && b.getType() == Material.GRAVEL) {
+			if (rand.nextInt(2) == 0) {
+				event.setCancelled(true);
+				b.setType(Material.AIR);
+				b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType(), b.getData());
+				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.FLINT));
 			}
 		}
 	}

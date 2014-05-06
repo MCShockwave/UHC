@@ -127,7 +127,7 @@ public enum Option {
 	// 2,
 	// 1),
 	Hunger(
-		Material.APPLE,
+		Material.COOKED_BEEF,
 		0,
 		false),
 	Absorption(
@@ -150,6 +150,14 @@ public enum Option {
 		Material.ENDER_PEARL,
 		0,
 		false),
+	Increased_Apples(
+		Material.APPLE,
+		0,
+		true),
+	Increased_Flint(
+		Material.FLINT,
+		0,
+		true),
 	Head_on_Fence(
 		Material.NETHER_FENCE,
 		0,
