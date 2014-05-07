@@ -453,6 +453,8 @@ public class UltraHC extends JavaPlugin {
 		p.setHealth(20);
 		p.setFoodLevel(20);
 		p.setSaturation(10f);
+		p.setLevel(0);
+		p.setExp(0);
 		UltraHC.updateHealthFor(p);
 
 		p.getInventory().clear();

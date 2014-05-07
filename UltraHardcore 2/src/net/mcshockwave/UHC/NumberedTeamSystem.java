@@ -359,10 +359,7 @@ public class NumberedTeamSystem {
 			final NumberTeam team = this;
 			delete.setOnClick(new ButtonRunnable() {
 				public void run(final Player p, InventoryClickEvent event) {
-					teams.remove(team);
-					if (s.getTeam("T" + id) != null) {
-						s.getTeam("T" + id).unregister();
-					}
+					removeTeam(team);
 					p.sendMessage("§cDeleted team #" + team.id);
 
 					p.closeInventory();
