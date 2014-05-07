@@ -61,10 +61,12 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -266,8 +268,19 @@ public class DefaultListener implements Listener {
 	// }
 
 	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		Player p = event.getPlayer();
+
+		if (UltraHC.nts.getTeam(p.getName()) != null) {
+			if (UltraHC.nts.getTeam(p.getName()).getOnlinePlayers().size() <= 1) {
+				UltraHC.nts.removeTeam(UltraHC.nts.getTeam(p.getName()));
+			}
+		}
+	}
+
+	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
-		if (event.getReason().contains("Kicked")) {
+		if (event.getReason().contains("Kicked") && UltraHC.specs.contains(event.getPlayer().getName())) {
 			UltraHC.onDeath(event.getPlayer());
 			Bukkit.broadcastMessage("§c" + event.getPlayer().getName()
 					+ " was killed for getting kicked for reason: §r\n" + event.getReason());
@@ -914,6 +927,13 @@ public class DefaultListener implements Listener {
 
 		for (int i = 0; i < 4; i++) {
 			im.i.setItem(i + 9, in.getArmorContents()[i]);
+		}
+	}
+
+	@EventHandler
+	public void onWeatherChange(WeatherChangeEvent event) {
+		if (!Multiworld.isUHCWorld(event.getWorld()) && event.toWeatherState()) {
+			event.setCancelled(true);
 		}
 	}
 
