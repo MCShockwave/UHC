@@ -39,7 +39,7 @@ public class BanManager {
 			bt.del("Username", name);
 		}
 
-		bt.add("Username", name, "Games", "" + games, "Reason", reason, "BannedBy", by, "Recent", "1");
+		bt.add("Username", name, "Games", "" + games, "Reason", reason, "BannedBy", by, "RecentBan", "1");
 
 		if (Bukkit.getPlayer(name) != null) {
 			Bukkit.getPlayer(name).kickPlayer(getBanReason(by, reason, games));
@@ -49,7 +49,7 @@ public class BanManager {
 	public static ArrayList<String> incrGames(int games) {
 		ArrayList<String> ret = new ArrayList<>();
 		for (String s : bt.getAll("Username")) {
-			boolean recent = bt.getInt("Username", s, "Recent") == 1;
+			boolean recent = bt.getInt("Username", s, "RecentBan") == 1;
 			if (recent) {
 				bt.set("Recent", 0 + "", "Username", s);
 				continue;
