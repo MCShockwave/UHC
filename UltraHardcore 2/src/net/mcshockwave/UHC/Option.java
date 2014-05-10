@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public enum Option {
@@ -18,19 +19,7 @@ public enum Option {
 	Scenario(
 		Material.DIAMOND,
 		0,
-		"UHC",
-		"UHC",
-		"Mini UHC",
-		"OP Enchants",
-		// "Crux",
-		"Linked",
-		"Triple Ores",
-		"Hallucinations",
-		"Barebones",
-		"Mole",
-		"Team DM",
-		"Resurrect",
-		"Switcheroo"),
+		"UHC"),
 	Spectating(
 		Material.THIN_GLASS,
 		0,
@@ -252,6 +241,14 @@ public enum Option {
 		this.name = name().replace('_', ' ');
 
 		icon = new ItemStack(m, 1, (short) d);
+
+		if (name().equalsIgnoreCase("Scenario")) {
+			ArrayList<String> scens = new ArrayList<>();
+			for (Scenarios s : Scenarios.values()) {
+				scens.add(s.name().replace('_', ' '));
+			}
+			this.stringVals = scens.toArray(new String[0]);
+		}
 	}
 
 	private Option(Material m, int d, boolean def) {

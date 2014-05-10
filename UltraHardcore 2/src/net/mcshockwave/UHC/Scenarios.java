@@ -1,13 +1,6 @@
 package net.mcshockwave.UHC;
 
-import net.mcshockwave.UHC.Listeners.BarebonesListener;
-import net.mcshockwave.UHC.Listeners.CruxListener;
-import net.mcshockwave.UHC.Listeners.HallucinationHandler;
-import net.mcshockwave.UHC.Listeners.LinkedListener;
-import net.mcshockwave.UHC.Listeners.MoleListener;
-import net.mcshockwave.UHC.Listeners.ResurrectListener;
-import net.mcshockwave.UHC.Listeners.SwitchListener;
-import net.mcshockwave.UHC.Listeners.TripleListener;
+import net.mcshockwave.UHC.Listeners.*;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -32,7 +25,12 @@ public enum Scenarios {
 	Resurrect(
 		new ResurrectListener()),
 	Switcheroo(
-		new SwitchListener());
+		new SwitchListener()),
+	Chump_Charity(),
+	Blood_Price(),
+	Weakest_Link(),
+	Compensation(
+		new Compensation());
 
 	public Listener	l	= null;
 
@@ -130,6 +128,15 @@ public enum Scenarios {
 		if (this == Mole) {
 			MoleListener.onStart();
 		}
+		if (this == Chump_Charity) {
+			ChumpHandler.start(10);
+		}
+		if (this == Blood_Price) {
+			BloodPrice.start(10);
+		}
+		if (this == Weakest_Link) {
+			WeakestLink.start(10);
+		}
 	}
 
 	public void onStop() {
@@ -147,6 +154,15 @@ public enum Scenarios {
 		if (this == Mole) {
 			MoleListener.moleKit.clear();
 			MoleListener.moles.clear();
+		}
+		if (this == Chump_Charity) {
+			ChumpHandler.stop();
+		}
+		if (this == Blood_Price) {
+			BloodPrice.stop();
+		}
+		if (this == Weakest_Link) {
+			WeakestLink.stop();
 		}
 	}
 

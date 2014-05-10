@@ -38,6 +38,7 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import com.comphenix.protocol.PacketType;
@@ -339,7 +340,7 @@ public class UltraHC extends JavaPlugin {
 		specs.clear();
 
 		playersLeft = null;
-		
+
 		stats.unregister();
 	}
 
@@ -499,6 +500,71 @@ public class UltraHC extends JavaPlugin {
 			UltraHC.players.remove(name);
 		}
 		UltraHC.players.add(name);
+	}
+
+	public static boolean canBeCounted(Player p) {
+		if (p.getGameMode() == GameMode.CREATIVE || specs.contains(p.getName())) {
+			return false;
+		}
+		return true;
+	}
+
+	public static ArrayList<String>	random	= new ArrayList<>();
+
+	public static void rerandomize() {
+		ArrayList<String> ret = new ArrayList<>();
+		ArrayList<Player> ps = new ArrayList<>(Arrays.asList(Bukkit.getOnlinePlayers()));
+
+		for (int i = 0; i < ps.size(); i++) {
+			Player r = ps.get(rand.nextInt(ps.size()));
+			ps.remove(r);
+
+			ret.add(r.getName());
+		}
+
+		random = ret;
+	}
+
+	public static Player getLowestHealth() {
+		Player ret = null;
+		for (String s : random) {
+			if (Bukkit.getPlayer(s) == null) {
+				continue;
+			}
+			Player p = Bukkit.getPlayer(s);
+			if (!canBeCounted(p)) {
+				continue;
+			}
+			if (ret == null) {
+				ret = p;
+				continue;
+			}
+			if (p.getHealth() < ret.getHealth()) {
+				ret = p;
+			}
+		}
+		return ret;
+	}
+
+	public static Player getMaximumHealth() {
+		Player ret = null;
+		for (String s : random) {
+			if (Bukkit.getPlayer(s) == null) {
+				continue;
+			}
+			Player p = Bukkit.getPlayer(s);
+			if (!canBeCounted(p)) {
+				continue;
+			}
+			if (ret == null) {
+				ret = p;
+				continue;
+			}
+			if (p.getHealth() > ret.getHealth()) {
+				ret = p;
+			}
+		}
+		return ret;
 	}
 
 }
