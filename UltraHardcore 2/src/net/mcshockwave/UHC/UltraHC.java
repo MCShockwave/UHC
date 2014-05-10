@@ -113,10 +113,6 @@ public class UltraHC extends JavaPlugin {
 				ChatColor.GOLD + "Golden Head")).shape("III", "IHI", "III").setIngredient('I', Material.GOLD_INGOT)
 				.setIngredient('H', new ItemStack(Material.SKULL_ITEM, 1, (short) 3).getData()));
 
-		saveDefaultConfig();
-
-		SQLTable.enable();
-
 		if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
 			ProtocolManager pm = ProtocolLibrary.getProtocolManager();
 			PacketAdapter pa = null;

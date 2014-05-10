@@ -1,4 +1,6 @@
-package net.mcshockwave.UHC;
+package net.mcshockwave.UHC.db;
+
+import net.mcshockwave.UHC.UltraHC;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
@@ -11,7 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public enum SQLTable {
+public enum SQLTableOLD {
 	Settings,
 	Stats,
 	Hall_Of_Fame,

@@ -1,9 +1,9 @@
 package net.mcshockwave.UHC.HoF;
 
-import net.mcshockwave.UHC.SQLTable;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
+import net.mcshockwave.UHC.db.ConfigFile;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,13 +16,13 @@ public class HallOfFame {
 	public static HOFEntry[] getEntries() {
 		ArrayList<HOFEntry> ret = new ArrayList<>();
 
-		ArrayList<String> winners = SQLTable.Hall_Of_Fame.getAll("Winners");
-		ArrayList<String> scen = SQLTable.Hall_Of_Fame.getAll("Scenario");
-		ArrayList<String> teams = SQLTable.Hall_Of_Fame.getAll("Teams");
-		ArrayList<String> reddit = SQLTable.Hall_Of_Fame.getAll("Reddit");
+		ArrayList<String> entries = new ArrayList<>(ConfigFile.HOF.get().getStringList("entries"));
 
-		for (int i = 0; i < winners.size(); i++) {
-			ret.add(new HOFEntry(i + 1, winners.get(i), scen.get(i), teams.get(i), reddit.get(i)));
+		for (int i = 0; i < entries.size(); i++) {
+			String ent = entries.get(i);
+			String[] split = ent.split(";");
+
+			ret.add(new HOFEntry(i + 1, split[0], split[1], split[2], split[3]));
 		}
 
 		return ret.toArray(new HOFEntry[0]);

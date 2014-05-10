@@ -1,20 +1,21 @@
 package net.mcshockwave.UHC;
 
+import net.mcshockwave.UHC.db.ConfigFile;
+
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BanManager {
 
-	private static SQLTable	bt	= SQLTable.Bans;
-
 	public static boolean isBanned(String name) {
-		if (bt.has("Username", name)) {
-			int games = bt.getInt("Username", name, "Games");
-
-			if (games == -1 || games > 0) {
-				return true;
+		if (getBanFor(name) != null) {
+			Ban b = getBanFor(name);
+			if (b.games == 0) {
+				return false;
 			}
+			return true;
 		}
 		return false;
 	}
@@ -27,19 +28,21 @@ public class BanManager {
 	}
 
 	public static String getBanReason(String name) {
-		String by = bt.get("Username", name, "BannedBy");
-		String reason = bt.get("Username", name, "Reason");
-		int games = bt.getInt("Username", name, "Games");
+		Ban b = getBanFor(name);
 
-		return getBanReason(by, reason, games);
+		return getBanReason(b.bannedBy, b.reason, b.games);
 	}
 
 	public static void setBanned(String name, int games, String reason, String by) {
-		if (bt.has("Username", name)) {
-			bt.del("Username", name);
+		if (getBanFor(name) != null) {
+			unBan(name);
 		}
 
-		bt.add("Username", name, "Games", "" + games, "Reason", reason, "BannedBy", by, "RecentBan", "1");
+		Ban ban = new Ban(name, games, by, reason, true);
+		ArrayList<String> bans = getBansString();
+		bans.add(ban.getString());
+		ConfigFile.Bans.get().set("bans", bans);
+		ConfigFile.Bans.update();
 
 		if (Bukkit.getPlayer(name) != null) {
 			Bukkit.getPlayer(name).kickPlayer(getBanReason(by, reason, games));
@@ -48,14 +51,14 @@ public class BanManager {
 
 	public static ArrayList<String> incrGames(int games) {
 		ArrayList<String> ret = new ArrayList<>();
-		for (String s : bt.getAll("Username")) {
-			boolean recent = bt.getInt("Username", s, "RecentBan") == 1;
-			if (recent) {
-				bt.set("Recent", 0 + "", "Username", s);
+		for (Ban b : getBans()) {
+			if (b.recent) {
+				b.recent = false;
+				updateBan(b);
 				continue;
 			}
 
-			int gs = bt.getInt("Username", s, "Games");
+			int gs = b.games;
 			if (gs == -1) {
 				continue;
 			}
@@ -63,12 +66,105 @@ public class BanManager {
 			gs += games;
 
 			if (gs == 0) {
-				bt.del("Username", s);
-				ret.add(s);
-			} else
-				bt.set("Games", "" + gs, "Username", s);
+				unBan(b.name);
+				ret.add(b.name);
+			} else {
+				b.games = gs;
+				updateBan(b);
+			}
 		}
 		return ret;
+	}
+
+	public static void unBan(String unban) {
+		List<String> list = ConfigFile.Bans.get().getStringList("bans");
+
+		if (getBanFor(unban) != null) {
+			list.remove(getBanFor(unban).getString());
+		}
+
+		ConfigFile.Bans.update();
+	}
+
+	public static void updateBan(Ban b) {
+		ArrayList<String> bs = getBansString();
+
+		for (int i = 0; i < bs.size(); i++) {
+			String ban = bs.get(i);
+			if (ban.equalsIgnoreCase(b.getString())) {
+				bs.remove(ban);
+			}
+		}
+
+		ConfigFile.Bans.get().set("bans", bs);
+		ConfigFile.Bans.update();
+	}
+
+	public static ArrayList<String> getBansString() {
+		return new ArrayList<>(ConfigFile.Bans.get().getStringList("bans"));
+	}
+
+	public static Ban[] getBans() {
+		ArrayList<String> bans = getBansString();
+		ArrayList<Ban> ret = new ArrayList<>();
+
+		for (int i = 0; i < bans.size(); i++) {
+			String b = bans.get(i);
+			String[] bs = b.split(";");
+
+			Ban ba = new Ban(i, bs[0], Integer.parseInt(bs[1]), bs[2], bs[3], Integer.parseInt(bs[4]) == 1);
+
+			ret.add(ba);
+		}
+
+		return ret.toArray(new Ban[0]);
+	}
+
+	public static class Ban {
+		public String	name, bannedBy, reason;
+		public int		games;
+		public boolean	recent;
+		public int		id;
+
+		public Ban(int id, String name, int games, String bannedBy, String reason, boolean recent) {
+			this.id = id;
+			this.name = name;
+			this.games = games;
+			this.bannedBy = bannedBy;
+			this.reason = reason;
+			this.recent = recent;
+		}
+
+		public Ban(String name, int games, String bannedBy, String reason, boolean recent) {
+			this.id = getBans().length;
+			this.name = name;
+			this.games = games;
+			this.bannedBy = bannedBy;
+			this.reason = reason;
+			this.recent = recent;
+		}
+
+		public String getString() {
+			return String.format("%s;%s;%s;%s;%s", name, games, bannedBy, reason, recent ? 1 : 0);
+		}
+	}
+
+	public static Ban getBanFor(String name) {
+		for (Ban b : getBans()) {
+			if (b.name.equalsIgnoreCase(name)) {
+				return b;
+			}
+		}
+		return null;
+	}
+
+	public static Ban getBanFromId(int id) {
+		for (Ban b : getBans()) {
+			if (b.id == id) {
+				return b;
+			}
+		}
+		return null;
 	}
 
 }

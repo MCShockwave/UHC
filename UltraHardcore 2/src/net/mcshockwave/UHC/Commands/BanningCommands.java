@@ -1,7 +1,6 @@
 package net.mcshockwave.UHC.Commands;
 
 import net.mcshockwave.UHC.BanManager;
-import net.mcshockwave.UHC.SQLTable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -93,7 +92,7 @@ public class BanningCommands implements CommandExecutor {
 			if (label.equalsIgnoreCase("uhcunban")) {
 				if (args.length > 0) {
 					String unban = args[0];
-					SQLTable.Bans.del("Username", unban);
+					BanManager.unBan(unban);
 					Bukkit.broadcastMessage("§a" + sender.getName() + " unbanned " + unban);
 				}
 			}
