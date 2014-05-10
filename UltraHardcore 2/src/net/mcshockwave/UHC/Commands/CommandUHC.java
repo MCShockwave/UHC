@@ -46,7 +46,7 @@ public class CommandUHC implements CommandExecutor {
 				if (args.length == 1) {
 					UltraHC.start(0);
 				} else {
-					UltraHC.start(Integer.parseInt(args[1]));
+					UltraHC.start(Long.parseLong(args[1]));
 				}
 			}
 			if (args[0].equalsIgnoreCase("stop")) {
@@ -140,7 +140,7 @@ public class CommandUHC implements CommandExecutor {
 
 			if (args[0].equalsIgnoreCase("kitmode")) {
 				kitMOTD = !kitMOTD;
-				
+
 				if (kitMOTD) {
 					UltraHC.maxPlayers = 20;
 					Bukkit.setWhitelist(false);
