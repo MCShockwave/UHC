@@ -7,6 +7,7 @@ import net.mcshockwave.UHC.Commands.CommandTeam;
 import net.mcshockwave.UHC.Commands.CommandUHC;
 import net.mcshockwave.UHC.Commands.MoleChatCommand;
 import net.mcshockwave.UHC.Commands.RestrictCommand;
+import net.mcshockwave.UHC.Commands.ScenarioListCommand;
 import net.mcshockwave.UHC.Commands.SilenceCommand;
 import net.mcshockwave.UHC.Commands.VoteCommand;
 import net.mcshockwave.UHC.Listeners.MoleListener;
@@ -99,6 +100,7 @@ public class UltraHC extends JavaPlugin {
 		getCommand("permban").setExecutor(new BanningCommands());
 		getCommand("incrban").setExecutor(new BanningCommands());
 		getCommand("uhcunban").setExecutor(new BanningCommands());
+		getCommand("scenarios").setExecutor(new ScenarioListCommand());
 
 		scb = Bukkit.getScoreboardManager().getMainScoreboard();
 
@@ -131,6 +133,10 @@ public class UltraHC extends JavaPlugin {
 			}
 			pm.addPacketListener(pa);
 		}
+
+		rerandomize();
+
+		Multiworld.getUHC().setSpawnLocation(0, Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
 	}
 
 	public static void registerHealthScoreboard() {
@@ -262,7 +268,7 @@ public class UltraHC extends JavaPlugin {
 				if (isM && c == Option.No_Kill_Time.getInt() && c > 0) {
 					Bukkit.broadcastMessage("§aKilling is now allowed!");
 
-					if (Option.Scenario.getString().equalsIgnoreCase("Mole")) {
+					if (Scenarios.Mole.isEnabled()) {
 						for (NumberTeam nt : nts.teams) {
 							ArrayList<String> ps = nt.players;
 							if (ps.size() == 0) {
@@ -271,6 +277,12 @@ public class UltraHC extends JavaPlugin {
 							String mole = ps.get(rand.nextInt(ps.size()));
 
 							MoleListener.setAsMole(Bukkit.getOfflinePlayer(mole));
+
+							for (Player p : nt.getOnlinePlayers()) {
+								if (!p.getName().equalsIgnoreCase(mole)) {
+									p.sendMessage("§cYou are not the mole!");
+								}
+							}
 						}
 					}
 				}
@@ -282,6 +294,17 @@ public class UltraHC extends JavaPlugin {
 
 				if (isM && c == Option.Meet_Up_Time.getInt()) {
 					Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z:0)");
+
+					Location beacon = new Location(Multiworld.getUHC(), 0,
+							Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
+
+					beacon.getBlock().setType(Material.BEACON);
+					int[] xz = { -1, 0, 1 };
+					for (int x : xz) {
+						for (int z : xz) {
+							beacon.getBlock().getRelative(x, -1, z).setType(Material.IRON_BLOCK);
+						}
+					}
 				}
 
 				// if (isM && c == Option.Border_Time.getInt()) {
@@ -305,18 +328,20 @@ public class UltraHC extends JavaPlugin {
 		Multiworld.getUHC().setGameRuleValue("doDaylightCycle", !Option.Eternal_Daylight.getBoolean() + "");
 		Multiworld.getUHC().setTime(0);
 
-		if (Option.getScenario().l != null) {
-			Bukkit.getPluginManager().registerEvents(Option.getScenario().l, ins);
+		for (Scenarios s : Scenarios.getEnabled()) {
+			if (s.l != null) {
+				Bukkit.getPluginManager().registerEvents(s.l, ins);
+			}
+			s.onStart();
 		}
-		Option.getScenario().onStart();
 	}
 
 	public static String getBarText() {
-		return "§e" + Option.getScenario().name().replace('_', ' ') + " §6" + count.getTimeString() + "§0 - §a"
-				+ getTimeUntil();
+		return "§eMCShockwave UHC §6" + count.getTimeString() + "§0 - §a" + getTimeUntil();
 	}
 
-	public static char[]	colors	= { 'a', 'b', 'c', 'd', 'e', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+	public static String	colors	= "c6ea2b3d5";
+	public static int		id		= -1;
 
 	public static String getTimeUntil() {
 		if (Option.No_Kill_Time.getInt() > count.getTotalMins()) {
@@ -324,7 +349,11 @@ public class UltraHC extends JavaPlugin {
 		} else if (Option.Meet_Up_Time.getInt() > count.getTotalMins()) {
 			return "Meet Up in " + getReadableTime((Option.Meet_Up_Time.getInt() * 60) - count.getTime());
 		}
-		return colors[rand.nextInt(colors.length)] + "§lMEETUP";
+		id++;
+		if (id >= colors.length()) {
+			id = 0;
+		}
+		return "§" + colors.charAt(id) + "§lMEETUP";
 	}
 
 	public static String getReadableTime(long time) {
@@ -349,10 +378,12 @@ public class UltraHC extends JavaPlugin {
 		Bukkit.broadcastMessage("§a§lGame has been stopped!");
 		count.stop();
 
-		if (Option.getScenario().l != null) {
-			HandlerList.unregisterAll(Option.getScenario().l);
+		for (Scenarios s : Scenarios.getEnabled()) {
+			if (s.l != null) {
+				HandlerList.unregisterAll(s.l);
+			}
+			s.onStop();
 		}
-		Option.getScenario().onStop();
 		// for (Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
 		// h.clearAllPlayerViews();
 		// HoloAPI.getManager().stopTracking(h);
@@ -380,10 +411,10 @@ public class UltraHC extends JavaPlugin {
 
 	public static void onDeath(final Player p) {
 		specs.add(p.getName());
-		p.sendMessage("§c You died! You have 30 seconds before you get kicked!");
+		p.sendMessage("§c§lYou died! You have 30 seconds before you get kicked!");
 		Bukkit.getScheduler().runTaskLater(ins, new Runnable() {
 			public void run() {
-				p.kickPlayer("§cYou are out!");
+				p.kickPlayer("§c§lThanks for playing MCShockwave UHC!");
 			}
 		}, 600l);
 		// playersLeft.setScore(getAlive().size());
@@ -480,6 +511,10 @@ public class UltraHC extends JavaPlugin {
 		p.setLevel(0);
 		p.setExp(0);
 		UltraHC.updateHealthFor(p);
+
+		for (PotionEffect pe : p.getActivePotionEffects()) {
+			p.removePotionEffect(pe.getType());
+		}
 
 		p.getInventory().clear();
 		p.getInventory().setArmorContents(new ItemStack[4]);

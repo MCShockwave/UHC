@@ -1,5 +1,7 @@
 package net.mcshockwave.UHC.Listeners;
 
+import net.mcshockwave.UHC.UltraHC;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -20,6 +22,13 @@ public class SwitchListener implements Listener {
 			ProjectileSource le = ((Projectile) de).getShooter();
 
 			if (le instanceof Player) {
+				Player p = (Player) ee;
+				Player d = (Player) le;
+
+				if (UltraHC.specs.contains(p.getName()) || UltraHC.specs.contains(d.getName())) {
+					return;
+				}
+
 				Location l1 = ee.getLocation();
 				Location l2 = de.getLocation();
 

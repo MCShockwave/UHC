@@ -83,7 +83,7 @@ public class CommandUHC implements CommandExecutor {
 				UltraHC.stop();
 			}
 			if (args[0].equalsIgnoreCase("option")) {
-				Option.getGlobalMenu().open(p);
+				Option.getGlobalMenu(true).open(p);
 			}
 			if (args[0].equalsIgnoreCase("teams")) {
 				UltraHC.nts.getMenu(p, true).open(p);
@@ -110,9 +110,10 @@ public class CommandUHC implements CommandExecutor {
 			}
 
 			if (args[0].equalsIgnoreCase("onStart")) {
-				Scenarios s = Option.getScenario();
-				Bukkit.getPluginManager().registerEvents(s.l, UltraHC.ins);
-				s.onStart();
+				for (Scenarios s : Scenarios.getEnabled()) {
+					Bukkit.getPluginManager().registerEvents(s.l, UltraHC.ins);
+					s.onStart();
+				}
 			}
 			if (args[0].equalsIgnoreCase("remholos")) {
 				for (Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {

@@ -70,7 +70,7 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -345,7 +345,7 @@ public class DefaultListener implements Listener {
 			// h.show(p2);
 			// }
 			// }
-			if (Option.Scenario.getString().equalsIgnoreCase("Mole")) {
+			if (Scenarios.Mole.isEnabled()) {
 				boolean mole = MoleListener.isMole(p.getName());
 
 				Bukkit.broadcastMessage("§aThis player was " + (mole ? "§ca mole" : "§bnot a mole"));
@@ -375,7 +375,7 @@ public class DefaultListener implements Listener {
 					}, 1);
 				}
 			}
-			if (Option.Scenario.getString().equalsIgnoreCase("Team DM")) {
+			if (Scenarios.Team_DM.isEnabled()) {
 				event.getDrops().clear();
 			}
 		}
@@ -410,17 +410,24 @@ public class DefaultListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		Player p = event.getPlayer();
-
-		if (p.getWorld() == Multiworld.getKit()) {
-			event.setRespawnLocation(Multiworld.getKit().getSpawnLocation());
-		} else
-			event.setRespawnLocation(Multiworld.getLobby().getSpawnLocation());
+	public void onPlayerRespawn(final PlayerRespawnEvent event) {
+		final Player p = event.getPlayer();
 
 		if (UltraHC.started && !UltraHC.specs.contains(p.getName())) {
 			UltraHC.onDeath(p);
 		}
+
+		if (p.getWorld() == Multiworld.getKit()) {
+			event.setRespawnLocation(Multiworld.getKit().getSpawnLocation());
+		} else {
+			event.setRespawnLocation(Multiworld.getLobby().getSpawnLocation());
+		}
+
+		Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+			public void run() {
+				p.teleport(event.getRespawnLocation());
+			}
+		}, 1l);
 	}
 
 	@EventHandler
@@ -561,16 +568,27 @@ public class DefaultListener implements Listener {
 
 	@EventHandler
 	public void onCraftItem(PrepareItemCraftEvent event) {
-		Recipe r = event.getRecipe();
 		CraftingInventory ci = event.getInventory();
-		if (r.getResult().getType() == Material.GOLDEN_APPLE && ItemMetaUtils.hasCustomName(r.getResult())
-				&& !Option.Golden_Heads.getBoolean()) {
+		if (ci.getResult().getType() == Material.GOLDEN_APPLE && ItemMetaUtils.hasCustomName(ci.getResult())) {
+			if (!Option.Golden_Heads.getBoolean()) {
+				ci.setResult(new ItemStack(Material.AIR));
+			} else {
+				String name = "null";
+				for (ItemStack itemStack : event.getInventory().getContents()) {
+					if (itemStack.getType() == Material.SKULL_ITEM) {
+						SkullMeta sm = (SkullMeta) itemStack.getItemMeta();
+						name = sm.getOwner();
+					}
+				}
+
+				ItemStack res = ci.getResult();
+				ci.setResult(ItemMetaUtils.setLore(res, "§eMade from the head of:", "§e§l" + name));
+			}
+		}
+		if (ci.getResult().getType() == Material.GOLDEN_APPLE && ci.getResult().getDurability() == 1) {
 			ci.setResult(new ItemStack(Material.AIR));
 		}
-		if (r.getResult().getType() == Material.GOLDEN_APPLE && r.getResult().getDurability() == 1) {
-			ci.setResult(new ItemStack(Material.AIR));
-		}
-		if (r.getResult().getType() == Material.BLAZE_POWDER && !Option.Strength_Potions.getBoolean()) {
+		if (ci.getResult().getType() == Material.BLAZE_POWDER && !Option.Strength_Potions.getBoolean()) {
 			ci.setResult(new ItemStack(Material.AIR));
 		}
 	}
@@ -614,6 +632,11 @@ public class DefaultListener implements Listener {
 				b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType(), b.getData());
 				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.FLINT));
 			}
+		}
+
+		if (b.getLocation().getWorld() == Multiworld.getUHC() && Math.abs(b.getLocation().getX()) < 4
+				&& Math.abs(b.getLocation().getX()) < 4 && UltraHC.count.getTotalMins() >= Option.Meet_Up_Time.getInt()) {
+			event.setCancelled(true);
 		}
 	}
 
@@ -821,7 +844,7 @@ public class DefaultListener implements Listener {
 		return name;
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
 		Player p = event.getPlayer();
 

@@ -91,9 +91,7 @@ public class OldTeamSystem {
 					// UltraHC.stats.getScore(Bukkit.getOfflinePlayer(getSubName(c)));
 					// scores.put(c, s);
 
-					if (Option.getScenario() != Scenarios.Linked) {
-						// s.setScore(teams.get(c).getSize());
-					} else {
+					if (Scenarios.Linked.isEnabled()) {
 						if (liTa.containsKey(c)) {
 							liTa.get(c).cancel();
 							liTa.remove(c);

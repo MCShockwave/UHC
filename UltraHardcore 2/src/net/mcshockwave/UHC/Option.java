@@ -5,18 +5,17 @@ import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public enum Option {
 
-	Scenario(
+	Scenario_List(
 		Material.DIAMOND,
 		0,
 		"UHC"),
@@ -83,6 +82,7 @@ public enum Option {
 		20,
 		15,
 		5,
+		2,
 		0),
 	// Border_Radius(
 	// Material.BEDROCK,
@@ -242,14 +242,6 @@ public enum Option {
 		this.name = name().replace('_', ' ');
 
 		icon = new ItemStack(m, 1, (short) d);
-
-		if (name().equalsIgnoreCase("Scenario")) {
-			ArrayList<String> scens = new ArrayList<>();
-			for (Scenarios s : Scenarios.values()) {
-				scens.add(s.name().replace('_', ' '));
-			}
-			this.stringVals = scens.toArray(new String[0]);
-		}
 	}
 
 	private Option(Material m, int d, boolean def) {
@@ -296,6 +288,10 @@ public enum Option {
 	}
 
 	public int getValLength() {
+		if (this == Scenario_List) {
+			return Scenarios.values().length;
+		}
+
 		if (getType() == Integer.class) {
 			return intVals.length;
 		} else if (getType() == String.class) {
@@ -315,7 +311,7 @@ public enum Option {
 		}
 	}
 
-	public ItemMenu getMenu() {
+	public ItemMenu getMenu(final ItemMenu from) {
 		ItemMenu m = new ItemMenu(name, getValLength() + 1);
 
 		if (getType() == Integer.class) {
@@ -330,36 +326,52 @@ public enum Option {
 						p.sendMessage("§aSet " + name + " to " + intVal);
 
 						p.closeInventory();
-						getGlobalMenu().open(p);
+						getGlobalMenu(true).open(p);
 					}
 				});
 			}
 		}
 
 		if (getType() == String.class) {
-			final boolean sc = this == Scenario;
+			if (this == Scenario_List) {
+				for (int sid = 0; sid < Scenarios.values().length; sid++) {
+					final Scenarios s = Scenarios.values()[sid];
 
-			for (int i = 0; i < stringVals.length; i++) {
-				String v = stringVals[i];
-
-				Button b = new Button(false, icon.getType(), 1, icon.getDurability(), "" + v, "Click to set");
-				m.addButton(b, i);
-				b.setOnClick(new ButtonRunnable() {
-					public void run(Player p, InventoryClickEvent event) {
-						stringVal = ItemMetaUtils.getItemName(event.getCurrentItem()).substring(2);
-						p.sendMessage("§aSet " + name + " to " + stringVal);
-
-						if (sc) {
-							Bukkit.broadcastMessage("§aScenario changed to " + stringVal);
-
-							Scenarios s = Scenarios.valueOf(stringVal.replace(' ', '_'));
-							s.setOptions();
-						}
-
-						p.closeInventory();
-						getGlobalMenu().open(p);
+					Button b = new Button(false, icon.getType(), 1, icon.getDurability(), s.name().replace('_', ' '),
+							"§eClick to " + (s.isEnabled() ? "§cdisable" : "§aenable"));
+					if (s.isEnabled()) {
+						ItemMetaUtils.addEnchantment(b.button, Enchantment.WATER_WORKER, 1);
 					}
-				});
+					m.addButton(b, sid);
+					b.setOnClick(new ButtonRunnable() {
+						public void run(Player p, InventoryClickEvent event) {
+							s.setEnabled(!s.isEnabled());
+
+							p.closeInventory();
+							getMenu(getGlobalMenu(true)).open(p);
+						}
+					});
+				}
+
+				Button back = new Button(false, Material.STICK, 1, 0, "Back", "Click to go back");
+				m.addButton(back, m.i.getSize() - 1);
+				m.addSubMenu(from, back);
+			} else {
+				for (int i = 0; i < stringVals.length; i++) {
+					String v = stringVals[i];
+
+					Button b = new Button(false, icon.getType(), 1, icon.getDurability(), "" + v, "Click to set");
+					m.addButton(b, i);
+					b.setOnClick(new ButtonRunnable() {
+						public void run(Player p, InventoryClickEvent event) {
+							stringVal = ItemMetaUtils.getItemName(event.getCurrentItem()).substring(2);
+							p.sendMessage("§aSet " + name + " to " + stringVal);
+
+							p.closeInventory();
+							getGlobalMenu(true).open(p);
+						}
+					});
+				}
 			}
 		}
 
@@ -374,7 +386,7 @@ public enum Option {
 						p.sendMessage("§aSet " + name + " to " + boolVal);
 
 						p.closeInventory();
-						getGlobalMenu().open(p);
+						getGlobalMenu(true).open(p);
 					}
 				});
 
@@ -399,32 +411,23 @@ public enum Option {
 		return "";
 	}
 
-	public static ItemMenu getGlobalMenu() {
-		return getGlobalMenu(true);
-	}
-
 	public static ItemMenu getGlobalMenu(boolean editable) {
 		ItemMenu m = new ItemMenu("Options - " + (editable ? "Editable" : "Viewing"), values().length);
 
 		int in = 0;
 		for (Option o : values()) {
-			Button b = new Button(false, o.icon.getType(), 1, o.icon.getDurability(), o.name, "Current Value: §o"
-					+ o.toString());
+			Button b = new Button(false, o.icon.getType(), 1, o.icon.getDurability(), o.name,
+					(o == Scenario_List ? (editable ? "Click to open menu" : "Type /scenarios to view")
+							: "Current Value: §o" + o.toString()));
 			m.addButton(b, in);
 			if (editable) {
-				m.addSubMenu(o.getMenu(), b, true);
+				m.addSubMenu(o.getMenu(m), b, !(o == Scenario_List));
 			}
 
 			in++;
 		}
 
 		return m;
-	}
-
-	public static Scenarios getScenario() {
-		String na = Option.Scenario.getString().replace(' ', '_');
-		Scenarios s = Scenarios.valueOf(na);
-		return s;
 	}
 
 }

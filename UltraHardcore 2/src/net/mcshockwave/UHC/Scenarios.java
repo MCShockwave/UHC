@@ -1,17 +1,29 @@
 package net.mcshockwave.UHC;
 
-import net.mcshockwave.UHC.Listeners.*;
+import net.mcshockwave.UHC.Listeners.BarebonesListener;
+import net.mcshockwave.UHC.Listeners.BloodPrice;
+import net.mcshockwave.UHC.Listeners.ChumpHandler;
+import net.mcshockwave.UHC.Listeners.Compensation;
+import net.mcshockwave.UHC.Listeners.HallucinationHandler;
+import net.mcshockwave.UHC.Listeners.LinkedListener;
+import net.mcshockwave.UHC.Listeners.MoleListener;
+import net.mcshockwave.UHC.Listeners.ResurrectListener;
+import net.mcshockwave.UHC.Listeners.SwitchListener;
+import net.mcshockwave.UHC.Listeners.TripleListener;
+import net.mcshockwave.UHC.Listeners.WeakestLink;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum Scenarios {
 
-	UHC,
 	Mini_UHC,
 	OP_Enchants,
-	Crux(
-		new CruxListener()),
+	// Crux(
+	// new CruxListener()),
 	Linked(
 		new LinkedListener()),
 	Triple_Ores(
@@ -32,7 +44,9 @@ public enum Scenarios {
 	Compensation(
 		new Compensation());
 
-	public Listener	l	= null;
+	public static List<Scenarios>	enabled	= new ArrayList<>();
+
+	public Listener					l		= null;
 
 	private Scenarios() {
 	}
@@ -41,79 +55,102 @@ public enum Scenarios {
 		this.l = l;
 	}
 
-	public static void setToDefaults() {
-		for (Option o : Option.values()) {
-			if (o == Option.Scenario) {
-				continue;
-			}
+	public boolean isEnabled() {
+		return enabled.contains(this);
+	}
 
-			if (o.getType() == Integer.class) {
-				o.setInt(o.defInt);
-			} else if (o.getType() == String.class) {
-				o.setString(o.defString);
-			} else {
-				o.setBoolean(o.defBool);
-			}
+	public void setEnabled(boolean en) {
+		enabled.remove(this);
+		if (en) {
+			enabled.add(this);
 		}
 	}
 
-	public void setOptions() {
-		setToDefaults();
+	public static List<Scenarios> getEnabled() {
+		ArrayList<Scenarios> ret = new ArrayList<>();
 
-		if (this == UHC) {
-			UltraHC.startCon = null;
-			UltraHC.startACon = null;
+		for (Scenarios s : values()) {
+			if (s.isEnabled()) {
+				ret.add(s);
+			}
 		}
 
-		if (this == Mini_UHC) {
-			// Option.Border_Radius.setInt(250);
-			// Option.Border_Rate.setInt(2);
-			// Option.Border_Time.setInt(15);
-			Option.Meet_Up_Time.setInt(15);
-			Option.Mark_Time.setInt(5);
-			Option.No_Kill_Time.setInt(2);
-			Option.Spread_Radius.setInt(250);
-		}
-
-		if (this == OP_Enchants) {
-			// Option.Border_Radius.setInt(250);
-			// Option.Border_Time.setInt(15);
-			Option.Meet_Up_Time.setInt(15);
-			Option.Mark_Time.setInt(5);
-			Option.No_Kill_Time.setInt(3);
-			Option.Spread_Radius.setInt(250);
-		}
-
-		if (this == Crux) {
-			// Option.Border_Rate.setInt(1);
-			// Option.Border_Time.setInt(180);
-			Option.Hunger.setBoolean(true);
-			Option.Spread_Radius.setInt(1000);
-			Option.Death_Distance.setBoolean(false);
-		}
-
-		if (this == Triple_Ores) {
-			// Option.Border_Time.setInt(30);
-			Option.Meet_Up_Time.setInt(30);
-		}
-
-		if (this == Team_DM) {
-			// Option.Border_Radius.setInt(250);
-			// Option.Border_Rate.setInt(2);
-			// Option.Border_Time.setInt(15);
-			Option.Meet_Up_Time.setInt(15);
-			Option.Mark_Time.setInt(5);
-			Option.No_Kill_Time.setInt(1);
-			Option.Spread_Radius.setInt(250);
-			Option.Head_on_Fence.setBoolean(false);
-			Option.UHC_Mode.setBoolean(false);
-		}
+		return ret;
 	}
+
+	// public static void setToDefaults() {
+	// for (Option o : Option.values()) {
+	// if (o == Option.Scenario) {
+	// continue;
+	// }
+	//
+	// if (o.getType() == Integer.class) {
+	// o.setInt(o.defInt);
+	// } else if (o.getType() == String.class) {
+	// o.setString(o.defString);
+	// } else {
+	// o.setBoolean(o.defBool);
+	// }
+	// }
+	// }
+	//
+	// public void setOptions() {
+	// setToDefaults();
+	//
+	// if (this == Vanilla) {
+	// UltraHC.startCon = null;
+	// UltraHC.startACon = null;
+	// }
+	//
+	// if (this == Mini_UHC) {
+	// // Option.Border_Radius.setInt(250);
+	// // Option.Border_Rate.setInt(2);
+	// // Option.Border_Time.setInt(15);
+	// Option.Meet_Up_Time.setInt(15);
+	// Option.Mark_Time.setInt(5);
+	// Option.No_Kill_Time.setInt(2);
+	// Option.Spread_Radius.setInt(250);
+	// }
+	//
+	// if (this == OP_Enchants) {
+	// // Option.Border_Radius.setInt(250);
+	// // Option.Border_Time.setInt(15);
+	// Option.Meet_Up_Time.setInt(15);
+	// Option.Mark_Time.setInt(5);
+	// Option.No_Kill_Time.setInt(3);
+	// Option.Spread_Radius.setInt(250);
+	// }
+	//
+	// if (this == Crux) {
+	// // Option.Border_Rate.setInt(1);
+	// // Option.Border_Time.setInt(180);
+	// Option.Hunger.setBoolean(true);
+	// Option.Spread_Radius.setInt(1000);
+	// Option.Death_Distance.setBoolean(false);
+	// }
+	//
+	// if (this == Triple_Ores) {
+	// // Option.Border_Time.setInt(30);
+	// Option.Meet_Up_Time.setInt(30);
+	// }
+	//
+	// if (this == Team_DM) {
+	// // Option.Border_Radius.setInt(250);
+	// // Option.Border_Rate.setInt(2);
+	// // Option.Border_Time.setInt(15);
+	// Option.Meet_Up_Time.setInt(15);
+	// Option.Mark_Time.setInt(5);
+	// Option.No_Kill_Time.setInt(1);
+	// Option.Spread_Radius.setInt(250);
+	// Option.Head_on_Fence.setBoolean(false);
+	// Option.UHC_Mode.setBoolean(false);
+	// }
+	// }
 
 	public void onStart() {
-		if (this == Crux) {
-			// CruxListener.onStartGame();
-		}
+		// if (this == Crux) {
+		// // CruxListener.onStartGame();
+		// }
 		if (this == Linked) {
 			LinkedListener.onStart();
 		}
@@ -140,11 +177,11 @@ public enum Scenarios {
 	}
 
 	public void onStop() {
-		if (this == Crux) {
-			// CruxListener.part.cancel();
-			// CruxListener.cruxi.clear();
-			// CruxListener.cruxh.clear();
-		}
+		// if (this == Crux) {
+		// // CruxListener.part.cancel();
+		// // CruxListener.cruxi.clear();
+		// // CruxListener.cruxh.clear();
+		// }
 		if (this == Linked) {
 			LinkedListener.startSize.clear();
 		}
