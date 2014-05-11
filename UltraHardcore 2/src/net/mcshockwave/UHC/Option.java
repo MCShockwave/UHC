@@ -73,6 +73,7 @@ public enum Option {
 	Meet_Up_Time(
 		Material.BEDROCK,
 		0,
+		60,
 		120,
 		90,
 		60,

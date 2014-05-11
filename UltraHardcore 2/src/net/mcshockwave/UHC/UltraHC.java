@@ -104,6 +104,8 @@ public class UltraHC extends JavaPlugin {
 
 		registerHealthScoreboard();
 
+		BarUtil.enable();
+
 		nts = new NumberedTeamSystem(scb);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
@@ -252,7 +254,7 @@ public class UltraHC extends JavaPlugin {
 				if (Option.Eternal_Daylight.getBoolean()) {
 					Multiworld.getUHC().setTime(5000);
 				} else {
-					Multiworld.getUHC().setTime(count.runCount * 20);
+					Multiworld.getUHC().setTime(count.getTime() * 20);
 				}
 
 				long c = count.runCountMin + 1;
@@ -261,7 +263,7 @@ public class UltraHC extends JavaPlugin {
 					Bukkit.broadcastMessage("§c§lMARK " + c + " MINS IN!");
 				}
 
-				if (isM && c == Option.No_Kill_Time.getInt()) {
+				if (isM && c == Option.No_Kill_Time.getInt() && c > 0) {
 					Bukkit.broadcastMessage("§aKilling is now allowed!");
 
 					if (Option.Scenario.getString().equalsIgnoreCase("Mole")) {
@@ -314,11 +316,25 @@ public class UltraHC extends JavaPlugin {
 	}
 
 	public static String getBarText() {
-		return "§c" + Option.getScenario().name().replace('_', ' ') + " §6" + count.getTimeString();
+		return "§e" + Option.getScenario().name().replace('_', ' ') + " §6" + count.getTimeString() + "§0 - §a"
+				+ getTimeUntil();
+	}
+
+	public static String getTimeUntil() {
+		if (Option.No_Kill_Time.getInt() > count.getTotalMins()) {
+			return "PVP in " + getReadableTime((Option.No_Kill_Time.getInt() * 60) - count.getTime());
+		} else if (Option.Meet_Up_Time.getInt() > count.getTotalMins()) {
+			return "MU in " + getReadableTime((Option.Meet_Up_Time.getInt() * 60) - count.getTime());
+		}
+		return "MEETUP";
+	}
+
+	public static String getReadableTime(long time) {
+		return String.format("%d:%02d:%02d", time / 3600, time % 3600 / 60, time % 60);
 	}
 
 	public static float getBarHealth() {
-		return 1;
+		return 100;
 	}
 
 	public static int getRoundedHealth(double h) {
@@ -347,6 +363,8 @@ public class UltraHC extends JavaPlugin {
 
 		players.clear();
 		specs.clear();
+
+		BarUtil.destroyTimer();
 
 		// playersLeft = null;
 		// stats.unregister();
