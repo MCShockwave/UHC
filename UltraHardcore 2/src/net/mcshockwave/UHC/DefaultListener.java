@@ -92,6 +92,21 @@ public class DefaultListener implements Listener {
 	Random				rand		= new Random();
 
 	public static int	maxLength	= 9;
+	
+	@EventHandler
+	public void join(PlayerJoinEvent event) {
+		UltraHC.rerandomize();
+	}
+
+	@EventHandler
+	public void quit(PlayerQuitEvent event) {
+		UltraHC.rerandomize();
+	}
+
+	@EventHandler
+	public void kick(PlayerKickEvent event) {
+		UltraHC.rerandomize();
+	}
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {

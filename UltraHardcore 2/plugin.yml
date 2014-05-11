@@ -22,3 +22,5 @@ commands:
    permban:
    incrban:
    uhcunban:
+   min:
+   max:

@@ -46,7 +46,7 @@ public class BloodPrice implements Listener {
 					if (dam == null) {
 						Bukkit.broadcastMessage(pre + "Nobody was damaged!");
 					}
-
+					
 					Bukkit.broadcastMessage(pre + dam.getName() + " has been damaged!");
 					double hp = dam.getHealth();
 					hp -= 6;

@@ -13,8 +13,6 @@ public class Compensation implements Listener {
 
 	public static final String	pre		= "§8[§5Compensation§8] §d";
 
-	public static Compensation	comp	= new Compensation();
-
 	public int getTeamSize(Team t) {
 		int si = 0;
 
@@ -32,7 +30,7 @@ public class Compensation implements Listener {
 		double health = d.getMaxHealth() / players;
 
 		for (OfflinePlayer op : t.getPlayers()) {
-			if (op.isOnline() && op != d) {
+			if (op.isOnline() && !op.getName().equalsIgnoreCase(d.getName())) {
 				Player p = op.getPlayer();
 
 				p.setMaxHealth(p.getMaxHealth() + health);

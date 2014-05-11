@@ -46,7 +46,7 @@ public class WeakestLink implements Listener {
 					if (kill == null) {
 						Bukkit.broadcastMessage(pre + "Nobody was killed!");
 					}
-
+					
 					Bukkit.broadcastMessage(pre + kill.getName() + " has been killed!");
 					kill.damage(kill.getHealth());
 				}

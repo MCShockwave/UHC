@@ -23,6 +23,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -561,6 +563,26 @@ public class UltraHC extends JavaPlugin {
 			}
 		}
 		return ret;
+	}
+
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (label.equalsIgnoreCase("max")) {
+			Player max = getMaximumHealth();
+			if (max == null) {
+				sender.sendMessage("§cCould not find player with most health");
+				return true;
+			}
+			sender.sendMessage("§cPerson with most health: " + max.getName());
+		}
+		if (label.equalsIgnoreCase("min")) {
+			Player min = getLowestHealth();
+			if (min == null) {
+				sender.sendMessage("§cCould not find player with lowest health");
+				return true;
+			}
+			sender.sendMessage("§cPerson with least health: " + min.getName());
+		}
+		return false;
 	}
 
 }
