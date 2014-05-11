@@ -92,7 +92,7 @@ public class DefaultListener implements Listener {
 	Random				rand		= new Random();
 
 	public static int	maxLength	= 9;
-	
+
 	@EventHandler
 	public void join(PlayerJoinEvent event) {
 		UltraHC.rerandomize();
@@ -476,6 +476,11 @@ public class DefaultListener implements Listener {
 			event.setFoodLevel(20);
 			((Player) event.getEntity()).setSaturation(10f);
 			event.getEntity().setHealth(event.getEntity().getMaxHealth());
+		}
+
+		if (!Option.Hunger.getBoolean()) {
+			event.setFoodLevel(20);
+			((Player) event.getEntity()).setSaturation(10f);
 		}
 	}
 

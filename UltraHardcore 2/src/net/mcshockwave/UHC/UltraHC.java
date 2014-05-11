@@ -208,10 +208,6 @@ public class UltraHC extends JavaPlugin {
 				p.setGameMode(GameMode.SURVIVAL);
 			}
 
-			if (!Option.Hunger.getBoolean()) {
-				p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 10));
-			}
-
 			if (!resuming) {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 620, 10));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 620, 10));
@@ -320,13 +316,15 @@ public class UltraHC extends JavaPlugin {
 				+ getTimeUntil();
 	}
 
+	public static char[]	colors	= { 'a', 'b', 'c', 'd', 'e', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
 	public static String getTimeUntil() {
 		if (Option.No_Kill_Time.getInt() > count.getTotalMins()) {
 			return "PVP in " + getReadableTime((Option.No_Kill_Time.getInt() * 60) - count.getTime());
 		} else if (Option.Meet_Up_Time.getInt() > count.getTotalMins()) {
-			return "MU in " + getReadableTime((Option.Meet_Up_Time.getInt() * 60) - count.getTime());
+			return "Meet Up in " + getReadableTime((Option.Meet_Up_Time.getInt() * 60) - count.getTime());
 		}
-		return "MEETUP";
+		return colors[rand.nextInt(colors.length)] + "§lMEETUP";
 	}
 
 	public static String getReadableTime(long time) {
