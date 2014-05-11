@@ -11,6 +11,7 @@ import net.mcshockwave.UHC.Commands.SilenceCommand;
 import net.mcshockwave.UHC.Commands.VoteCommand;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenuListener;
+import net.mcshockwave.UHC.Utils.BarUtil;
 import net.mcshockwave.UHC.Utils.CustomSignUtils.CustomSignListener;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
@@ -35,7 +36,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
@@ -64,8 +64,7 @@ public class UltraHC extends JavaPlugin {
 	public static Counter				count			= null;
 
 	public static Scoreboard			scb				= null;
-	public static Objective				health			= null, healthList = null, stats = null;
-	public static Score					playersLeft		= null, mutime = null;
+	public static Objective				health			= null, healthList = null;
 	// borderSize = null;
 
 	public static ArrayList<String>		specs			= new ArrayList<>();
@@ -226,15 +225,17 @@ public class UltraHC extends JavaPlugin {
 			players.add(p.getName());
 		}
 
-		stats = scb.registerNewObjective("UHCStats", "dummy");
-		stats.setDisplayName("§c" + Option.getScenario().name().replace('_', ' ') + " §60:00:00");
-		stats.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-		playersLeft = stats.getScore(Bukkit.getOfflinePlayer("§aPlayers Left:"));
-		playersLeft.setScore(Bukkit.getOnlinePlayers().length);
-
-		mutime = stats.getScore(Bukkit.getOfflinePlayer("§bTime Until MU:"));
-		mutime.setScore(Option.Meet_Up_Time.getInt() * 60);
+		// stats = scb.registerNewObjective("UHCStats", "dummy");
+		// stats.setDisplayName("§c" + Option.getScenario().name().replace('_',
+		// ' ') + " §60:00:00");
+		// stats.setDisplaySlot(DisplaySlot.SIDEBAR);
+		//
+		// playersLeft =
+		// stats.getScore(Bukkit.getOfflinePlayer("§aPlayers Left:"));
+		// playersLeft.setScore(Bukkit.getOnlinePlayers().length);
+		//
+		// mutime = stats.getScore(Bukkit.getOfflinePlayer("§bTime Until MU:"));
+		// mutime.setScore(Option.Meet_Up_Time.getInt() * 60);
 
 		// borderSize =
 		// stats.getScore(Bukkit.getOfflinePlayer("§bBorder Size:"));
@@ -243,8 +244,10 @@ public class UltraHC extends JavaPlugin {
 		count = new Counter();
 		count.setRunnable(new Runnable() {
 			public void run() {
-				stats.setDisplayName("§c" + Option.getScenario().name().replace('_', ' ') + " §6"
-						+ count.getTimeString());
+				// stats.setDisplayName("§c" +
+				// Option.getScenario().name().replace('_', ' ') + " §6"
+				// + count.getTimeString());
+				BarUtil.displayTextBar(getBarText(), getBarHealth());
 
 				if (Option.Eternal_Daylight.getBoolean()) {
 					Multiworld.getUHC().setTime(5000);
@@ -274,13 +277,13 @@ public class UltraHC extends JavaPlugin {
 					}
 				}
 
-				if (c < Option.Meet_Up_Time.getInt()) {
-					mutime.setScore((int) ((Option.Meet_Up_Time.getInt() * 60) - count.runCount));
-				}
+				// if (c < Option.Meet_Up_Time.getInt()) {
+				// mutime.setScore((int) ((Option.Meet_Up_Time.getInt() * 60) -
+				// count.runCount));
+				// }
 
 				if (isM && c == Option.Meet_Up_Time.getInt()) {
 					Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z:0)");
-					mutime.setScore(0);
 				}
 
 				// if (isM && c == Option.Border_Time.getInt()) {
@@ -310,6 +313,14 @@ public class UltraHC extends JavaPlugin {
 		Option.getScenario().onStart();
 	}
 
+	public static String getBarText() {
+		return "§c" + Option.getScenario().name().replace('_', ' ') + " §6" + count.getTimeString();
+	}
+
+	public static float getBarHealth() {
+		return 1;
+	}
+
 	public static int getRoundedHealth(double h) {
 		h = Math.round(h * 10);
 		h /= 2;
@@ -337,9 +348,8 @@ public class UltraHC extends JavaPlugin {
 		players.clear();
 		specs.clear();
 
-		playersLeft = null;
-
-		stats.unregister();
+		// playersLeft = null;
+		// stats.unregister();
 	}
 
 	public static ArrayList<Player> getAlive() {
@@ -360,8 +370,7 @@ public class UltraHC extends JavaPlugin {
 				p.kickPlayer("§cYou are out!");
 			}
 		}, 600l);
-
-		playersLeft.setScore(getAlive().size());
+		// playersLeft.setScore(getAlive().size());
 	}
 
 	public static Random	rand		= new Random();

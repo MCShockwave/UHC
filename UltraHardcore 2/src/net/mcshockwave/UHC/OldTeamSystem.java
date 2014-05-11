@@ -80,18 +80,19 @@ public class OldTeamSystem {
 
 	HashMap<ChatColor, BukkitTask>	liTa	= new HashMap<>();
 
-	@SuppressWarnings("deprecation")
+	// @SuppressWarnings("deprecation")
 	public void setScores() {
 		for (ChatColor c : colors) {
 			if (isEnabled(c)) {
 				if (scores.containsKey(c) && scores.get(c) != null) {
 					scores.get(c).setScore(teams.get(c).getSize());
 				} else {
-					final Score s = UltraHC.stats.getScore(Bukkit.getOfflinePlayer(getSubName(c)));
-					scores.put(c, s);
+					// final Score s =
+					// UltraHC.stats.getScore(Bukkit.getOfflinePlayer(getSubName(c)));
+					// scores.put(c, s);
 
 					if (Option.getScenario() != Scenarios.Linked) {
-						s.setScore(teams.get(c).getSize());
+						// s.setScore(teams.get(c).getSize());
 					} else {
 						if (liTa.containsKey(c)) {
 							liTa.get(c).cancel();
@@ -104,7 +105,7 @@ public class OldTeamSystem {
 								if (teams.get(c2).getPlayers().size() > 0) {
 									for (OfflinePlayer op : teams.get(c2).getPlayers()) {
 										if (op.isOnline()) {
-											s.setScore(UltraHC.health.getScore(op).getScore());
+											// s.setScore(UltraHC.health.getScore(op).getScore());
 											break;
 										}
 									}
