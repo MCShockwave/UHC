@@ -409,7 +409,7 @@ public class DefaultListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerRespawn(final PlayerRespawnEvent event) {
 		final Player p = event.getPlayer();
 
@@ -427,7 +427,7 @@ public class DefaultListener implements Listener {
 			public void run() {
 				p.teleport(event.getRespawnLocation());
 			}
-		}, 1l);
+		}, 10l);
 	}
 
 	@EventHandler
