@@ -20,32 +20,37 @@ public class BanManager {
 		return false;
 	}
 
-	public static String getBanReason(String by, String reason, int games) {
+	public static String getBanReason(String by, String reason, int games, boolean recent) {
 		if (games == -1) {
 			return String.format("§aBanned by %s: §f%s §b[Permanent]", by, reason);
 		}
-		return String.format("§aBanned by %s: §f%s §b[%s games left]", by, reason, games);
+		return String.format("§aBanned by %s: §f%s §b[%s games left" + (recent ? " after current" : "") + "]", by,
+				reason, games);
 	}
 
 	public static String getBanReason(String name) {
 		Ban b = getBanFor(name);
 
-		return getBanReason(b.bannedBy, b.reason, b.games);
+		return getBanReason(b.bannedBy, b.reason, b.games, b.recent);
 	}
 
-	public static void setBanned(String name, int games, String reason, String by) {
+	public static void setBanned(String name, int games, String reason, String by, boolean recent) {
+		setBanned(getBans().length, name, games, reason, by, recent);
+	}
+
+	public static void setBanned(int id, String name, int games, String reason, String by, boolean recent) {
 		if (getBanFor(name) != null) {
 			unBan(name);
 		}
 
-		Ban ban = new Ban(name, games, by, reason, true);
+		Ban ban = new Ban(id, name, games, by, reason, recent);
 		ArrayList<String> bans = getBansString();
-		bans.add(ban.getString());
+		bans.add(ban.toString());
 		ConfigFile.Bans.get().set("bans", bans);
 		ConfigFile.Bans.update();
 
 		if (Bukkit.getPlayer(name) != null) {
-			Bukkit.getPlayer(name).kickPlayer(getBanReason(by, reason, games));
+			Bukkit.getPlayer(name).kickPlayer(getBanReason(by, reason, games, recent));
 		}
 	}
 
@@ -80,24 +85,18 @@ public class BanManager {
 		List<String> list = ConfigFile.Bans.get().getStringList("bans");
 
 		if (getBanFor(unban) != null) {
-			list.remove(getBanFor(unban).getString());
+			list.remove(getBanFor(unban).toString());
 		}
 
+		ConfigFile.Bans.get().set("bans", list);
 		ConfigFile.Bans.update();
 	}
 
 	public static void updateBan(Ban b) {
-		ArrayList<String> bs = getBansString();
+		int id = b.id;
+		unBan(getBanFromId(id).name);
 
-		for (int i = 0; i < bs.size(); i++) {
-			String ban = bs.get(i);
-			if (ban.equalsIgnoreCase(b.getString())) {
-				bs.remove(ban);
-			}
-		}
-
-		ConfigFile.Bans.get().set("bans", bs);
-		ConfigFile.Bans.update();
+		setBanned(b.id, b.name, b.games, b.reason, b.bannedBy, b.recent);
 	}
 
 	public static ArrayList<String> getBansString() {
@@ -112,7 +111,8 @@ public class BanManager {
 			String b = bans.get(i);
 			String[] bs = b.split(";");
 
-			Ban ba = new Ban(i, bs[0], Integer.parseInt(bs[1]), bs[2], bs[3], Integer.parseInt(bs[4]) == 1);
+			Ban ba = new Ban(Integer.parseInt(bs[0]), bs[1], Integer.parseInt(bs[2]), bs[3], bs[4],
+					Integer.parseInt(bs[5]) == 1);
 
 			ret.add(ba);
 		}
@@ -144,8 +144,9 @@ public class BanManager {
 			this.recent = recent;
 		}
 
-		public String getString() {
-			return String.format("%s;%s;%s;%s;%s", name, games, bannedBy, reason, recent ? 1 : 0);
+		@Override
+		public String toString() {
+			return String.format("%s;%s;%s;%s;%s;%s", id, name, games, bannedBy, reason, recent ? 1 : 0);
 		}
 	}
 

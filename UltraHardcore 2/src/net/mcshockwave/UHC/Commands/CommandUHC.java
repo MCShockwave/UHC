@@ -4,6 +4,7 @@ import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.Scenarios;
 import net.mcshockwave.UHC.UltraHC;
 import net.mcshockwave.UHC.Listeners.ResurrectListener;
+import net.mcshockwave.UHC.db.ConfigFile;
 import net.mcshockwave.UHC.worlds.Multiworld;
 import net.minecraft.server.v1_7_R2.ChatSerializer;
 import net.minecraft.server.v1_7_R2.PacketPlayOutChat;
@@ -17,6 +18,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+
+import java.util.ArrayList;
 
 import com.dsh105.holoapi.HoloAPI;
 import com.dsh105.holoapi.api.Hologram;
@@ -35,6 +38,14 @@ public class CommandUHC implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (sender.isOp() && args.length > 0 && args[0].equalsIgnoreCase("reload")) {
+			for (ConfigFile cf : ConfigFile.values()) {
+				cf.reload();
+				sender.sendMessage("§6" + cf.name + " reloaded");
+			}
+			return true;
+		}
+
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
 
@@ -42,6 +53,25 @@ public class CommandUHC implements CommandExecutor {
 				return false;
 			}
 
+			if (args[0].equalsIgnoreCase("hof")) {
+				if (args.length <= 4) {
+					p.sendMessage("§c/uhc hof {winner} {scenario} {teams} {reddit}");
+				} else {
+					String win = args[1];
+					win = (win.contains("and") ? win.replace('_', ' ') : win);
+					String scen = args[2].replace('_', ' ');
+					String team = args[3].replace('_', ' ');
+					String link = args[4];
+
+					ArrayList<String> hof = new ArrayList<>(ConfigFile.HOF.get().getStringList("entries"));
+					hof.add(String.format("%s;%s;%s;%s", win, scen, team, link));
+					ConfigFile.HOF.get().set("entries", hof);
+					ConfigFile.HOF.update();
+
+					p.sendMessage("§6Added HOF entry:\n§e"
+							+ String.format("Winner: %s\nScenario: %s\nTeams: %s\nReddit: %s", win, scen, team, link));
+				}
+			}
 			if (args[0].equalsIgnoreCase("start")) {
 				if (args.length == 1) {
 					UltraHC.start(0);

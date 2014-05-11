@@ -25,7 +25,7 @@ public class BanningCommands implements CommandExecutor {
 					}
 					reason = reason.replaceFirst(" ", "");
 
-					BanManager.setBanned(toBan, -1, reason, sender.getName());
+					BanManager.setBanned(toBan, -1, reason, sender.getName(), true);
 					Bukkit.broadcastMessage("§e" + toBan + " was banned by " + sender.getName()
 							+ " permanently for reason " + reason);
 				}
@@ -49,7 +49,7 @@ public class BanningCommands implements CommandExecutor {
 					}
 					reason = reason.replaceFirst(" ", "");
 
-					BanManager.setBanned(toBan, games, reason, sender.getName());
+					BanManager.setBanned(toBan, games, reason, sender.getName(), true);
 					Bukkit.broadcastMessage("§e" + toBan + " was banned by " + sender.getName() + " for " + games
 							+ " games for reason " + reason);
 				}
