@@ -18,6 +18,10 @@ public class SwitchListener implements Listener {
 		Entity ee = event.getEntity();
 		Entity de = event.getDamager();
 
+		if (!UltraHC.isPVP()) {
+			return;
+		}
+
 		if (de instanceof Projectile && ee instanceof Player) {
 			ProjectileSource le = ((Projectile) de).getShooter();
 

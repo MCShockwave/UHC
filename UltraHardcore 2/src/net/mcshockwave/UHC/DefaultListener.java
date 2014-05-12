@@ -504,9 +504,9 @@ public class DefaultListener implements Listener {
 			// Player p = (Player) ee;s
 			Player d = (Player) de;
 
-			if (ee instanceof Player && UltraHC.started && Option.No_Kill_Time.getInt() > UltraHC.count.getTotalMins()) {
+			if (ee instanceof Player && UltraHC.started && !UltraHC.isPVP()) {
 				event.setCancelled(true);
-				d.sendMessage("§cKilling is disabled until " + Option.No_Kill_Time.getInt() + " minutes in!");
+				d.sendMessage("§cKilling is disabled until " + Option.PVP_Time.getInt() + " minutes in!");
 			}
 
 			if (UltraHC.started && UltraHC.specs.contains(d.getName())) {
@@ -539,10 +539,9 @@ public class DefaultListener implements Listener {
 			Player d = (Player) arrow.getShooter();
 			Player p = (Player) ee;
 
-			if (UltraHC.getAlive().contains(p) && UltraHC.getAlive().contains(d) && UltraHC.started
-					&& Option.No_Kill_Time.getInt() > UltraHC.count.getTotalMins()) {
+			if (UltraHC.getAlive().contains(p) && UltraHC.getAlive().contains(d) && UltraHC.started && !UltraHC.isPVP()) {
 				event.setCancelled(true);
-				d.sendMessage("§cKilling is disabled until " + Option.No_Kill_Time.getInt() + " minutes in!");
+				d.sendMessage("§cKilling is disabled until " + Option.PVP_Time.getInt() + " minutes in!");
 			}
 
 			Vector velocity = arrow.getVelocity();

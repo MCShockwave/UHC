@@ -24,7 +24,9 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -265,8 +267,11 @@ public class UltraHC extends JavaPlugin {
 					Bukkit.broadcastMessage("§c§lMARK " + c + " MINS IN!");
 				}
 
-				if (isM && c == Option.No_Kill_Time.getInt() && c > 0) {
-					Bukkit.broadcastMessage("§aKilling is now allowed!");
+				if (isM && c == Option.PVP_Time.getInt() && c > 0) {
+					Bukkit.broadcastMessage("§a§lKilling is now allowed!");
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						p.playSound(p.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 0.75f);
+					}
 
 					if (Scenarios.Mole.isEnabled()) {
 						for (NumberTeam nt : nts.teams) {
@@ -294,15 +299,17 @@ public class UltraHC extends JavaPlugin {
 
 				if (isM && c == Option.Meet_Up_Time.getInt()) {
 					Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z:0)");
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						p.playSound(p.getLocation(), Sound.WITHER_SPAWN, 1, 0.75f);
+					}
 
-					Location beacon = new Location(Multiworld.getUHC(), 0,
-							Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
+					Block beacon = Multiworld.getUHC().getBlockAt(0, Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
 
-					beacon.getBlock().setType(Material.BEACON);
+					beacon.setType(Material.BEACON);
 					int[] xz = { -1, 0, 1 };
 					for (int x : xz) {
 						for (int z : xz) {
-							beacon.getBlock().getRelative(x, -1, z).setType(Material.IRON_BLOCK);
+							beacon.getRelative(x, -1, z).setType(Material.IRON_BLOCK);
 						}
 					}
 				}
@@ -344,8 +351,8 @@ public class UltraHC extends JavaPlugin {
 	public static int		id		= -1;
 
 	public static String getTimeUntil() {
-		if (Option.No_Kill_Time.getInt() > count.getTotalMins()) {
-			return "PVP in " + getReadableTime((Option.No_Kill_Time.getInt() * 60) - count.getTime());
+		if (!isPVP()) {
+			return "PVP in " + getReadableTime((Option.PVP_Time.getInt() * 60) - count.getTime());
 		} else if (Option.Meet_Up_Time.getInt() > count.getTotalMins()) {
 			return "Meet Up in " + getReadableTime((Option.Meet_Up_Time.getInt() * 60) - count.getTime());
 		}
@@ -643,6 +650,13 @@ public class UltraHC extends JavaPlugin {
 			sender.sendMessage("§cPerson with least health: " + min.getName());
 		}
 		return false;
+	}
+
+	public static boolean isPVP() {
+		if (!started) {
+			return false;
+		}
+		return Option.PVP_Time.getInt() <= UltraHC.count.getTotalMins();
 	}
 
 }

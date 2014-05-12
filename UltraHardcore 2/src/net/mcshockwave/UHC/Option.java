@@ -44,7 +44,7 @@ public enum Option {
 		250,
 		150,
 		100),
-	No_Kill_Time(
+	PVP_Time(
 		Material.STONE_SWORD,
 		0,
 		20,
