@@ -21,7 +21,7 @@ import java.util.List;
 public enum Scenarios {
 
 	Mini_UHC,
-	OP_Enchants,
+	Infinite_Enchanter,
 	// Crux(
 	// new CruxListener()),
 	Linked(
@@ -154,9 +154,9 @@ public enum Scenarios {
 		if (this == Linked) {
 			LinkedListener.onStart();
 		}
-		if (this == OP_Enchants) {
+		if (this == Infinite_Enchanter) {
 			for (Player p : UltraHC.getAlive()) {
-				p.setLevel(1000);
+				p.setLevel(Short.MAX_VALUE);
 			}
 		}
 		if (this == Hallucinations) {
