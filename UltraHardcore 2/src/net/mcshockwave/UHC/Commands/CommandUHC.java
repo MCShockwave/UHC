@@ -138,17 +138,7 @@ public class CommandUHC implements CommandExecutor {
 			}
 			if (args[0].equalsIgnoreCase("genborder")) {
 				int rad = Integer.parseInt(args[1]);
-				EditSession es = new EditSession(new BukkitWorld(p.getWorld()), Integer.MAX_VALUE);
-
-				Bukkit.broadcastMessage("§bGENERATING WALLS WITH RADIUS " + rad);
-				Region r = new CuboidRegion(new Vector(-rad, 0, -rad), new Vector(rad, 256, rad));
-				try {
-					es.makeCuboidWalls(r, new SingleBlockPattern(new BaseBlock(7)));
-					Bukkit.broadcastMessage("§aWALLS GENERATED");
-				} catch (MaxChangedBlocksException e) {
-					e.printStackTrace();
-					Bukkit.broadcastMessage("§cERROR: " + e.getMessage());
-				}
+				genWalls(Multiworld.isUHCWorld(p.getWorld()) ? p.getWorld() : Multiworld.getUHC(), rad);
 			}
 			if (args[0].equalsIgnoreCase("sethealth")) {
 				Player set = Bukkit.getPlayer(args[1]);
@@ -215,5 +205,19 @@ public class CommandUHC implements CommandExecutor {
 			}
 		}
 		return true;
+	}
+
+	public static void genWalls(World w, int rad) {
+		EditSession es = new EditSession(new BukkitWorld(w), Integer.MAX_VALUE);
+
+		Bukkit.broadcastMessage("§bGENERATING WALLS WITH RADIUS " + rad);
+		Region r = new CuboidRegion(new Vector(-rad, 0, -rad), new Vector(rad, 256, rad));
+		try {
+			es.makeCuboidWalls(r, new SingleBlockPattern(new BaseBlock(7)));
+			Bukkit.broadcastMessage("§aWALLS GENERATED");
+		} catch (MaxChangedBlocksException e) {
+			e.printStackTrace();
+			Bukkit.broadcastMessage("§cERROR: " + e.getMessage());
+		}
 	}
 }

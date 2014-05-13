@@ -69,7 +69,7 @@ public enum Option {
 		Material.WATCH,
 		0,
 		true),
-	Meet_Up_Time(
+	Game_Length(
 		Material.BEDROCK,
 		0,
 		60,
@@ -84,6 +84,13 @@ public enum Option {
 		5,
 		2,
 		0),
+	End_Game(
+		Material.COMPASS,
+		0,
+		"Meetup",
+		"Meetup",
+		"Sudden Death",
+		"Compasses (Not Added)"),
 	// Border_Radius(
 	// Material.BEDROCK,
 	// 0,

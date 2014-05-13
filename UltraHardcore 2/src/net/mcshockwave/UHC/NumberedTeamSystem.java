@@ -79,7 +79,7 @@ public class NumberedTeamSystem {
 					ntt = nt.sc.registerNewTeam("T" + nt2.id);
 					ntt.setCanSeeFriendlyInvisibles(true);
 					ntt.setDisplayName("Team " + nt2.id);
-					ntt.setPrefix((nt2 == nt ? "§a" : "§c") + "[" + nt2.id + "]§f");
+					ntt.setPrefix(getPrefix(nt2.id, nt2 == nt ? "§a" : "§c"));
 					if (nt2 == nt) {
 						nt.t = ntt;
 					}
@@ -91,12 +91,20 @@ public class NumberedTeamSystem {
 				Team t = s.registerNewTeam("T" + nt.id);
 				t.setAllowFriendlyFire(true);
 				t.setCanSeeFriendlyInvisibles(false);
-				t.setPrefix("§e[" + nt.id + "]§f");
+				t.setPrefix(getPrefix(nt.id, ChatColor.YELLOW));
 				t.setSuffix("§r");
 			}
 
 			updatePlayersForTeam(nt);
 		}
+	}
+
+	public static String getPrefix(int id, String color) {
+		return color + id + "|§f";
+	}
+
+	public static String getPrefix(int id, ChatColor color) {
+		return getPrefix(id, color.toString());
 	}
 
 	private void cloneObjective(Objective n, Objective cl) {
@@ -140,11 +148,12 @@ public class NumberedTeamSystem {
 				st.removePlayer(op);
 			}
 		}
-		for (Player p : tou.getOnlinePlayers()) {
-			if (!st.hasPlayer(p)) {
-				st.addPlayer(p);
-				if (!ChatColor.stripColor(p.getPlayerListName()).equals(p.getName())) {
-					st.addPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(p.getPlayerListName())));
+		for (String s : tou.players) {
+			OfflinePlayer op = Bukkit.getOfflinePlayer(s);
+			if (!st.hasPlayer(op)) {
+				st.addPlayer(op);
+				if (op.isOnline() && !ChatColor.stripColor(op.getPlayer().getPlayerListName()).equals(op.getName())) {
+					st.addPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(op.getPlayer().getPlayerListName())));
 				}
 			}
 		}

@@ -40,6 +40,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -634,7 +635,7 @@ public class DefaultListener implements Listener {
 		}
 
 		if (b.getLocation().getWorld() == Multiworld.getUHC() && Math.abs(b.getLocation().getX()) < 4
-				&& Math.abs(b.getLocation().getX()) < 4 && UltraHC.count.getTotalMins() >= Option.Meet_Up_Time.getInt()) {
+				&& Math.abs(b.getLocation().getX()) < 4 && UltraHC.count.getTotalMins() >= Option.Game_Length.getInt()) {
 			event.setCancelled(true);
 		}
 	}
@@ -650,6 +651,11 @@ public class DefaultListener implements Listener {
 		if (b.getWorld() == Multiworld.getKit()) {
 			event.setCancelled(false);
 			return;
+		}
+
+		if (b.getLocation().getWorld() == Multiworld.getUHC() && Math.abs(b.getLocation().getX()) < 4
+				&& Math.abs(b.getLocation().getX()) < 4 && UltraHC.count.getTotalMins() >= Option.Game_Length.getInt()) {
+			event.setCancelled(true);
 		}
 	}
 
@@ -801,7 +807,7 @@ public class DefaultListener implements Listener {
 			int i = 0;
 			for (Player p2 : al) {
 				int am = 1;
-				if (UltraHC.nts.isTeamGame() && UltraHC.nts.getTeam(p.getName()) != null) {
+				if (UltraHC.nts.getTeam(p.getName()) != null) {
 					am = UltraHC.nts.getTeam(p.getName()).id;
 				}
 				Button bu = new Button(true, Material.WOOL, am, 0, p2.getName(), "Click to teleport");
@@ -849,6 +855,17 @@ public class DefaultListener implements Listener {
 
 		if (UltraHC.specs.contains(p.getName())) {
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onEntityExplode(EntityExplodeEvent event) {
+		for (Block b : event.blockList().toArray(new Block[0])) {
+			if (b.getLocation().getWorld() == Multiworld.getUHC() && Math.abs(b.getLocation().getX()) < 4
+					&& Math.abs(b.getLocation().getX()) < 4
+					&& UltraHC.count.getTotalMins() >= Option.Game_Length.getInt()) {
+				event.blockList().remove(b);
+			}
 		}
 	}
 

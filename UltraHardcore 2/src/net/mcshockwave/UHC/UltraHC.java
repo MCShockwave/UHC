@@ -67,7 +67,7 @@ public class UltraHC extends JavaPlugin {
 	public static Counter				count			= null;
 
 	public static Scoreboard			scb				= null;
-	public static Objective				health			= null, healthList = null;
+	public static Objective				health			= null, healthList = null, kills = null;
 	// borderSize = null;
 
 	public static ArrayList<String>		specs			= new ArrayList<>();
@@ -148,6 +148,9 @@ public class UltraHC extends JavaPlugin {
 		if (scb.getObjective("HealthList") != null) {
 			scb.getObjective("HealthList").unregister();
 		}
+		if (scb.getObjective("Kills") != null) {
+			scb.getObjective("Kills").unregister();
+		}
 
 		health = scb.registerNewObjective("Health", "dummy");
 		health.setDisplayName(" / 100");
@@ -161,6 +164,10 @@ public class UltraHC extends JavaPlugin {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			healthList.getScore(p).setScore(getRoundedHealth(p.getHealth()));
 		}
+
+		kills = scb.registerNewObjective("Kills", "playerKillCount");
+		kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+		kills.setDisplayName("§e>> §6KILLS §e<<");
 	}
 
 	public static void updateHealthFor(final Player p) {
@@ -199,7 +206,6 @@ public class UltraHC extends JavaPlugin {
 		if (started)
 			return;
 		started = true;
-		Bukkit.broadcastMessage("§c§lGame " + (resuming ? "§c§lresuming" : "§c§lstarted") + "!");
 
 		if (!resuming) {
 			spreadPlayers(Option.Spread_Radius.getInt());
@@ -297,19 +303,45 @@ public class UltraHC extends JavaPlugin {
 				// count.runCount));
 				// }
 
-				if (isM && c == Option.Meet_Up_Time.getInt()) {
-					Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z:0)");
+				if (isM && c == Option.Game_Length.getInt()) {
 					for (Player p : Bukkit.getOnlinePlayers()) {
 						p.playSound(p.getLocation(), Sound.WITHER_SPAWN, 1, 0.75f);
 					}
 
-					Block beacon = Multiworld.getUHC().getBlockAt(0, Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
+					String end = Option.End_Game.getString();
+					if (end.equalsIgnoreCase("Meetup")) {
+						Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z:0)");
 
-					beacon.setType(Material.BEACON);
-					int[] xz = { -1, 0, 1 };
-					for (int x : xz) {
-						for (int z : xz) {
-							beacon.getRelative(x, -1, z).setType(Material.IRON_BLOCK);
+						int y = Multiworld.getUHC().getHighestBlockYAt(0, 0);
+						Block b = Multiworld.getUHC().getBlockAt(0, y, 0);
+						if (b.getRelative(0, -1, 0).getType() == Material.BEACON) {
+							y--;
+						} else {
+							b.setType(Material.BEACON);
+						}
+
+						int[] xs = { -1, 0, 1 };
+						int[] zs = { -1, 0, 1 };
+
+						for (int x : xs) {
+							for (int z : zs) {
+								Multiworld.getUHC().getBlockAt(x, y - 1, z).setType(Material.IRON_BLOCK);
+							}
+						}
+					} else if (end.equalsIgnoreCase("Sudden Death")) {
+						Bukkit.broadcastMessage("§a§lSudden Death! Everyone will be teleported to 0, 0 for a final battle.");
+
+						CommandUHC.genWalls(Multiworld.getUHC(), 100);
+
+						Bukkit.broadcastMessage("§bSpreading players...");
+						spreadPlayers(100);
+					} else if (end.equalsIgnoreCase("Compasses")) {
+						Bukkit.broadcastMessage("§a§lCompass Time! Everyone has received a compass. Right-click the compass to point to close players.");
+
+						for (Player p : Bukkit.getOnlinePlayers()) {
+							p.getInventory().addItem(
+									ItemMetaUtils.setLore(new ItemStack(Material.COMPASS), "§eClick to point",
+											"§eto closest player"));
 						}
 					}
 				}
@@ -332,7 +364,6 @@ public class UltraHC extends JavaPlugin {
 			count.startTime = time;
 		}
 
-		Multiworld.getUHC().setGameRuleValue("doDaylightCycle", !Option.Eternal_Daylight.getBoolean() + "");
 		Multiworld.getUHC().setTime(0);
 
 		for (Scenarios s : Scenarios.getEnabled()) {
@@ -341,6 +372,8 @@ public class UltraHC extends JavaPlugin {
 			}
 			s.onStart();
 		}
+
+		Bukkit.broadcastMessage("§c§lGame " + (resuming ? "§c§lresuming" : "§c§lstarted") + "!");
 	}
 
 	public static String getBarText() {
@@ -353,14 +386,15 @@ public class UltraHC extends JavaPlugin {
 	public static String getTimeUntil() {
 		if (!isPVP()) {
 			return "PVP in " + getReadableTime((Option.PVP_Time.getInt() * 60) - count.getTime());
-		} else if (Option.Meet_Up_Time.getInt() > count.getTotalMins()) {
-			return "Meet Up in " + getReadableTime((Option.Meet_Up_Time.getInt() * 60) - count.getTime());
+		} else if (Option.Game_Length.getInt() > count.getTotalMins()) {
+			return Option.End_Game.getString() + " in "
+					+ getReadableTime((Option.Game_Length.getInt() * 60) - count.getTime());
 		}
 		id++;
 		if (id >= colors.length()) {
 			id = 0;
 		}
-		return "§" + colors.charAt(id) + "§lMEETUP";
+		return "§" + colors.charAt(id) + "§l" + Option.End_Game.getString().toUpperCase();
 	}
 
 	public static String getReadableTime(long time) {
@@ -368,7 +402,16 @@ public class UltraHC extends JavaPlugin {
 	}
 
 	public static float getBarHealth() {
+		if (!isPVP()) {
+			return getPercentDone(count.getTime(), Option.PVP_Time.getInt() * 60);
+		} else if (Option.Game_Length.getInt() > count.getTotalMins()) {
+			return getPercentDone(count.getTime(), Option.Game_Length.getInt() * 60);
+		}
 		return 100;
+	}
+
+	public static float getPercentDone(float cur, float fin) {
+		return 100 * ((fin - cur) / fin);
 	}
 
 	public static int getRoundedHealth(double h) {
@@ -399,6 +442,7 @@ public class UltraHC extends JavaPlugin {
 
 		players.clear();
 		specs.clear();
+		kills.unregister();
 
 		BarUtil.destroyTimer();
 
@@ -512,7 +556,8 @@ public class UltraHC extends JavaPlugin {
 	}
 
 	public static void resetPlayer(Player p) {
-		p.setHealth(20);
+		p.setMaxHealth(20);
+		p.setHealth(p.getMaxHealth());
 		p.setFoodLevel(20);
 		p.setSaturation(10f);
 		p.setLevel(0);

@@ -43,7 +43,7 @@ public class Counter {
 
 	public void start() {
 		startTime = System.currentTimeMillis();
-		co = Bukkit.getScheduler().runTaskTimerAsynchronously(UltraHC.ins, new Runnable() {
+		co = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new Runnable() {
 			public void run() {
 				long time = getTime();
 				if (runCount % 60 > time % 60) { // skipped min
@@ -55,7 +55,7 @@ public class Counter {
 				run.run();
 			}
 		}, 20, 20);
-		coMi = Bukkit.getScheduler().runTaskTimerAsynchronously(UltraHC.ins, new Runnable() {
+		coMi = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new Runnable() {
 			public void run() {
 				runCountMin = getTotalMins();
 			}
