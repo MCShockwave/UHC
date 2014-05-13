@@ -108,6 +108,8 @@ public class UltraHC extends JavaPlugin {
 
 		registerHealthScoreboard();
 
+		registerKillScoreboard();
+
 		BarUtil.enable();
 
 		nts = new NumberedTeamSystem(scb);
@@ -141,15 +143,22 @@ public class UltraHC extends JavaPlugin {
 		Multiworld.getUHC().setSpawnLocation(0, Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
 	}
 
+	public static void registerKillScoreboard() {
+		if (scb.getObjective("Kills") != null) {
+			scb.getObjective("Kills").unregister();
+		}
+
+		kills = scb.registerNewObjective("Kills", "playerKillCount");
+		kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+		kills.setDisplayName("§e>> §6KILLS §e<<");
+	}
+
 	public static void registerHealthScoreboard() {
 		if (scb.getObjective("Health") != null) {
 			scb.getObjective("Health").unregister();
 		}
 		if (scb.getObjective("HealthList") != null) {
 			scb.getObjective("HealthList").unregister();
-		}
-		if (scb.getObjective("Kills") != null) {
-			scb.getObjective("Kills").unregister();
 		}
 
 		health = scb.registerNewObjective("Health", "dummy");
@@ -164,10 +173,6 @@ public class UltraHC extends JavaPlugin {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			healthList.getScore(p).setScore(getRoundedHealth(p.getHealth()));
 		}
-
-		kills = scb.registerNewObjective("Kills", "playerKillCount");
-		kills.setDisplaySlot(DisplaySlot.SIDEBAR);
-		kills.setDisplayName("§e>> §6KILLS §e<<");
 	}
 
 	public static void updateHealthFor(final Player p) {

@@ -165,8 +165,10 @@ public class CommandUHC implements CommandExecutor {
 				if (kitMOTD) {
 					UltraHC.maxPlayers = 20;
 					Bukkit.setWhitelist(false);
+					UltraHC.kills.unregister();
 				} else {
 					Bukkit.setWhitelist(true);
+					UltraHC.registerKillScoreboard();
 				}
 
 				p.sendMessage("§aKit mode is now " + kitMOTD);
