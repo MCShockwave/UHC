@@ -33,6 +33,10 @@ public class NumberedTeamSystem {
 
 	public BukkitTask							updater				= null;
 
+	// usable colors: 14, usable formats: 3, total # of colored teams: 42!
+	public static String						usableColors		= "123456789abcde";
+	public static String						usableFormats		= "xon";
+
 	public NumberedTeamSystem(Scoreboard s) {
 		this.s = s;
 
@@ -58,7 +62,12 @@ public class NumberedTeamSystem {
 				teams.add(nt);
 			}
 		}
-		updateScoreboard();
+
+		Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+			public void run() {
+				updateScoreboard();
+			}
+		}, 10l);
 	}
 
 	public void updateScoreboard() {
@@ -79,7 +88,7 @@ public class NumberedTeamSystem {
 					ntt = nt.sc.registerNewTeam("T" + nt2.id);
 					ntt.setCanSeeFriendlyInvisibles(true);
 					ntt.setDisplayName("Team " + nt2.id);
-					ntt.setPrefix(getPrefix(nt2.id, nt2 == nt ? "§a" : "§c"));
+					ntt.setPrefix(getPrefix(nt2.id, false, nt2 == nt));
 					if (nt2 == nt) {
 						nt.t = ntt;
 					}
@@ -91,7 +100,7 @@ public class NumberedTeamSystem {
 				Team t = s.registerNewTeam("T" + nt.id);
 				t.setAllowFriendlyFire(true);
 				t.setCanSeeFriendlyInvisibles(false);
-				t.setPrefix(getPrefix(nt.id, ChatColor.YELLOW));
+				t.setPrefix(getPrefix(nt.id, true, false));
 				t.setSuffix("§r");
 			}
 
@@ -99,12 +108,25 @@ public class NumberedTeamSystem {
 		}
 	}
 
-	public static String getPrefix(int id, String color) {
-		return color + id + "|§f";
+	public static String getPrefix(int id, boolean noteam, boolean sameteam) {
+		if (UltraHC.nts.teams.size() > (usableColors.length() * usableFormats.length())) {
+			String color = "§e";
+			if (!noteam) {
+				color = sameteam ? "§a" : "§c";
+			}
+
+			return color + id + "|§f";
+		} else {
+			return getColorFromId(id);
+		}
 	}
 
-	public static String getPrefix(int id, ChatColor color) {
-		return getPrefix(id, color.toString());
+	public static String getColorFromId(int id) {
+		id--;
+		int formatid = id / usableColors.length();
+		int colorid = id % usableColors.length();
+
+		return "§" + usableColors.charAt(colorid) + (formatid == 0 ? "" : "§" + usableFormats.charAt(formatid));
 	}
 
 	private void cloneObjective(Objective n, Objective cl) {
@@ -173,8 +195,18 @@ public class NumberedTeamSystem {
 		}
 	}
 
+	public int getHighestId() {
+		int ret = 0;
+		for (NumberTeam nt : teams) {
+			if (nt.id > ret) {
+				ret = nt.id;
+			}
+		}
+		return ret;
+	}
+
 	public ItemMenu getMenu(Player p, boolean edit) {
-		ItemMenu m = new ItemMenu("Teams" + (edit ? " - Editing" : ""), teams.size());
+		ItemMenu m = new ItemMenu("Teams" + (edit ? " - Editing" : ""), getHighestId());
 
 		int teamlimit = Option.Team_Limit.getInt();
 
@@ -182,7 +214,7 @@ public class NumberedTeamSystem {
 			int data = getTeam(p.getName()) == nt ? 4 : nt.players.size() >= teamlimit ? 14 : nt.password == null ? 5
 					: 13;
 
-			Button b = new Button(false, Material.WOOL, nt.id, data, "Team #" + nt.id,
+			Button b = new Button(true, Material.WOOL, nt.id, data, "Team #" + nt.id,
 					nt.password == null ? "§aClick to join" : "§cPassword Protected", "§eOwner: " + nt.owner,
 					"§aOnline Players: " + nt.getOnlinePlayers().size(), "", "§bPlayers: (max "
 							+ Option.Team_Limit.getInt() + ")");
@@ -245,6 +277,12 @@ public class NumberedTeamSystem {
 
 	public boolean isOnTeam(String name, int id) {
 		return getTeam(name) == getFromId(id);
+	}
+
+	public NumberTeam createTeam(int id, String pass, String owner) {
+		NumberTeam nt = createTeam(pass, owner);
+		nt.id = id;
+		return nt;
 	}
 
 	public NumberTeam createTeam(String pass, String owner) {
@@ -439,7 +477,9 @@ public class NumberedTeamSystem {
 
 	Random	rand	= new Random();
 
-	public void randomize(int num, boolean isTeamSize, boolean remaining) {
+	public void randomize(int number, boolean isTeamSize, boolean remaining) {
+		double num = number;
+
 		if (remaining) {
 			ArrayList<Player> noteam = new ArrayList<>();
 			for (Player p : Bukkit.getOnlinePlayers()) {
@@ -448,36 +488,46 @@ public class NumberedTeamSystem {
 				}
 			}
 
-			for (NumberTeam nt : teams) {
-				if (!nt.isFull()) {
-					Player p = noteam.get(rand.nextInt(noteam.size()));
+			while (noteam.size() > 0) {
+				boolean allfull = true;
 
-					nt.addPlayer(p.getName());
+				for (NumberTeam nt : teams) {
+					if (!nt.isFull()) {
+						Player p = noteam.get(rand.nextInt(noteam.size()));
 
-					noteam.remove(p);
+						nt.addPlayer(p.getName());
+
+						noteam.remove(p);
+
+						allfull = false;
+					}
+				}
+
+				if (allfull) {
+					break;
 				}
 			}
 		} else {
-			int tcount = 0;
-			int numPlayers = Bukkit.getOnlinePlayers().length;
+			double tcount = 0;
+			double numPlayers = Bukkit.getOnlinePlayers().length;
 
 			if (isTeamSize) {
 				tcount = (int) Math.ceil(numPlayers / num);
-				Option.Team_Limit.setInt(num);
+				Option.Team_Limit.setInt((int) num);
 			} else {
 				tcount = num;
-				Option.Team_Limit.setInt((int) Math.ceil(numPlayers / tcount));
+				Option.Team_Limit.setInt((int) Math.ceil(numPlayers / num));
 			}
-			Option.Max_Teams.setInt(tcount);
+			Option.Max_Teams.setInt((int) tcount);
 
 			// clear teams
-			for (NumberTeam nt : UltraHC.nts.teams.toArray(new NumberTeam[0])) {
-				UltraHC.nts.removeTeam(nt);
+			for (NumberTeam nt : teams.toArray(new NumberTeam[0])) {
+				removeTeam(nt);
 			}
 
 			// create teams
-			for (int i = 0; i < tcount; i++) {
-				createTeam(null, null);
+			for (int i = 1; i <= tcount; i++) {
+				createTeam(i, null, "None");
 			}
 
 			// put players on teams
@@ -485,14 +535,23 @@ public class NumberedTeamSystem {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				undef.add(p);
 			}
+			int times = 0;
 
 			int tid = 1;
 			while (undef.size() > 0) {
 				Player p = undef.get(rand.nextInt(undef.size()));
 
 				NumberTeam addTo = getFromId(tid);
-				addTo.addPlayer(p.getName());
-				undef.remove(p);
+				if (addTo != null) {
+					addTo.addPlayer(p.getName());
+					undef.remove(p);
+				} else {
+					times++;
+					if (times > 100) {
+						Bukkit.broadcastMessage("§4Error: §cTeam with id " + tid + " does not exist");
+						break;
+					}
+				}
 
 				tid++;
 				if (tid > teams.size()) {

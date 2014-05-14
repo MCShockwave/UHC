@@ -185,8 +185,7 @@ public enum Option {
 		4,
 		3,
 		2,
-		1,
-		4),
+		1),
 	Max_Teams(
 		Material.WOOL,
 		0,
