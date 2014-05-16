@@ -10,6 +10,7 @@ import net.mcshockwave.UHC.Commands.RestrictCommand;
 import net.mcshockwave.UHC.Commands.ScenarioListCommand;
 import net.mcshockwave.UHC.Commands.SilenceCommand;
 import net.mcshockwave.UHC.Commands.VoteCommand;
+import net.mcshockwave.UHC.Listeners.DTMListener;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenuListener;
 import net.mcshockwave.UHC.Utils.BarUtil;
@@ -29,6 +30,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -283,6 +285,10 @@ public class UltraHC extends JavaPlugin {
 					for (Player p : Bukkit.getOnlinePlayers()) {
 						p.playSound(p.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 0.75f);
 					}
+					
+					if (Scenarios.DTM.isEnabled()) {
+						DTMListener.onPVP();
+					}
 
 					if (Scenarios.Mole.isEnabled()) {
 						for (NumberTeam nt : nts.teams) {
@@ -497,13 +503,26 @@ public class UltraHC extends JavaPlugin {
 					goodSpawn = true;
 				}
 			}
+			int tries = 0;
 			while (!goodSpawn) {
+				tries++;
+
 				int x = rand.nextInt(spreadDistance) - rand.nextInt(spreadDistance);
 				int z = rand.nextInt(spreadDistance) - rand.nextInt(spreadDistance);
 				int y = Multiworld.getUHC().getHighestBlockYAt(x, z);
 				Location l = new Location(Multiworld.getUHC(), x, y, z);
 				Material m = l.add(0, -1, 0).getBlock().getType();
 				boolean noHazard = true;
+				int minRadPlayers = (spreadDistance / Bukkit.getOnlinePlayers().length * 2) - tries;
+				for (Entity e : p.getNearbyEntities(minRadPlayers, 256, minRadPlayers)) {
+					if (e instanceof Player) {
+						Player n = (Player) e;
+						if (nts.getTeam(p.getName()) != null && nts.getTeam(n.getName()) != null
+								&& nts.getTeam(n.getName()) != nts.getTeam(p.getName())) {
+							noHazard = false;
+						}
+					}
+				}
 				if (l.getBlockY() < 48) {
 					noHazard = false;
 				}

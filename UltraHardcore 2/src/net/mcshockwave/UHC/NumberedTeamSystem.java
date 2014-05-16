@@ -35,7 +35,7 @@ public class NumberedTeamSystem {
 
 	// usable colors: 14, usable formats: 3, total # of colored teams: 42!
 	public static String						usableColors		= "123456789abcde";
-	public static String						usableFormats		= "xon";
+	public static String						usableFormats		= "xn";
 
 	public NumberedTeamSystem(Scoreboard s) {
 		this.s = s;
@@ -230,7 +230,7 @@ public class NumberedTeamSystem {
 			} else {
 				b.setOnClick(new ButtonRunnable() {
 					public void run(final Player p, InventoryClickEvent event) {
-						if (UltraHC.started || !Option.Team_Commands.getBoolean()) {
+						if ((UltraHC.started || !Option.Team_Commands.getBoolean()) && !p.isOp()) {
 							p.sendMessage("§cThat is not enabled right now!");
 							return;
 						}
@@ -246,6 +246,7 @@ public class NumberedTeamSystem {
 
 						if (nt.password == null) {
 							nt.addPlayer(p.getName());
+							nt.messageAll("§e" + p.getName() + " has joined your team");
 						} else {
 							enteringPassword.put(p, nt);
 							p.sendMessage("§6Please enter the password for team " + nt.id);
@@ -348,8 +349,6 @@ public class NumberedTeamSystem {
 				Bukkit.getPlayer(name).setScoreboard(sc);
 			}
 
-			messageAll("§6" + name + " joined your team");
-
 			if (owner == null) {
 				owner = name;
 			}
@@ -371,8 +370,6 @@ public class NumberedTeamSystem {
 			}
 
 			updatePlayersForAllTeams();
-
-			messageAll("§6" + name + " left your team");
 
 			if (players.size() < 1) {
 				removeTeam(this);

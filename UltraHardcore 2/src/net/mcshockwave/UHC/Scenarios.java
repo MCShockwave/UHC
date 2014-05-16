@@ -4,6 +4,7 @@ import net.mcshockwave.UHC.Listeners.BarebonesListener;
 import net.mcshockwave.UHC.Listeners.BloodPrice;
 import net.mcshockwave.UHC.Listeners.ChumpHandler;
 import net.mcshockwave.UHC.Listeners.Compensation;
+import net.mcshockwave.UHC.Listeners.DTMListener;
 import net.mcshockwave.UHC.Listeners.HallucinationHandler;
 import net.mcshockwave.UHC.Listeners.LinkedListener;
 import net.mcshockwave.UHC.Listeners.MoleListener;
@@ -21,6 +22,9 @@ import java.util.List;
 public enum Scenarios {
 
 	Mini_UHC,
+	Team_DM,
+	DTM(
+		new DTMListener()),
 	Infinite_Enchanter,
 	// Crux(
 	// new CruxListener()),
@@ -33,7 +37,6 @@ public enum Scenarios {
 		new BarebonesListener()),
 	Mole(
 		new MoleListener()),
-	Team_DM,
 	Resurrect(
 		new ResurrectListener()),
 	Switcheroo(
@@ -174,6 +177,9 @@ public enum Scenarios {
 		if (this == Weakest_Link) {
 			WeakestLink.start(10);
 		}
+		if (this == DTM) {
+			DTMListener.start();
+		}
 	}
 
 	public void onStop() {
@@ -200,6 +206,9 @@ public enum Scenarios {
 		}
 		if (this == Weakest_Link) {
 			WeakestLink.stop();
+		}
+		if (this == DTM) {
+			DTMListener.stop();
 		}
 	}
 

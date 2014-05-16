@@ -78,6 +78,7 @@ public class CommandTeam implements CommandExecutor {
 					if (UltraHC.nts.getTeam(p.getName()) != null) {
 						NumberTeam nt = UltraHC.nts.getTeam(p.getName());
 						nt.removePlayer(p.getName());
+						nt.messageAll("§e" + p.getName() + " has left your team");
 						p.sendMessage("§cLeft team " + nt.id + "!");
 					}
 				}
