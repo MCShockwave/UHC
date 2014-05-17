@@ -415,6 +415,32 @@ public class NumberedTeamSystem {
 				}
 			});
 
+			Button add = new Button(false, Material.SKULL_ITEM, 1, 3, "Add Players...", "", "Click to open menu");
+			m.addButton(add, 2);
+			add.setOnClick(new ButtonRunnable() {
+				public void run(final Player p, InventoryClickEvent event) {
+					p.closeInventory();
+					Bukkit.getScheduler().runTask(UltraHC.ins, new Runnable() {
+						public void run() {
+							getAddMenu(NumberTeam.this.id).open(p);
+						}
+					});
+				}
+			});
+
+			Button rem = new Button(false, Material.SKULL_ITEM, 1, 3, "Remove Players...", "", "Click to open menu");
+			m.addButton(rem, 3);
+			rem.setOnClick(new ButtonRunnable() {
+				public void run(final Player p, InventoryClickEvent event) {
+					p.closeInventory();
+					Bukkit.getScheduler().runTask(UltraHC.ins, new Runnable() {
+						public void run() {
+							getRemoveMenu(NumberTeam.this.id).open(p);
+						}
+					});
+				}
+			});
+
 			Button pass = new Button(false, Material.TRIPWIRE_HOOK, 1, 0, "Password", "Click to see password", "",
 					"Pass: §kPASSWORD");
 			m.addButton(pass, 7);
@@ -446,6 +472,78 @@ public class NumberedTeamSystem {
 		public boolean isFull() {
 			return players.size() + 1 > Option.Team_Limit.getInt();
 		}
+	}
+
+	public ItemMenu getAddMenu(final int id) {
+		Player[] ps = Bukkit.getOnlinePlayers();
+
+		ItemMenu m = new ItemMenu("Add Players - #" + id, Bukkit.getOnlinePlayers().length);
+
+		for (int i = 0; i < ps.length; i++) {
+			final Player p = ps[i];
+			if (getFromId(id) == getTeam(p.getName()))
+				continue;
+			Button pl = new Button(false, Material.SKULL_ITEM, 1, 3, getTeam(p.getName()) == null ? "" : getPrefix(
+					getTeam(p.getName()).id, true, false) + p.getName(), "", "Click to add player");
+			m.addButton(pl, i);
+			pl.setOnClick(new ButtonRunnable() {
+				public void run(final Player p2, InventoryClickEvent event) {
+					p2.sendMessage("§aAdded player " + p.getName() + " to team " + id);
+
+					getFromId(id).addPlayer(p.getName());
+				}
+			});
+		}
+
+		Button ba = new Button(false, Material.STICK, 1, 0, "Back", "Click to go back");
+		m.addButton(ba, m.i.getSize() - 1);
+		ba.setOnClick(new ButtonRunnable() {
+			public void run(final Player p, InventoryClickEvent event) {
+				p.closeInventory();
+				Bukkit.getScheduler().runTask(UltraHC.ins, new Runnable() {
+					public void run() {
+						getFromId(id).getSubMenu().open(p);
+					}
+				});
+			}
+		});
+
+		return m;
+	}
+
+	public ItemMenu getRemoveMenu(final int id) {
+		String[] players = getFromId(id).getPlayersArray();
+
+		ItemMenu m = new ItemMenu("Remove Players - #" + id, 54);
+
+		for (int i = 0; i < players.length; i++) {
+			final String ps = players[i];
+			Button pl = new Button(false, Material.SKULL_ITEM, 1, 3, getTeam(ps) == null ? "" : getPrefix(
+					getTeam(ps).id, true, false) + ps, "", "Click to remove player");
+			m.addButton(pl, i);
+			pl.setOnClick(new ButtonRunnable() {
+				public void run(final Player p2, InventoryClickEvent event) {
+					p2.sendMessage("§cRemoved player " + ps + " from team " + id);
+
+					getFromId(id).removePlayer(ps);
+				}
+			});
+		}
+
+		Button ba = new Button(false, Material.STICK, 1, 0, "Back", "Click to go back");
+		m.addButton(ba, m.i.getSize() - 1);
+		ba.setOnClick(new ButtonRunnable() {
+			public void run(final Player p, InventoryClickEvent event) {
+				p.closeInventory();
+				Bukkit.getScheduler().runTask(UltraHC.ins, new Runnable() {
+					public void run() {
+						getFromId(id).getSubMenu().open(p);
+					}
+				});
+			}
+		});
+
+		return m;
 	}
 
 	public int getValidId() {

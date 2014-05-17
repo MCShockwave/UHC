@@ -513,7 +513,7 @@ public class UltraHC extends JavaPlugin {
 				Location l = new Location(Multiworld.getUHC(), x, y, z);
 				Material m = l.add(0, -1, 0).getBlock().getType();
 				boolean noHazard = true;
-				int minRadPlayers = (spreadDistance / Bukkit.getOnlinePlayers().length * 2) - tries;
+				int minRadPlayers = (spreadDistance / Bukkit.getOnlinePlayers().length) - tries;
 				for (Entity e : p.getNearbyEntities(minRadPlayers, 256, minRadPlayers)) {
 					if (e instanceof Player) {
 						Player n = (Player) e;
