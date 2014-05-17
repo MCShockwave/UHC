@@ -59,10 +59,19 @@ public class DTMListener implements Listener {
 		}
 
 		part = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new Runnable() {
+			@SuppressWarnings("deprecation")
 			public void run() {
 				for (Block b : monu.keySet()) {
 					PacketUtils.playParticleEffect(ParticleEffect.ENCHANTMENT_TABLE,
 							b.getLocation().add(0.5, 0.5, 0.5), 0.3f, 0.3f, 20);
+
+					for (int y = 151; y < 256; y++) {
+						Location l = b.getLocation();
+						Block bl = b.getWorld().getBlockAt(l.getBlockX(), y, l.getBlockZ());
+						if (bl.getType() != Material.AIR) {
+							bl.setTypeId(0, false);
+						}
+					}
 				}
 			}
 		}, 2, 2);
