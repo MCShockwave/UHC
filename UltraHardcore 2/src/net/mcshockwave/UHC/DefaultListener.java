@@ -738,7 +738,7 @@ public class DefaultListener implements Listener {
 		if (UltraHC.nts.isTeamGame() && !UltraHC.isMCShockwaveEnabled()) {
 			NumberTeam t = UltraHC.nts.getTeam(p.getName());
 			if (t != null) {
-				event.setFormat("<§e[" + t.id + "] §f%s> " + event.getMessage());
+				event.setFormat("<" + NumberedTeamSystem.getPrefix(t.id, true, false) + "%s§r> " + event.getMessage());
 			}
 		}
 

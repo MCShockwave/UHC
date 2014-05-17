@@ -280,12 +280,12 @@ public class UltraHC extends JavaPlugin {
 					Bukkit.broadcastMessage("§c§lMARK " + c + " MINS IN!");
 				}
 
-				if (isM && c == Option.PVP_Time.getInt() && c > 0) {
+				if (isM && c == Option.PVP_Time.getInt() && count.getTime() > 30) {
 					Bukkit.broadcastMessage("§a§lKilling is now allowed!");
 					for (Player p : Bukkit.getOnlinePlayers()) {
 						p.playSound(p.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 0.75f);
 					}
-					
+
 					if (Scenarios.DTM.isEnabled()) {
 						DTMListener.onPVP();
 					}
