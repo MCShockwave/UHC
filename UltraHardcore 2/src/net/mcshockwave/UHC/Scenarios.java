@@ -10,6 +10,7 @@ import net.mcshockwave.UHC.Listeners.LinkedListener;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Listeners.ResurrectListener;
 import net.mcshockwave.UHC.Listeners.SwitchListener;
+import net.mcshockwave.UHC.Listeners.TowerListener;
 import net.mcshockwave.UHC.Listeners.TripleListener;
 import net.mcshockwave.UHC.Listeners.WeakestLink;
 
@@ -45,7 +46,9 @@ public enum Scenarios {
 	Blood_Price(),
 	Weakest_Link(),
 	Compensation(
-		new Compensation());
+		new Compensation()),
+	Tower_of_Death(
+		new TowerListener());
 
 	public static List<Scenarios>	enabled	= new ArrayList<>();
 
@@ -180,6 +183,9 @@ public enum Scenarios {
 		if (this == DTM) {
 			DTMListener.start();
 		}
+		if (this == Tower_of_Death) {
+			TowerListener.start();
+		}
 	}
 
 	public void onStop() {
@@ -209,6 +215,9 @@ public enum Scenarios {
 		}
 		if (this == DTM) {
 			DTMListener.stop();
+		}
+		if (this == Tower_of_Death) {
+			TowerListener.stop();
 		}
 	}
 

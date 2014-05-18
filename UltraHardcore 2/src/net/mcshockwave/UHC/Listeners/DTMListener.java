@@ -122,8 +122,8 @@ public class DTMListener implements Listener {
 				PacketUtils.playParticleEffect(ParticleEffect.LARGE_EXPLODE,
 						LocUtils.addRand(b.getLocation(), 10, 10, 10), 0, 1, 10);
 			}
-			Bukkit.broadcastMessage("§c§lTeam " + nt.id + "'s Monument has been broken by " + p.getName() + " [Team "
-					+ des.id + "]!");
+			Bukkit.broadcastMessage("§c§lTeam " + nt.id + "'s Monument has been broken by " + p.getName()
+					+ (des == null ? "" : " [Team " + des.id + "]") + "!");
 			b.getWorld().playSound(b.getLocation(), Sound.ENDERDRAGON_DEATH, 1000, 2);
 
 			monu.remove(b);
@@ -131,8 +131,6 @@ public class DTMListener implements Listener {
 			for (Player tm : nt.getOnlinePlayers()) {
 				tm.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, 0));
 			}
-
-			UltraHC.nts.removeTeam(nt);
 		}
 	}
 
