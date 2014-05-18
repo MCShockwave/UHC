@@ -34,17 +34,20 @@ import java.util.Random;
 
 public class TowerListener implements Listener {
 
-	public static BukkitTask											spawn	= null, particles = null;
-	public static Random												rand	= new Random();
+	public static BukkitTask											spawn				= null, particles = null;
+	public static Random												rand				= new Random();
 
-	public static HashMap<EntityLiving, Class<? extends EntityLiving>>	spawned	= new HashMap<>();
+	public static HashMap<EntityLiving, Class<? extends EntityLiving>>	spawned				= new HashMap<>();
+
+	public static final int												SPAWN_RATE			= 1;
+	public static final int												SPAWN_CHECK_AMOUNT	= 10;
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player p = event.getPlayer();
 		Block b = event.getBlock();
 
-		if (b.getType() == Material.BEACON) {
+		if (!UltraHC.specs.contains(p.getName()) && b.getType() == Material.BEACON) {
 			event.setCancelled(true);
 			b.setType(Material.AIR);
 			b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, Material.BEACON);
@@ -78,12 +81,12 @@ public class TowerListener implements Listener {
 
 		spawn = new BukkitRunnable() {
 			public void run() {
-				Location loc = LocUtils.addRand(new Location(Multiworld.getUHC(), 0, 60, 0), 50, 25, 50);
+				Location loc = LocUtils.addRand(new Location(Multiworld.getUHC(), 0, 96, 0), 50, 48, 50);
 
 				if (isValidSpawn(loc)) {
 					EntityLiving el = (EntityLiving) CustomEntityRegistrar.spawnCustomEntity(
 							rand.nextBoolean() ? CustomSkeleton.class : CustomZombie.class,
-							isAboveBedrock(loc.getBlock(), 5).getRelative(0, 1, 0).getLocation());
+							isAboveBedrock(loc.getBlock(), SPAWN_CHECK_AMOUNT).getRelative(0, 1, 0).getLocation());
 					if (el instanceof EntitySkeleton) {
 						el.setEquipment(0, new net.minecraft.server.v1_7_R2.ItemStack(Items.BOW));
 						spawned.put(el, CustomSkeleton.class);
@@ -94,7 +97,7 @@ public class TowerListener implements Listener {
 					}
 				}
 			}
-		}.runTaskTimer(UltraHC.ins, 4, 4);
+		}.runTaskTimer(UltraHC.ins, SPAWN_RATE, SPAWN_RATE);
 	}
 
 	public static boolean isValidSpawn(Location spawn) {
@@ -104,7 +107,7 @@ public class TowerListener implements Listener {
 			}
 
 			Block b = spawn.getBlock();
-			if (b.getType() == Material.AIR && isAboveBedrock(b, 5) != null) {
+			if (b.getType() == Material.AIR && isAboveBedrock(b, SPAWN_CHECK_AMOUNT) != null) {
 				return true;
 			}
 		}

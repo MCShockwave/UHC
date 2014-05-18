@@ -746,12 +746,18 @@ public class DefaultListener implements Listener {
 			event.setFormat("§c[§lOP§c]§r " + event.getFormat());
 		}
 
-		if (UltraHC.specs.contains(p.getName()) && (p.isOp() && event.getMessage().startsWith("$") || !p.isOp())) {
-			event.setMessage("§7" + event.getMessage().replaceFirst("$", ""));
-			for (Player p2 : UltraHC.getAlive()) {
-				event.getRecipients().remove(p2);
+		if (UltraHC.specs.contains(p.getName())) {
+			if (p.isOp() && !event.getMessage().startsWith("$") || !p.isOp()) {
+				event.setMessage("§7" + event.getMessage());
+				for (Player p2 : UltraHC.getAlive()) {
+					event.getRecipients().remove(p2);
+				}
+				if (!UltraHC.isMCShockwaveEnabled()) {
+					event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
+				}
+			} else {
+				event.setMessage(event.getMessage().replaceFirst("$", ""));
 			}
-			event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
 		}
 	}
 
@@ -807,10 +813,10 @@ public class DefaultListener implements Listener {
 			int i = 0;
 			for (Player p2 : al) {
 				int am = 1;
-				if (UltraHC.nts.getTeam(p.getName()) != null) {
-					am = UltraHC.nts.getTeam(p.getName()).id;
+				if (UltraHC.nts.getTeam(p2.getName()) != null) {
+					am = UltraHC.nts.getTeam(p2.getName()).id;
 				}
-				Button bu = new Button(true, Material.WOOL, am, 0, p2.getName(), "Click to teleport");
+				Button bu = new Button(true, Material.WOOL, am, 0, p2.getPlayerListName(), "Click to teleport");
 				bu.onClick = new ButtonRunnable() {
 					public void run(Player c, InventoryClickEvent event) {
 						Player tp = Bukkit.getPlayer(ChatColor.stripColor(ItemMetaUtils.getItemName(event

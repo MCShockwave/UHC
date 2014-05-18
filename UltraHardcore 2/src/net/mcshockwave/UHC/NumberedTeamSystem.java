@@ -34,7 +34,7 @@ public class NumberedTeamSystem {
 	public BukkitTask							updater				= null;
 
 	// usable colors: 14, usable formats: 3, total # of colored teams: 42!
-	public static String						usableColors		= "123456789abcde";
+	public static String						usableColors		= "abcde679342581";
 	public static String						usableFormats		= "xn";
 
 	public NumberedTeamSystem(Scoreboard s) {
@@ -387,7 +387,7 @@ public class NumberedTeamSystem {
 			ArrayList<Player> ret = new ArrayList<>();
 
 			for (String s : players) {
-				if (Bukkit.getPlayer(s) != null) {
+				if (Bukkit.getPlayer(s) != null && !UltraHC.specs.contains(s)) {
 					ret.add(Bukkit.getPlayer(s));
 				}
 			}

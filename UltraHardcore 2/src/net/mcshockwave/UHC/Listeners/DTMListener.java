@@ -18,7 +18,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -108,7 +110,7 @@ public class DTMListener implements Listener {
 		Block b = event.getBlock();
 		Player p = event.getPlayer();
 
-		if (monu.containsKey(b)) {
+		if (!UltraHC.specs.contains(p.getName()) && monu.containsKey(b)) {
 			NumberTeam nt = UltraHC.nts.getFromId(monu.get(b));
 			NumberTeam des = UltraHC.nts.getTeam(p.getName());
 			event.setCancelled(true);
@@ -144,6 +146,15 @@ public class DTMListener implements Listener {
 			if (ml.getBlockX() == b.getBlockX() && ml.getBlockZ() == b.getBlockZ() && ml.getBlockY() <= b.getBlockY()) {
 				event.setCancelled(true);
 			}
+		}
+	}
+
+	@EventHandler
+	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+		final Player p = event.getPlayer();
+		final ItemStack it = event.getItem();
+		if (it.getType() == Material.MILK_BUCKET && p.hasPotionEffect(PotionEffectType.WITHER)) {
+			p.damage(p.getMaxHealth());
 		}
 	}
 }
