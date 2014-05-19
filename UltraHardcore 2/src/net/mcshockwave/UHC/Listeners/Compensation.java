@@ -1,5 +1,7 @@
 package net.mcshockwave.UHC.Listeners;
 
+import net.mcshockwave.UHC.UltraHC;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -11,13 +13,13 @@ import org.bukkit.scoreboard.Team;
 
 public class Compensation implements Listener {
 
-	public static final String	pre		= "§8[§5Compensation§8] §d";
+	public static final String	pre	= "§8[§5Compensation§8] §d";
 
 	public int getTeamSize(Team t) {
 		int si = 0;
 
 		for (OfflinePlayer op : t.getPlayers()) {
-			if (op.isOnline()) {
+			if (op.isOnline() && UltraHC.getAlive().contains(op.getPlayer())) {
 				si++;
 			}
 		}
@@ -33,12 +35,24 @@ public class Compensation implements Listener {
 			if (op.isOnline() && !op.getName().equalsIgnoreCase(d.getName())) {
 				Player p = op.getPlayer();
 
-				p.setMaxHealth(p.getMaxHealth() + health);
-				p.setHealth(p.getHealth() + health);
+				double toDamage = p.getMaxHealth() - p.getHealth();
 
-				p.sendMessage(pre + "You were given " + health + " HP for the death of " + d.getName());
+				p.setMaxHealth(p.getMaxHealth() + health);
+				p.setHealth(p.getMaxHealth() - toDamage);
+
+				p.sendMessage(pre + "You were given " + getRoundedNumber(health, 2) + " HP for the death of "
+						+ d.getName());
 			}
 		}
+	}
+
+	public static double getRoundedNumber(double num, int places) {
+		double pla = Math.pow(10, places);
+
+		num = Math.round(num * pla);
+		num /= pla;
+
+		return num;
 	}
 
 	@EventHandler

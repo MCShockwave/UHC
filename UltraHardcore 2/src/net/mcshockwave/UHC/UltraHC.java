@@ -110,8 +110,6 @@ public class UltraHC extends JavaPlugin {
 
 		registerHealthScoreboard();
 
-		registerKillScoreboard();
-
 		BarUtil.enable();
 
 		nts = new NumberedTeamSystem(scb);
@@ -376,6 +374,8 @@ public class UltraHC extends JavaPlugin {
 		}
 
 		Multiworld.getUHC().setTime(0);
+
+		registerKillScoreboard();
 
 		for (Scenarios s : Scenarios.getEnabled()) {
 			if (s.l != null) {

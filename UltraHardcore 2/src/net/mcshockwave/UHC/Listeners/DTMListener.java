@@ -12,12 +12,15 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
@@ -131,7 +134,7 @@ public class DTMListener implements Listener {
 			monu.remove(b);
 
 			for (Player tm : nt.getOnlinePlayers()) {
-				tm.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, 0));
+				tm.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, 1));
 			}
 		}
 	}
@@ -155,6 +158,19 @@ public class DTMListener implements Listener {
 		final ItemStack it = event.getItem();
 		if (it.getType() == Material.MILK_BUCKET && p.hasPotionEffect(PotionEffectType.WITHER)) {
 			p.damage(p.getMaxHealth());
+		}
+	}
+
+	@EventHandler
+	public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
+		Entity e = event.getEntity();
+		if (e instanceof Player) {
+			Player p = (Player) e;
+			if (event.getRegainReason() == RegainReason.SATIATED && UltraHC.nts.getTeam(p.getName()) != null
+					&& !monu.containsValue(UltraHC.nts.getTeam(p.getName()).id)) {
+				event.setCancelled(true);
+			}
+			UltraHC.updateHealthFor(p);
 		}
 	}
 }

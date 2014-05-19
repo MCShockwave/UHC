@@ -76,6 +76,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -694,7 +695,7 @@ public class DefaultListener implements Listener {
 		// }
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		final Player p = event.getPlayer();
 
@@ -746,7 +747,7 @@ public class DefaultListener implements Listener {
 			event.setFormat("§c[§lOP§c]§r " + event.getFormat());
 		}
 
-		if (UltraHC.specs.contains(p.getName())) {
+		if (!event.getMessage().startsWith("@") && UltraHC.specs.contains(p.getName())) {
 			if (p.isOp() && !event.getMessage().startsWith("$") || !p.isOp()) {
 				event.setMessage("§7" + event.getMessage());
 				for (Player p2 : UltraHC.getAlive()) {
@@ -756,7 +757,7 @@ public class DefaultListener implements Listener {
 					event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
 				}
 			} else {
-				event.setMessage(event.getMessage().replaceFirst("$", ""));
+				event.setMessage(event.getMessage().substring(1));
 			}
 		}
 	}
@@ -811,20 +812,20 @@ public class DefaultListener implements Listener {
 			ItemMenu m = new ItemMenu("Alive Players", al.size());
 
 			int i = 0;
-			for (Player p2 : al) {
+			for (final Player p2 : al) {
 				int am = 1;
 				if (UltraHC.nts.getTeam(p2.getName()) != null) {
 					am = UltraHC.nts.getTeam(p2.getName()).id;
 				}
-				Button bu = new Button(true, Material.WOOL, am, 0, p2.getPlayerListName(), "Click to teleport");
-				bu.onClick = new ButtonRunnable() {
+				Team t = Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(p2);
+				Button bu = new Button(true, Material.WOOL, am, 0, (t != null ? t.getPrefix() : "") + p2.getName()
+						+ (t != null ? t.getSuffix() : ""), "Click to teleport");
+				bu.setOnClick(new ButtonRunnable() {
 					public void run(Player c, InventoryClickEvent event) {
-						Player tp = Bukkit.getPlayer(ChatColor.stripColor(ItemMetaUtils.getItemName(event
-								.getCurrentItem())));
-						c.teleport(tp);
-						c.sendMessage("§7Teleported to §a§o" + tp.getName());
+						c.teleport(p2);
+						c.sendMessage("§7Teleported to §a§o" + p2.getName());
 					}
-				};
+				});
 
 				m.addButton(bu, i);
 				i++;

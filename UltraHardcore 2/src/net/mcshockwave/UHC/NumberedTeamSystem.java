@@ -33,7 +33,7 @@ public class NumberedTeamSystem {
 
 	public BukkitTask							updater				= null;
 
-	// usable colors: 14, usable formats: 3, total # of colored teams: 42!
+	// usable colors: 14, usable formats: 2, total # of colored teams: 28!
 	public static String						usableColors		= "abcde679342581";
 	public static String						usableFormats		= "xn";
 
@@ -371,7 +371,7 @@ public class NumberedTeamSystem {
 
 			updatePlayersForAllTeams();
 
-			if (players.size() < 1) {
+			if (players.size() < 1 && !UltraHC.started) {
 				removeTeam(this);
 				return;
 			}

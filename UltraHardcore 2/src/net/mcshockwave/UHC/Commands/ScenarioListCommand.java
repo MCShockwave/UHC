@@ -24,7 +24,7 @@ public class ScenarioListCommand implements CommandExecutor {
 
 	private ItemMenu getMenu() {
 		int size = Scenarios.enabled.size();
-		ItemMenu m = new ItemMenu("Enabled Scenarios", size <= 0 ? Scenarios.enabled.size() : 1);
+		ItemMenu m = new ItemMenu("Enabled Scenarios", size > 0 ? Scenarios.enabled.size() : 1);
 
 		int id = -1;
 		for (Scenarios s : Scenarios.getEnabled()) {
