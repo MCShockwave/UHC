@@ -91,9 +91,11 @@ import org.apache.commons.lang.WordUtils;
 
 public class DefaultListener implements Listener {
 
-	Random				rand		= new Random();
+	Random									rand			= new Random();
 
-	public static int	maxLength	= 9;
+	public static int						maxLength		= 9;
+
+	public static HashMap<String, Integer>	livesRemaining	= new HashMap<>();
 
 	@EventHandler
 	public void join(PlayerJoinEvent event) {
@@ -415,6 +417,23 @@ public class DefaultListener implements Listener {
 	public void onPlayerRespawn(final PlayerRespawnEvent event) {
 		final Player p = event.getPlayer();
 
+		Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+			public void run() {
+				p.teleport(event.getRespawnLocation());
+			}
+		}, 10l);
+		
+		event.setRespawnLocation(UltraHC.getScatterLocation(p));
+
+		if (getLives(p.getName()) == -8) {
+			return;
+		}
+
+		if (getLives(p.getName()) > 0) {
+			addLives(p.getName(), -1);
+			return;
+		}
+
 		if (UltraHC.started && !UltraHC.specs.contains(p.getName())) {
 			UltraHC.onDeath(p);
 		}
@@ -424,12 +443,6 @@ public class DefaultListener implements Listener {
 		} else {
 			event.setRespawnLocation(Multiworld.getLobby().getSpawnLocation());
 		}
-
-		Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
-			public void run() {
-				p.teleport(event.getRespawnLocation());
-			}
-		}, 10l);
 	}
 
 	@EventHandler
@@ -1000,6 +1013,30 @@ public class DefaultListener implements Listener {
 	public void onWeatherChange(WeatherChangeEvent event) {
 		if (!Multiworld.isUHCWorld(event.getWorld()) && event.toWeatherState()) {
 			event.setCancelled(true);
+		}
+	}
+
+	public int getLives(String name) {
+		if (Option.Lives.getString().equalsIgnoreCase("Infinite")) {
+			return -8;
+		}
+		if (Option.Lives.getString().equalsIgnoreCase("No Respawns")) {
+			return -1;
+		}
+
+		if (!livesRemaining.containsKey(name)) {
+			livesRemaining.put(name, Integer.parseInt(Option.Lives.getString()));
+		}
+
+		return livesRemaining.get(name);
+	}
+
+	public void addLives(String name, int lives) {
+		int l = getLives(name);
+
+		if (l > 0) {
+			livesRemaining.remove(name);
+			livesRemaining.put(name, l + lives);
 		}
 	}
 

@@ -46,6 +46,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 import com.comphenix.protocol.PacketType;
@@ -62,26 +63,28 @@ import com.sk89q.worldedit.schematic.SchematicFormat;
 
 public class UltraHC extends JavaPlugin {
 
-	public static UltraHC				ins;
+	public static UltraHC					ins;
 
-	public static boolean				started			= false;
+	public static boolean					started			= false;
 
-	public static Counter				count			= null;
+	public static Counter					count			= null;
 
-	public static Scoreboard			scb				= null;
-	public static Objective				health			= null, healthList = null, kills = null;
+	public static Scoreboard				scb				= null;
+	public static Objective					health			= null, healthList = null, kills = null;
 	// borderSize = null;
 
-	public static ArrayList<String>		specs			= new ArrayList<>();
-	public static ArrayList<String>		players			= new ArrayList<>();
+	public static ArrayList<String>			specs			= new ArrayList<>();
+	public static ArrayList<String>			players			= new ArrayList<>();
 
-	public static ItemStack[]			startCon		= null, startACon;
+	public static ItemStack[]				startCon		= null, startACon;
 
-	public static String				cruxSchemName	= "cruxSpawn";
+	public static String					cruxSchemName	= "cruxSpawn";
 
-	public static boolean				chatSilenced	= false;
+	public static boolean					chatSilenced	= false;
 
-	public static NumberedTeamSystem	nts;
+	public static HashMap<String, Location>	scatterLocs		= new HashMap<>();
+
+	public static NumberedTeamSystem		nts;
 
 	public void onEnable() {
 		ins = this;
@@ -487,6 +490,8 @@ public class UltraHC extends JavaPlugin {
 	public static int		maxPlayers	= 30;
 
 	public static void spreadPlayers(int spreadDistance) {
+		scatterLocs.clear();
+
 		Material[] nospawn = { Material.STATIONARY_WATER, Material.WATER, Material.STATIONARY_LAVA, Material.LAVA,
 				Material.CACTUS };
 		if (spreadDistance <= -1) {
@@ -536,10 +541,29 @@ public class UltraHC extends JavaPlugin {
 					l.getChunk().load();
 					p.teleport(l.add(0, 2, 0));
 					spread.add(p);
+
+					if (nts.getTeam(p.getName()) != null) {
+						scatterLocs.put(nts.getTeam(p.getName()).id + "", l);
+					} else {
+						scatterLocs.put(p.getName(), l);
+					}
 				}
 			}
 		}
 		spread.clear();
+	}
+
+	public static Location getScatterLocation(Player p) {
+		String s = p.getName();
+		
+		if (scatterLocs.containsKey(s)) {
+			return scatterLocs.get(s);
+		}
+		NumberTeam nt = nts.getTeam(s);
+		if (nt != null && scatterLocs.containsKey(nt.id + "")) {
+			return scatterLocs.get(nt.id + "");
+		}
+		return Multiworld.getUHC().getSpawnLocation();
 	}
 
 	public static void setInventory(Player p, ItemStack[] con, ItemStack[] acon) {
