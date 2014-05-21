@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC.Listeners;
 
+import net.mcshockwave.UHC.DefaultListener;
 import net.mcshockwave.UHC.NumberedTeamSystem.NumberTeam;
 import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.UltraHC;
@@ -135,6 +136,11 @@ public class DTMListener implements Listener {
 
 			for (Player tm : nt.getOnlinePlayers()) {
 				tm.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, 1));
+			}
+
+			for (String tm : nt.getPlayers()) {
+				DefaultListener.livesRemaining.remove(tm);
+				DefaultListener.livesRemaining.put(tm, -1);
 			}
 		}
 	}

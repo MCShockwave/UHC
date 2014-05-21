@@ -422,15 +422,18 @@ public class DefaultListener implements Listener {
 				p.teleport(event.getRespawnLocation());
 			}
 		}, 10l);
-		
+
 		event.setRespawnLocation(UltraHC.getScatterLocation(p));
 
-		if (getLives(p.getName()) == -8) {
-			return;
-		}
+		if (getLives(p.getName()) == -8 || getLives(p.getName()) > 0) {
+			if (getLives(p.getName()) != -8) {
+				addLives(p.getName(), -1);
+				p.sendMessage("§e§lYOU HAVE " + getLives(p.getName()) + " LIVES REMAINING");
+			}
 
-		if (getLives(p.getName()) > 0) {
-			addLives(p.getName(), -1);
+			if (UltraHC.startCon != null) {
+				UltraHC.setInventory(p, UltraHC.startCon, UltraHC.startACon);
+			}
 			return;
 		}
 
