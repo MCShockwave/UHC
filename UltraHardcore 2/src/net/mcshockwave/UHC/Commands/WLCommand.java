@@ -10,10 +10,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class WLCommand implements CommandExecutor {
 
@@ -26,10 +25,14 @@ public class WLCommand implements CommandExecutor {
 
 			if (args.length == 0) {
 				String pre = "§c /" + label + " ";
-				sender.sendMessage(new String[] { pre + "list - See the whitelisted players",
-						pre + "add/remove - Add/remove player from whitelist", pre + "clear - clear the whitelist",
+				sender.sendMessage(new String[] {
+						pre + "list - See the whitelisted players",
+						pre + "add/remove [player] - Add/remove player from whitelist",
+						pre + "clear - clear the whitelist",
 						pre + "addall - add all online players to whitelist",
-						pre + "offat - [EXPEREMENTAL] turn whitelist off at certain time (format: HH:MM UTC)" });
+						pre + "time - get current java time to compare with time.is to get offset for offat",
+						pre
+								+ "offat [HH:MM] [offset] - [EXPEREMENTAL] turn whitelist off at certain time (format: HH:MM UTC)" });
 			} else {
 				String c = args[0];
 
@@ -58,19 +61,35 @@ public class WLCommand implements CommandExecutor {
 					}
 
 					sender.sendMessage("Added all online players to whitelist");
+				} else if (c.equalsIgnoreCase("time")) {
+					Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
+					sender.sendMessage("§cCurrent Time: §f" + cal.getTime().toString());
 				} else if (c.equalsIgnoreCase("offat")) {
-					SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-					sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
 					try {
-						Date date = sdf.parse(args[1]);
-						sender.sendMessage("Parsed as: " + date.toString() + " Off at: " + date.getTime() + " millis");
+						String[] par = args[1].split(":");
+						int h = Integer.parseInt(par[0]);
+						int m = Integer.parseInt(par[1]);
 
-						long timeUntil = date.getTime() - System.currentTimeMillis();
-						long timeTicks = timeUntil / 50;
+						Calendar cl = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+						if (cl.get(Calendar.HOUR_OF_DAY) > h) {
+							cl.add(Calendar.DAY_OF_MONTH, 1);
+						}
+						cl.set(Calendar.HOUR_OF_DAY, h);
+						cl.set(Calendar.MINUTE, m);
+						cl.set(Calendar.SECOND, 0);
 
-						sender.sendMessage("Time until whitelist off: " + timeUntil + " millis (" + timeTicks
-								+ " ticks)");
+						long offsetMillis = Long.parseLong(args[2]) * 1000;
+
+						long now = System.currentTimeMillis() - offsetMillis;
+						long wlo = cl.getTimeInMillis();
+
+						long time = wlo - now;
+
+						long ticks = TimeUnit.MILLISECONDS.toSeconds(time) * 20;
+
+						sender.sendMessage("Time until whitelist off: " + ticks + " ticks (" + (ticks / 20)
+								+ " seconds)");
 
 						if (wloff != null) {
 							wloff.cancel();
@@ -82,8 +101,8 @@ public class WLCommand implements CommandExecutor {
 
 								Bukkit.broadcastMessage("§eWhitelist has been turned off by Scheduler");
 							}
-						}, timeTicks);
-					} catch (ParseException e) {
+						}, ticks);
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -98,7 +117,7 @@ public class WLCommand implements CommandExecutor {
 		String ret = "";
 		String com = ", ";
 
-		for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
+		for (OfflinePlayer op : Bukkit.getWhitelistedPlayers()) {
 			ret += op.getName() + com;
 		}
 
