@@ -1,13 +1,23 @@
 package net.mcshockwave.UHC.Commands;
 
+import net.mcshockwave.UHC.UltraHC;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class WLCommand implements CommandExecutor {
+
+	public static BukkitTask	wloff	= null;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -18,7 +28,8 @@ public class WLCommand implements CommandExecutor {
 				String pre = "§c /" + label + " ";
 				sender.sendMessage(new String[] { pre + "list - See the whitelisted players",
 						pre + "add/remove - Add/remove player from whitelist", pre + "clear - clear the whitelist",
-						pre + "addall - add all online players to whitelist" });
+						pre + "addall - add all online players to whitelist",
+						pre + "offat - [EXPEREMENTAL] turn whitelist off at certain time (format: HH:MM UTC)" });
 			} else {
 				String c = args[0];
 
@@ -45,8 +56,36 @@ public class WLCommand implements CommandExecutor {
 					for (Player p : Bukkit.getOnlinePlayers()) {
 						p.setWhitelisted(true);
 					}
-					
+
 					sender.sendMessage("Added all online players to whitelist");
+				} else if (c.equalsIgnoreCase("offat")) {
+					SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+					sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+					try {
+						Date date = sdf.parse(args[1]);
+						sender.sendMessage("Parsed as: " + date.toString() + " Off at: " + date.getTime() + " millis");
+
+						long timeUntil = date.getTime() - System.currentTimeMillis();
+						long timeTicks = timeUntil / 50;
+
+						sender.sendMessage("Time until whitelist off: " + timeUntil + " millis (" + timeTicks
+								+ " ticks)");
+
+						if (wloff != null) {
+							wloff.cancel();
+						}
+
+						wloff = Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+							public void run() {
+								Bukkit.setWhitelist(false);
+
+								Bukkit.broadcastMessage("§eWhitelist has been turned off by Scheduler");
+							}
+						}, timeTicks);
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 
