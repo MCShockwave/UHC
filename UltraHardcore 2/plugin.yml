@@ -25,3 +25,5 @@ commands:
    min:
    max:
    scenarios:
+   wl:
+      aliases: [whli, wlist]

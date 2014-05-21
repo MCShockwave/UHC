@@ -10,6 +10,7 @@ import net.mcshockwave.UHC.Commands.RestrictCommand;
 import net.mcshockwave.UHC.Commands.ScenarioListCommand;
 import net.mcshockwave.UHC.Commands.SilenceCommand;
 import net.mcshockwave.UHC.Commands.VoteCommand;
+import net.mcshockwave.UHC.Commands.WLCommand;
 import net.mcshockwave.UHC.Listeners.DTMListener;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenuListener;
@@ -108,6 +109,7 @@ public class UltraHC extends JavaPlugin {
 		getCommand("incrban").setExecutor(new BanningCommands());
 		getCommand("uhcunban").setExecutor(new BanningCommands());
 		getCommand("scenarios").setExecutor(new ScenarioListCommand());
+		getCommand("wl").setExecutor(new WLCommand());
 
 		scb = Bukkit.getScoreboardManager().getMainScoreboard();
 
