@@ -39,7 +39,7 @@ public class SkyhighHandler {
 
 		timer = new BukkitRunnable() {
 			public void run() {
-				for (Player p : Bukkit.getOnlinePlayers()) {
+				for (Player p : UltraHC.getAlive()) {
 					if (p.getLocation().getY() < 101) {
 						p.damage(1);
 					}
