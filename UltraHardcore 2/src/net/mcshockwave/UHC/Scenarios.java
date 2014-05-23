@@ -9,6 +9,7 @@ import net.mcshockwave.UHC.Listeners.HallucinationHandler;
 import net.mcshockwave.UHC.Listeners.LinkedListener;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Listeners.ResurrectListener;
+import net.mcshockwave.UHC.Listeners.SkyhighHandler;
 import net.mcshockwave.UHC.Listeners.SwitchListener;
 import net.mcshockwave.UHC.Listeners.TowerListener;
 import net.mcshockwave.UHC.Listeners.TripleListener;
@@ -48,7 +49,8 @@ public enum Scenarios {
 	Compensation(
 		new Compensation()),
 	Tower_of_Death(
-		new TowerListener());
+		new TowerListener()),
+	Skyhigh;
 
 	public static List<Scenarios>	enabled	= new ArrayList<>();
 
@@ -186,6 +188,9 @@ public enum Scenarios {
 		if (this == Tower_of_Death) {
 			TowerListener.start();
 		}
+		if (this == Skyhigh) {
+			SkyhighHandler.start();
+		}
 	}
 
 	public void onStop() {
@@ -218,6 +223,9 @@ public enum Scenarios {
 		}
 		if (this == Tower_of_Death) {
 			TowerListener.stop();
+		}
+		if (this == Skyhigh) {
+			SkyhighHandler.stop();
 		}
 	}
 
