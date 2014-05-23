@@ -16,10 +16,12 @@ import java.util.Arrays;
 public enum Option {
 
 	Scenario_List(
+		Category.Scenarios,
 		Material.DIAMOND,
 		0,
 		"UHC"),
 	Spectating(
+		Category.Game_Settings,
 		Material.THIN_GLASS,
 		0,
 		"OP Only",
@@ -36,6 +38,7 @@ public enum Option {
 		"Iron",
 		"Coal"),
 	Spread_Radius(
+		Category.Game_Settings,
 		Material.EYE_OF_ENDER,
 		0,
 		500,
@@ -45,6 +48,7 @@ public enum Option {
 		150,
 		100),
 	PVP_Time(
+		Category.Game_Settings,
 		Material.STONE_SWORD,
 		0,
 		20,
@@ -58,6 +62,7 @@ public enum Option {
 		1,
 		0),
 	Mark_Time(
+		Category.Game_Settings,
 		Material.PAPER,
 		0,
 		20,
@@ -66,10 +71,12 @@ public enum Option {
 		10,
 		5),
 	Eternal_Daylight(
+		Category.Game_Settings,
 		Material.WATCH,
 		0,
 		true),
 	Game_Length(
+		Category.End_Game,
 		Material.BEDROCK,
 		0,
 		60,
@@ -85,6 +92,7 @@ public enum Option {
 		2,
 		0),
 	End_Game(
+		Category.End_Game,
 		Material.COMPASS,
 		0,
 		"Meetup",
@@ -124,14 +132,17 @@ public enum Option {
 	// 2,
 	// 1),
 	Hunger(
+		Category.Game_Settings,
 		Material.COOKED_BEEF,
 		0,
 		false),
 	Absorption(
+		Category.Game_Settings,
 		Material.GOLDEN_APPLE,
 		0,
 		false),
 	Death_Distance(
+		Category.Game_Settings,
 		Material.SKULL_ITEM,
 		0,
 		true),
@@ -140,34 +151,42 @@ public enum Option {
 	// 0,
 	// false),
 	Golden_Heads(
+		Category.Game_Settings,
 		Material.SKULL_ITEM,
 		3,
 		true),
 	Ender_Pearl_Damage(
+		Category.Game_Settings,
 		Material.ENDER_PEARL,
 		0,
 		false),
 	Increased_Apples(
+		Category.Game_Settings,
 		Material.APPLE,
 		0,
 		true),
 	Increased_Flint(
+		Category.Game_Settings,
 		Material.FLINT,
 		0,
 		true),
 	Head_on_Fence(
+		Category.Game_Settings,
 		Material.NETHER_FENCE,
 		0,
 		true),
 	Enable_Nether(
+		Category.Game_Settings,
 		Material.NETHERRACK,
 		0,
 		true),
 	Strength_Potions(
+		Category.Game_Settings,
 		Material.BLAZE_POWDER,
 		0,
 		false),
 	Lives(
+		Category.End_Game,
 		Material.BEACON,
 		0,
 		"NO RESPAWNS",
@@ -185,10 +204,12 @@ public enum Option {
 	// 0,
 	// false),
 	UHC_Mode(
+		Category.Game_Settings,
 		Material.GOLD_INGOT,
 		0,
 		true),
 	Team_Limit(
+		Category.Teams,
 		Material.WOOL,
 		0,
 		0,
@@ -200,6 +221,7 @@ public enum Option {
 		2,
 		1),
 	Max_Teams(
+		Category.Teams,
 		Material.WOOL,
 		0,
 		64,
@@ -223,6 +245,7 @@ public enum Option {
 		1,
 		0),
 	Team_Commands(
+		Category.Teams,
 		Material.WOOL,
 		0,
 		false);
@@ -243,7 +266,12 @@ public enum Option {
 
 	private ItemStack	icon;
 
-	private Option(Material m, int d, int def, int... others) {
+	public Category		cat			= null;
+	public Scenarios	scen		= null;
+
+	private Option(Category cat, Material m, int d, int def, int... others) {
+		this.cat = cat;
+
 		this.defInt = def;
 		this.intVal = def;
 		this.intVals = others;
@@ -253,7 +281,9 @@ public enum Option {
 		icon = new ItemStack(m, 1, (short) d);
 	}
 
-	private Option(Material m, int d, String def, String... others) {
+	private Option(Category cat, Material m, int d, String def, String... others) {
+		this.cat = cat;
+
 		this.defString = def;
 		this.stringVal = def;
 		this.stringVals = others;
@@ -263,7 +293,44 @@ public enum Option {
 		icon = new ItemStack(m, 1, (short) d);
 	}
 
-	private Option(Material m, int d, boolean def) {
+	private Option(Category cat, Material m, int d, boolean def) {
+		this.cat = cat;
+
+		this.defBool = def;
+		this.boolVal = def;
+
+		this.name = name().replace('_', ' ');
+
+		icon = new ItemStack(m, 1, (short) d);
+	}
+
+	private Option(Scenarios scen, Material m, int d, int def, int... others) {
+		this.scen = scen;
+
+		this.defInt = def;
+		this.intVal = def;
+		this.intVals = others;
+
+		this.name = name().replace('_', ' ');
+
+		icon = new ItemStack(m, 1, (short) d);
+	}
+
+	private Option(Scenarios scen, Material m, int d, String def, String... others) {
+		this.scen = scen;
+
+		this.defString = def;
+		this.stringVal = def;
+		this.stringVals = others;
+
+		this.name = name().replace('_', ' ');
+
+		icon = new ItemStack(m, 1, (short) d);
+	}
+
+	private Option(Scenarios scen, Material m, int d, boolean def) {
+		this.scen = scen;
+
 		this.defBool = def;
 		this.boolVal = def;
 
@@ -434,7 +501,27 @@ public enum Option {
 		ItemMenu m = new ItemMenu("Options - " + (editable ? "Editable" : "Viewing"), values().length);
 
 		int in = 0;
+		for (Category c : Category.values()) {
+
+			Button b = new Button(false, c.ico, 1, c.icodata, c.name, "Click to open category");
+			m.addButton(b, in);
+			m.addSubMenu(getMenuFor(c, editable), b);
+
+			in++;
+		}
+
+		return m;
+	}
+
+	public static ItemMenu getMenuFor(Category c, boolean editable) {
+		ItemMenu m = new ItemMenu(c.name + " - " + (editable ? "Editable" : "Viewing"), values().length);
+
+		int in = 0;
 		for (Option o : values()) {
+			if (o.cat != c) {
+				continue;
+			}
+
 			Button b = new Button(false, o.icon.getType(), 1, o.icon.getDurability(), o.name,
 					(o == Scenario_List ? (editable ? "Click to open menu" : "Type /scenarios to view")
 							: "Current Value: §o" + o.toString()));
