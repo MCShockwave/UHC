@@ -14,7 +14,7 @@ public class CommandOption implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
 			
-			Option.getGlobalMenu(false).open(p);
+			Option.getOptionsMenu(false).open(p);
 		}
 		
 		return false;

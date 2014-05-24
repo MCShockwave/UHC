@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC.Listeners;
 
+import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.Scenarios;
 
 import org.bukkit.Material;
@@ -17,7 +18,7 @@ public class TripleListener implements Listener {
 		if (b.getType() == Material.IRON_ORE) {
 			b.breakNaturally(null);
 			event.setExpToDrop(4);
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < Option.Ore_Multiplier.getInt(); i++) {
 				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.IRON_INGOT));
 			}
 		}
@@ -25,20 +26,20 @@ public class TripleListener implements Listener {
 		if (b.getType() == Material.GOLD_ORE) {
 			b.breakNaturally(null);
 			event.setExpToDrop(8);
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < Option.Ore_Multiplier.getInt(); i++) {
 				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.GOLD_INGOT));
 			}
 		}
 
 		if (b.getType() == Material.DIAMOND_ORE) {
-			for (int i = 0; i < 2; i++) {
+			for (int i = 0; i < Option.Ore_Multiplier.getInt() - 1; i++) {
 				b.getWorld().dropItemNaturally(b.getLocation(),
 						new ItemStack(Scenarios.Barebones.isEnabled() ? Material.GOLD_INGOT : Material.DIAMOND));
 			}
 		}
 
 		if (b.getType() == Material.COAL_ORE) {
-			for (int i = 0; i < 2; i++) {
+			for (int i = 0; i < Option.Ore_Multiplier.getInt() - 1; i++) {
 				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.COAL));
 			}
 		}

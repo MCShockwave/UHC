@@ -1,5 +1,7 @@
 package net.mcshockwave.UHC.Listeners;
 
+import net.mcshockwave.UHC.Option;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -17,6 +19,10 @@ public class BarebonesListener implements Listener {
 
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e) {
+		if (!Option.Extra_Drops.getBoolean()) {
+			return;
+		}
+		
 		int i = new Random().nextInt(3) + 1;
 		for (int a = 0; a < i; a++) {
 			e.getDrops().add(new ItemStack(Material.DIAMOND));

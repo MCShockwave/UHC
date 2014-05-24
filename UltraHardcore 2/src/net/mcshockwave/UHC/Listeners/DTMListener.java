@@ -53,7 +53,7 @@ public class DTMListener implements Listener {
 		for (NumberTeam nt : UltraHC.nts.teams.toArray(new NumberTeam[0])) {
 			if (nt.getOnlinePlayers().size() > 0) {
 				Location monuLoc = nt.getOnlinePlayers().get(0).getLocation();
-				monuLoc.setY(150);
+				monuLoc.setY(Option.Base_Height.getInt());
 
 				Block m = monuLoc.getBlock();
 				m.setType(Material.ENDER_STONE);
@@ -71,7 +71,7 @@ public class DTMListener implements Listener {
 					PacketUtils.playParticleEffect(ParticleEffect.ENCHANTMENT_TABLE,
 							b.getLocation().add(0.5, 0.5, 0.5), 0.3f, 0.3f, 20);
 
-					for (int y = 151; y < 256; y++) {
+					for (int y = Option.Base_Height.getInt() + 1; y < 256; y++) {
 						Location l = b.getLocation();
 						Block bl = b.getWorld().getBlockAt(l.getBlockX(), y, l.getBlockZ());
 						if (bl.getType() != Material.AIR) {

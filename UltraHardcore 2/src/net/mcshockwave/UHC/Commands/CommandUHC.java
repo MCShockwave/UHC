@@ -83,7 +83,7 @@ public class CommandUHC implements CommandExecutor {
 				UltraHC.stop();
 			}
 			if (args[0].equalsIgnoreCase("option")) {
-				Option.getGlobalMenu(true).open(p);
+				Option.getOptionsMenu(true).open(p);
 			}
 			if (args[0].equalsIgnoreCase("teams")) {
 				UltraHC.nts.getMenu(p, true).open(p);

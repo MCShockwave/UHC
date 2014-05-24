@@ -11,7 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public enum Option {
 
@@ -248,7 +250,80 @@ public enum Option {
 		Category.Teams,
 		Material.WOOL,
 		0,
-		false);
+		false),
+
+	// Scenario-Based
+	Base_Height(
+		Scenarios.DTM,
+		Material.ENDER_STONE,
+		0,
+		150,
+		256,
+		150,
+		140,
+		130,
+		120,
+		110,
+		100,
+		90,
+		80,
+		70,
+		64,
+		16),
+	Ore_Multiplier(
+		Scenarios.Triple_Ores,
+		Material.IRON_INGOT,
+		0,
+		3,
+		10,
+		5,
+		4,
+		3,
+		2),
+	Extra_Drops(
+		Scenarios.Barebones,
+		Material.GOLDEN_APPLE,
+		0,
+		true),
+	Chump_Charity_Interval(
+		Scenarios.Chump_Charity,
+		Material.POTION,
+		0,
+		10,
+		15,
+		10,
+		8,
+		5,
+		4,
+		3,
+		2,
+		1),
+	Blood_Price_Interval(
+		Scenarios.Blood_Price,
+		Material.POTION,
+		0,
+		10,
+		15,
+		10,
+		8,
+		5,
+		4,
+		3,
+		2,
+		1),
+	Weakest_Link_Interval(
+		Scenarios.Weakest_Link,
+		Material.POTION,
+		0,
+		10,
+		15,
+		10,
+		8,
+		5,
+		4,
+		3,
+		2,
+		1), ;
 
 	public String		name;
 
@@ -412,7 +487,7 @@ public enum Option {
 						p.sendMessage("§aSet " + name + " to " + intVal);
 
 						p.closeInventory();
-						getGlobalMenu(true).open(p);
+						getMenuFor(cat == null ? scen : cat, true).open(p);
 					}
 				});
 			}
@@ -434,7 +509,7 @@ public enum Option {
 							s.setEnabled(!s.isEnabled());
 
 							p.closeInventory();
-							getMenu(getGlobalMenu(true)).open(p);
+							getMenu(getMenuFor(cat == null ? scen : cat, true)).open(p);
 						}
 					});
 				}
@@ -454,7 +529,7 @@ public enum Option {
 							p.sendMessage("§aSet " + name + " to " + stringVal);
 
 							p.closeInventory();
-							getGlobalMenu(true).open(p);
+							getMenuFor(cat == null ? scen : cat, true).open(p);
 						}
 					});
 				}
@@ -472,7 +547,7 @@ public enum Option {
 						p.sendMessage("§aSet " + name + " to " + boolVal);
 
 						p.closeInventory();
-						getGlobalMenu(true).open(p);
+						getMenuFor(cat == null ? scen : cat, true).open(p);
 					}
 				});
 
@@ -497,15 +572,15 @@ public enum Option {
 		return "";
 	}
 
-	public static ItemMenu getGlobalMenu(boolean editable) {
-		ItemMenu m = new ItemMenu("Options - " + (editable ? "Editable" : "Viewing"), values().length);
+	public static ItemMenu getOptionsMenu(final boolean editable) {
+		ItemMenu m = new ItemMenu("Options - " + (editable ? "Editable" : "Viewing"), Category.values().length);
 
 		int in = 0;
 		for (Category c : Category.values()) {
 
 			Button b = new Button(false, c.ico, 1, c.icodata, c.name, "Click to open category");
 			m.addButton(b, in);
-			m.addSubMenu(getMenuFor(c, editable), b);
+			m.addSubMenu(getMenuFor(c, editable), b, true);
 
 			in++;
 		}
@@ -513,15 +588,12 @@ public enum Option {
 		return m;
 	}
 
-	public static ItemMenu getMenuFor(Category c, boolean editable) {
-		ItemMenu m = new ItemMenu(c.name + " - " + (editable ? "Editable" : "Viewing"), values().length);
+	public static ItemMenu getMenuFor(Enum<?> category, final boolean editable) {
+		ItemMenu m = new ItemMenu(category.name().replace('_', ' ') + " - " + (editable ? "Editable" : "Viewing"),
+				getOptionsFor(category).size());
 
 		int in = 0;
-		for (Option o : values()) {
-			if (o.cat != c) {
-				continue;
-			}
-
+		for (Option o : getOptionsFor(category)) {
 			Button b = new Button(false, o.icon.getType(), 1, o.icon.getDurability(), o.name,
 					(o == Scenario_List ? (editable ? "Click to open menu" : "Type /scenarios to view")
 							: "Current Value: §o" + o.toString()));
@@ -533,7 +605,52 @@ public enum Option {
 			in++;
 		}
 
+		if (category == Category.Scenarios) {
+			if (Scenarios.getEnabled().size() > 0) {
+
+				int id = 0;
+				for (Scenarios s : Scenarios.getEnabled()) {
+					if (getOptionsFor(s).size() < 1) {
+						continue;
+					}
+					id++;
+
+					Button b = new Button(false, Category.Scenarios.ico, 1, Category.Scenarios.icodata, "Scenario: "
+							+ s.name().replace('_', ' '), "Click to open menu");
+					m.addButton(b, id);
+					m.addSubMenu(getMenuFor(s, editable), b, true);
+				}
+			}
+		}
+
+		if (category.getClass() == Scenarios.class) {
+			Button back = new Button(false, Material.STICK, 1, 0, "Back", "Click to go back");
+			m.addButton(back, m.i.getSize() - 1);
+			back.setOnClick(new ButtonRunnable() {
+				public void run(Player p, InventoryClickEvent event) {
+					p.closeInventory();
+
+					getMenuFor(Category.Scenarios, editable).open(p);
+				}
+			});
+		}
+
 		return m;
+	}
+
+	public static List<Option> getOptionsFor(Enum<?> category) {
+		List<Option> ret = new ArrayList<>();
+
+		for (Option o : values()) {
+			if (category.getClass() == Scenarios.class && o.scen != category || category.getClass() == Category.class
+					&& o.cat != category) {
+				continue;
+			}
+
+			ret.add(o);
+		}
+
+		return ret;
 	}
 
 }

@@ -174,13 +174,13 @@ public enum Scenarios {
 			MoleListener.onStart();
 		}
 		if (this == Chump_Charity) {
-			ChumpHandler.start(10);
+			ChumpHandler.start(Option.Chump_Charity_Interval.getInt());
 		}
 		if (this == Blood_Price) {
-			BloodPrice.start(10);
+			BloodPrice.start(Option.Blood_Price_Interval.getInt());
 		}
 		if (this == Weakest_Link) {
-			WeakestLink.start(10);
+			WeakestLink.start(Option.Weakest_Link_Interval.getInt());
 		}
 		if (this == DTM) {
 			DTMListener.start();
