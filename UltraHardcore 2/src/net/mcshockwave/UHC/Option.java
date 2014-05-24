@@ -323,7 +323,31 @@ public enum Option {
 		4,
 		3,
 		2,
-		1), ;
+		1),
+	Skyhigh_Enable(
+		Scenarios.Skyhigh,
+		Material.DIRT,
+		0,
+		45,
+		120,
+		90,
+		60,
+		45,
+		30,
+		15,
+		10,
+		5,
+		0),
+	Skyhigh_Damage_Interval(
+		Scenarios.Skyhigh,
+		Material.COBBLESTONE,
+		0,
+		30,
+		60,
+		45,
+		30,
+		15,
+		5);
 
 	public String		name;
 

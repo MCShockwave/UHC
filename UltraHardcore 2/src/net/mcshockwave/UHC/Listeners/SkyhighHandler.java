@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC.Listeners;
 
+import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.UltraHC;
 
 import org.bukkit.Bukkit;
@@ -9,19 +10,16 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class SkyhighHandler {
 
-	public static int			mins		= 45;
-	public static int			interval	= 30;
-
-	public static BukkitTask	timer		= null;
+	public static BukkitTask	timer	= null;
 
 	public static void start() {
-		Bukkit.broadcastMessage("§e§lSkyhigh on at " + mins + " minutes!");
+		Bukkit.broadcastMessage("§e§lSkyhigh on at " + Option.Skyhigh_Enable.getInt() + " minutes!");
 
 		timer = new BukkitRunnable() {
 			public void run() {
 				startSkyhigh();
 			}
-		}.runTaskLater(UltraHC.ins, mins * 1200);
+		}.runTaskLater(UltraHC.ins, Option.Skyhigh_Enable.getInt() * 1200);
 	}
 
 	public static void stop() {
@@ -45,7 +43,8 @@ public class SkyhighHandler {
 					}
 				}
 			}
-		}.runTaskTimer(UltraHC.ins, interval * 20, interval * 20);
+		}.runTaskTimer(UltraHC.ins, Option.Skyhigh_Damage_Interval.getInt() * 20,
+				Option.Skyhigh_Damage_Interval.getInt() * 20);
 	}
 
 }
