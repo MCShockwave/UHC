@@ -27,3 +27,4 @@ commands:
    scenarios:
    wl:
       aliases: [whli, wlist]
+   setoption:

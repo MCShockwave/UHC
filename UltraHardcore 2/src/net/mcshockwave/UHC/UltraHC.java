@@ -110,6 +110,7 @@ public class UltraHC extends JavaPlugin {
 		getCommand("uhcunban").setExecutor(new BanningCommands());
 		getCommand("scenarios").setExecutor(new ScenarioListCommand());
 		getCommand("wl").setExecutor(new WLCommand());
+		getCommand("setoption").setExecutor(new CommandOption());
 
 		scb = Bukkit.getScoreboardManager().getMainScoreboard();
 
@@ -476,14 +477,16 @@ public class UltraHC extends JavaPlugin {
 		return ret;
 	}
 
+	public static int	deathKickSeconds	= 30;
+
 	public static void onDeath(final Player p) {
 		specs.add(p.getName());
-		p.sendMessage("§c§lYou died! You have 30 seconds before you get kicked!");
+		p.sendMessage("§c§lYou died! You have " + deathKickSeconds + " seconds before you get kicked!");
 		Bukkit.getScheduler().runTaskLater(ins, new Runnable() {
 			public void run() {
 				p.kickPlayer("§c§lThanks for playing MCShockwave UHC!");
 			}
-		}, 600l);
+		}, deathKickSeconds * 20);
 		scb.resetScores(p);
 		// playersLeft.setScore(getAlive().size());
 	}
@@ -558,7 +561,7 @@ public class UltraHC extends JavaPlugin {
 
 	public static Location getScatterLocation(Player p) {
 		String s = p.getName();
-		
+
 		if (scatterLocs.containsKey(s)) {
 			return scatterLocs.get(s);
 		}

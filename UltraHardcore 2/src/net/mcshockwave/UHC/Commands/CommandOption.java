@@ -11,13 +11,61 @@ public class CommandOption implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (label.equalsIgnoreCase("setoption")) {
+
+			if (sender.isOp()) {
+				Option set = null;
+				for (Option o : Option.values()) {
+					if (o.name().equalsIgnoreCase(args[0])) {
+						set = o;
+						break;
+					}
+				}
+
+				if (set != null) {
+					String to = args[1];
+
+					if (isInteger(to)) {
+						set.setInt(Integer.parseInt(to));
+					} else if (isBoolean(to)) {
+						set.setBoolean(Boolean.parseBoolean(to));
+					} else {
+						set.setString(to);
+					}
+
+					sender.sendMessage("§aSet option " + set.name + " to value " + to);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
-			
+
 			Option.getOptionsMenu(false).open(p);
 		}
-		
+
 		return false;
 	}
-	
+
+	public boolean isInteger(String test) {
+		try {
+			Integer.parseInt(test);
+			return true;
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
+	public boolean isBoolean(String test) {
+		try {
+			Boolean.parseBoolean(test);
+			return true;
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
 }
