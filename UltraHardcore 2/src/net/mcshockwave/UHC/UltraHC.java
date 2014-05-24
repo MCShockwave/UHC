@@ -484,6 +484,7 @@ public class UltraHC extends JavaPlugin {
 				p.kickPlayer("§c§lThanks for playing MCShockwave UHC!");
 			}
 		}, 600l);
+		scb.resetScores(p);
 		// playersLeft.setScore(getAlive().size());
 	}
 

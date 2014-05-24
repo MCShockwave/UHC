@@ -651,8 +651,10 @@ public class DefaultListener implements Listener {
 			}
 		}
 
+		Material bm = b.getType();
 		if (b.getLocation().getWorld() == Multiworld.getUHC() && Math.abs(b.getLocation().getX()) < 4
-				&& Math.abs(b.getLocation().getX()) < 4 && UltraHC.count.getTotalMins() >= Option.Game_Length.getInt()) {
+				&& Math.abs(b.getLocation().getX()) < 4 && UltraHC.count.getTotalMins() >= Option.Game_Length.getInt()
+				&& (bm == Material.IRON_BLOCK || bm == Material.BEACON)) {
 			event.setCancelled(true);
 		}
 	}
@@ -668,11 +670,6 @@ public class DefaultListener implements Listener {
 		if (b.getWorld() == Multiworld.getKit()) {
 			event.setCancelled(false);
 			return;
-		}
-
-		if (b.getLocation().getWorld() == Multiworld.getUHC() && Math.abs(b.getLocation().getX()) < 4
-				&& Math.abs(b.getLocation().getX()) < 4 && UltraHC.count.getTotalMins() >= Option.Game_Length.getInt()) {
-			event.setCancelled(true);
 		}
 	}
 
@@ -752,13 +749,6 @@ public class DefaultListener implements Listener {
 			}
 		}
 
-		if (UltraHC.nts.isTeamGame() && !UltraHC.isMCShockwaveEnabled()) {
-			NumberTeam t = UltraHC.nts.getTeam(p.getName());
-			if (t != null) {
-				event.setFormat("<" + NumberedTeamSystem.getPrefix(t.id, true, false) + "%s§r> " + event.getMessage());
-			}
-		}
-
 		if (p.isOp() && !UltraHC.isMCShockwaveEnabled()) {
 			event.setFormat("§c[§lOP§c]§r " + event.getFormat());
 		}
@@ -769,12 +759,20 @@ public class DefaultListener implements Listener {
 				for (Player p2 : UltraHC.getAlive()) {
 					event.getRecipients().remove(p2);
 				}
-				if (!UltraHC.isMCShockwaveEnabled()) {
-					event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
-				}
 			} else {
 				event.setMessage(event.getMessage().substring(1));
 			}
+		}
+
+		if (UltraHC.nts.isTeamGame() && !UltraHC.isMCShockwaveEnabled()) {
+			NumberTeam t = UltraHC.nts.getTeam(p.getName());
+			if (t != null) {
+				event.setFormat("<" + UltraHC.nts.getPrefix(t.id, true, false) + "%s§r> " + event.getMessage());
+			}
+		}
+
+		if (!UltraHC.isMCShockwaveEnabled() && UltraHC.specs.contains(p.getName())) {
+			event.setFormat("§a[§lSPEC§a]§f " + event.getFormat());
 		}
 	}
 

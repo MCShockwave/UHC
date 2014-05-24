@@ -108,8 +108,8 @@ public class NumberedTeamSystem {
 		}
 	}
 
-	public static String getPrefix(int id, boolean noteam, boolean sameteam) {
-		if (UltraHC.nts.teams.size() > (usableColors.length() * usableFormats.length())) {
+	public String getPrefix(int id, boolean noteam, boolean sameteam) {
+		if (teams.size() > (usableColors.length() * usableFormats.length())) {
 			String color = "§e";
 			if (!noteam) {
 				color = sameteam ? "§a" : "§c";
@@ -174,9 +174,11 @@ public class NumberedTeamSystem {
 			OfflinePlayer op = Bukkit.getOfflinePlayer(s);
 			if (!st.hasPlayer(op)) {
 				st.addPlayer(op);
-				if (op.isOnline() && !ChatColor.stripColor(op.getPlayer().getPlayerListName()).equals(op.getName())) {
-					st.addPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(op.getPlayer().getPlayerListName())));
-				}
+			}
+			if (op.isOnline()
+					&& !st.hasPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(op.getPlayer().getPlayerListName())))
+					&& !ChatColor.stripColor(op.getPlayer().getPlayerListName()).equals(op.getName())) {
+				st.addPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(op.getPlayer().getPlayerListName())));
 			}
 		}
 	}
@@ -189,6 +191,16 @@ public class NumberedTeamSystem {
 
 					if (t.getScore(op).getScore() != f.getScore()) {
 						t.getScore(op).setScore(f.getScore());
+					}
+				}
+			}
+
+			for (Score t : to.getScores(op)) {
+				if (from.getObjective(t.getObjective().getName()) != null) {
+					Objective o = from.getObjective(t.getObjective().getName());
+
+					if (o.getScore(op) == null) {
+						to.resetScores(op);
 					}
 				}
 			}
@@ -483,8 +495,8 @@ public class NumberedTeamSystem {
 			final Player p = ps[i];
 			if (getFromId(id) == getTeam(p.getName()))
 				continue;
-			Button pl = new Button(false, Material.SKULL_ITEM, 1, 3, getTeam(p.getName()) == null ? "" : getPrefix(
-					getTeam(p.getName()).id, true, false) + p.getName(), "", "Click to add player");
+			Button pl = new Button(false, Material.SKULL_ITEM, 1, 3, (getTeam(p.getName()) == null ? "" : getPrefix(
+					getTeam(p.getName()).id, true, false)) + p.getName(), "", "Click to add player");
 			m.addButton(pl, i);
 			pl.setOnClick(new ButtonRunnable() {
 				public void run(final Player p2, InventoryClickEvent event) {
