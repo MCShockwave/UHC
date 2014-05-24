@@ -4,6 +4,9 @@ import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.Scenarios;
 import net.mcshockwave.UHC.UltraHC;
 import net.mcshockwave.UHC.Listeners.ResurrectListener;
+import net.mcshockwave.UHC.Menu.ItemMenu;
+import net.mcshockwave.UHC.Menu.ItemMenu.Button;
+import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.db.ConfigFile;
 import net.mcshockwave.UHC.worlds.Multiworld;
 import net.minecraft.server.v1_7_R2.ChatSerializer;
@@ -11,12 +14,14 @@ import net.minecraft.server.v1_7_R2.PacketPlayOutChat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
@@ -100,6 +105,9 @@ public class CommandUHC implements CommandExecutor {
 					p.sendMessage("§6Viewing current kit");
 				} else
 					p.sendMessage("§cNo kit found");
+			}
+			if (args[0].equalsIgnoreCase("givekit")) {
+				getKitMenu().open(p);
 			}
 
 			if (args[0].equalsIgnoreCase("loadCruxSpawn")) {
@@ -223,5 +231,36 @@ public class CommandUHC implements CommandExecutor {
 			e.printStackTrace();
 			Bukkit.broadcastMessage("§cERROR: " + e.getMessage());
 		}
+	}
+
+	public static ItemMenu getKitMenu() {
+		ItemMenu m = new ItemMenu("Give Kits", 9);
+
+		Button player = new Button(false, Material.SKULL_ITEM, 1, 3, "Players", "Click to open menu");
+		m.addButton(player, 4);
+		m.addSubMenu(getPlayerKitMenu(), player, true);
+
+		return m;
+	}
+
+	public static ItemMenu getPlayerKitMenu() {
+		ItemMenu m = new ItemMenu("Give Kits - Players", 9);
+
+		int slot = 0;
+		for (final Player p : Bukkit.getOnlinePlayers()) {
+			Button b = new Button(false, Material.SKULL_ITEM, 1, 3, p.getName(), "Click to give kit");
+			m.addButton(b, slot);
+			b.setOnClick(new ButtonRunnable() {
+				public void run(Player c, InventoryClickEvent event) {
+					UltraHC.setInventory(p, UltraHC.startCon, UltraHC.startACon);
+
+					c.sendMessage("§cGave kit to " + p.getName());
+				}
+			});
+
+			slot++;
+		}
+
+		return m;
 	}
 }
