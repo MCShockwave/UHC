@@ -231,6 +231,8 @@ public class CommandUHC implements CommandExecutor {
 			e.printStackTrace();
 			Bukkit.broadcastMessage("§cERROR: " + e.getMessage());
 		}
+
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + w.getName() + " set " + rad + " 0 0");
 	}
 
 	public static ItemMenu getKitMenu() {

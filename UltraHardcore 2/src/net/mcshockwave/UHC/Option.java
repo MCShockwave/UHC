@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC;
 
+import net.mcshockwave.UHC.Commands.ScenarioListCommand;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
@@ -84,7 +85,6 @@ public enum Option {
 		60,
 		120,
 		90,
-		60,
 		60,
 		45,
 		30,
@@ -249,6 +249,11 @@ public enum Option {
 	Team_Commands(
 		Category.Teams,
 		Material.WOOL,
+		0,
+		false),
+	Friendly_Fire(
+		Category.Teams,
+		Material.GOLD_SWORD,
 		0,
 		false),
 
@@ -604,7 +609,7 @@ public enum Option {
 
 			Button b = new Button(false, c.ico, 1, c.icodata, c.name, "Click to open category");
 			m.addButton(b, in);
-			m.addSubMenu(getMenuFor(c, editable), b, true);
+			m.addSubMenu(getMenuFor(c, editable), b);
 
 			in++;
 		}
@@ -612,18 +617,20 @@ public enum Option {
 		return m;
 	}
 
-	public static ItemMenu getMenuFor(Enum<?> category, final boolean editable) {
+	public static ItemMenu getMenuFor(final Enum<?> category, final boolean editable) {
 		ItemMenu m = new ItemMenu(category.name().replace('_', ' ') + " - " + (editable ? "Editable" : "Viewing"),
 				getOptionsFor(category).size());
 
 		int in = 0;
 		for (Option o : getOptionsFor(category)) {
 			Button b = new Button(false, o.icon.getType(), 1, o.icon.getDurability(), o.name,
-					(o == Scenario_List ? (editable ? "Click to open menu" : "Type /scenarios to view")
+					(o == Scenario_List ? (editable ? "Click to open menu" : "Click to view enabled scenarios")
 							: "Current Value: §o" + o.toString()));
 			m.addButton(b, in);
 			if (editable) {
 				m.addSubMenu(o.getMenu(m), b, !(o == Scenario_List));
+			} else if (o == Scenario_List) {
+				m.addSubMenu(ScenarioListCommand.getMenu(), b, true);
 			}
 
 			in++;
@@ -647,17 +654,15 @@ public enum Option {
 			}
 		}
 
-		if (category.getClass() == Scenarios.class) {
-			Button back = new Button(false, Material.STICK, 1, 0, "Back", "Click to go back");
-			m.addButton(back, m.i.getSize() - 1);
-			back.setOnClick(new ButtonRunnable() {
-				public void run(Player p, InventoryClickEvent event) {
-					p.closeInventory();
+		Button back = new Button(false, Material.STICK, 1, 0, "Back", "Click to go back");
+		m.addButton(back, m.i.getSize() - 1);
+		back.setOnClick(new ButtonRunnable() {
+			public void run(Player p, InventoryClickEvent event) {
+				p.closeInventory();
 
-					getMenuFor(Category.Scenarios, editable).open(p);
-				}
-			});
-		}
+				getOptionsMenu(editable).open(p);
+			}
+		});
 
 		return m;
 	}

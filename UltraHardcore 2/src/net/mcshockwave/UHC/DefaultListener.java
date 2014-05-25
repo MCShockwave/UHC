@@ -152,8 +152,7 @@ public class DefaultListener implements Listener {
 				p.showPlayer(p2);
 			}
 
-			Bukkit.broadcastMessage("§3§o" + p.getName() + " is now spectating");
-			event.setJoinMessage("");
+			event.setJoinMessage("§3§o" + p.getName() + " is now spectating");
 
 			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
 		} else {
@@ -290,19 +289,28 @@ public class DefaultListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player p = event.getPlayer();
 
-		if (UltraHC.nts.getTeam(p.getName()) != null) {
+		if (!UltraHC.started && UltraHC.nts.getTeam(p.getName()) != null) {
 			if (UltraHC.nts.getTeam(p.getName()).getOnlinePlayers().size() <= 1) {
 				UltraHC.nts.removeTeam(UltraHC.nts.getTeam(p.getName()));
 			}
+		}
+
+		if (UltraHC.specs.contains(p.getName())) {
+			event.setQuitMessage("§3§o" + p.getName() + " is no longer spectating");
 		}
 	}
 
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
-		if (event.getReason().contains("Kicked") && UltraHC.specs.contains(event.getPlayer().getName())) {
+		if (UltraHC.started && event.getReason().contains("Kicked")
+				&& !UltraHC.specs.contains(event.getPlayer().getName())) {
 			UltraHC.onDeath(event.getPlayer());
 			Bukkit.broadcastMessage("§c" + event.getPlayer().getName()
 					+ " was killed for getting kicked for reason: §r\n" + event.getReason());
+		}
+
+		if (UltraHC.specs.contains(event.getPlayer().getName())) {
+			event.setLeaveMessage("§3§o" + event.getPlayer().getName() + " is no longer spectating");
 		}
 	}
 
@@ -445,7 +453,6 @@ public class DefaultListener implements Listener {
 
 		if (getLives(p.getName()) == 1 || getLives(p.getName()) == 0) {
 			Bukkit.broadcastMessage("§e§l" + p.getName() + " IS OUT OF RESPAWNS!");
-			return;
 		}
 
 		if (UltraHC.started && !UltraHC.specs.contains(p.getName())) {
@@ -760,10 +767,6 @@ public class DefaultListener implements Listener {
 			}
 		}
 
-		if (p.isOp() && !UltraHC.isMCShockwaveEnabled()) {
-			event.setFormat("§c[§lOP§c]§r " + event.getFormat());
-		}
-
 		if (!event.getMessage().startsWith("@") && UltraHC.specs.contains(p.getName())) {
 			if (p.isOp() && !event.getMessage().startsWith("$") || !p.isOp()) {
 				event.setMessage("§7" + event.getMessage());
@@ -778,8 +781,12 @@ public class DefaultListener implements Listener {
 		if (UltraHC.nts.isTeamGame() && !UltraHC.isMCShockwaveEnabled()) {
 			NumberTeam t = UltraHC.nts.getTeam(p.getName());
 			if (t != null) {
-				event.setFormat("<" + UltraHC.nts.getPrefix(t.id, true, false) + "%s§r> " + event.getMessage());
+				event.setFormat("<" + UltraHC.nts.getPrefix(t.id, true, false, true) + "§f%s§r> " + event.getMessage());
 			}
+		}
+
+		if (p.isOp() && !UltraHC.isMCShockwaveEnabled()) {
+			event.setFormat("§c[§lOP§c]§r " + event.getFormat());
 		}
 
 		if (!UltraHC.isMCShockwaveEnabled() && UltraHC.specs.contains(p.getName())) {

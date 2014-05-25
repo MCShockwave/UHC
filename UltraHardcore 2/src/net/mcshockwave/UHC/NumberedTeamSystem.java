@@ -88,7 +88,7 @@ public class NumberedTeamSystem {
 					ntt = nt.sc.registerNewTeam("T" + nt2.id);
 					ntt.setCanSeeFriendlyInvisibles(true);
 					ntt.setDisplayName("Team " + nt2.id);
-					ntt.setPrefix(getPrefix(nt2.id, false, nt2 == nt));
+					ntt.setPrefix(getPrefix(nt2.id, false, nt2 == nt, false));
 					if (nt2 == nt) {
 						nt.t = ntt;
 					}
@@ -100,7 +100,7 @@ public class NumberedTeamSystem {
 				Team t = s.registerNewTeam("T" + nt.id);
 				t.setAllowFriendlyFire(true);
 				t.setCanSeeFriendlyInvisibles(false);
-				t.setPrefix(getPrefix(nt.id, true, false));
+				t.setPrefix(getPrefix(nt.id, true, false, false));
 				t.setSuffix("§r");
 			}
 
@@ -108,20 +108,26 @@ public class NumberedTeamSystem {
 		}
 	}
 
-	public String getPrefix(int id, boolean noteam, boolean sameteam) {
-		if (teams.size() > (usableColors.length() * usableFormats.length())) {
-			String color = "§e";
-			if (!noteam) {
-				color = sameteam ? "§a" : "§c";
-			}
-
-			return color + id + "|§f";
-		} else {
-			return getColorFromId(id);
+	public String getPrefix(int id, boolean noteam, boolean sameteam, boolean chat) {
+		if (chat) {
+			return getPrefixFromId(id, noteam, sameteam, chat) + " ";
 		}
+
+		return getPrefixFromId(id, noteam, sameteam, false)
+				+ (teams.size() > (usableColors.length() * usableFormats.length()) ? "" : getColorFromId(id));
 	}
 
-	public static String getColorFromId(int id) {
+	public String getPrefixFromId(int id, boolean noteam, boolean sameteam, boolean chat) {
+		String color = (chat && teams.size() > usableColors.length() * usableFormats.length()) ? getColorFromId(id)
+				: "§e";
+		if (!noteam) {
+			color = sameteam ? "§a" : "§c";
+		}
+
+		return color + id + "|§f";
+	}
+
+	public String getColorFromId(int id) {
 		id--;
 		int formatid = id / usableColors.length();
 		int colorid = id % usableColors.length();
@@ -496,7 +502,7 @@ public class NumberedTeamSystem {
 			if (getFromId(id) == getTeam(p.getName()))
 				continue;
 			Button pl = new Button(false, Material.SKULL_ITEM, 1, 3, (getTeam(p.getName()) == null ? "" : getPrefix(
-					getTeam(p.getName()).id, true, false)) + p.getName(), "", "Click to add player");
+					getTeam(p.getName()).id, true, false, false)) + p.getName(), "", "Click to add player");
 			m.addButton(pl, i);
 			pl.setOnClick(new ButtonRunnable() {
 				public void run(final Player p2, InventoryClickEvent event) {
@@ -531,7 +537,7 @@ public class NumberedTeamSystem {
 		for (int i = 0; i < players.length; i++) {
 			final String ps = players[i];
 			Button pl = new Button(false, Material.SKULL_ITEM, 1, 3, getTeam(ps) == null ? "" : getPrefix(
-					getTeam(ps).id, true, false) + ps, "", "Click to remove player");
+					getTeam(ps).id, true, false, false) + ps, "", "Click to remove player");
 			m.addButton(pl, i);
 			pl.setOnClick(new ButtonRunnable() {
 				public void run(final Player p2, InventoryClickEvent event) {

@@ -22,9 +22,9 @@ public class ScenarioListCommand implements CommandExecutor {
 		return false;
 	}
 
-	private ItemMenu getMenu() {
+	public static ItemMenu getMenu() {
 		int size = Scenarios.enabled.size();
-		ItemMenu m = new ItemMenu("Enabled Scenarios", size > 0 ? Scenarios.enabled.size() : 1);
+		ItemMenu m = new ItemMenu("Enabled Scenarios", size > 0 ? Scenarios.enabled.size() + 1 : 1);
 
 		int id = -1;
 		for (Scenarios s : Scenarios.getEnabled()) {
