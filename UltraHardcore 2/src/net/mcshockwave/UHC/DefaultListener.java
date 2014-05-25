@@ -425,15 +425,26 @@ public class DefaultListener implements Listener {
 
 		event.setRespawnLocation(UltraHC.getScatterLocation(p));
 
-		if (getLives(p.getName()) == -8 || getLives(p.getName()) > 0) {
+		if (getLives(p.getName()) == -8 || getLives(p.getName()) > 1) {
 			if (getLives(p.getName()) != -8) {
 				addLives(p.getName(), -1);
-				p.sendMessage("§e§lYOU HAVE " + getLives(p.getName()) + " LIVES REMAINING");
+				Bukkit.broadcastMessage("§e§l" + p.getName() + " HAS " + getLives(p.getName()) + " RESPAWNS REMAINING");
 			}
 
 			if (UltraHC.startCon != null) {
 				UltraHC.setInventory(p, UltraHC.startCon, UltraHC.startACon);
 			}
+
+			int time = 5;
+			p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, time * 20, 100));
+			p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, time * 20, 100));
+			p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, time * 20, 100));
+
+			return;
+		}
+
+		if (getLives(p.getName()) == 1 || getLives(p.getName()) == 0) {
+			Bukkit.broadcastMessage("§e§l" + p.getName() + " IS OUT OF RESPAWNS!");
 			return;
 		}
 
