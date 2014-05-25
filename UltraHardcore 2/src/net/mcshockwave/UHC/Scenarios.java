@@ -15,7 +15,9 @@ import net.mcshockwave.UHC.Listeners.TowerListener;
 import net.mcshockwave.UHC.Listeners.TripleListener;
 import net.mcshockwave.UHC.Listeners.WeakestLink;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
@@ -71,6 +73,20 @@ public enum Scenarios {
 		enabled.remove(this);
 		if (en) {
 			enabled.add(this);
+		}
+
+		if (UltraHC.started) {
+			if (en) {
+				if (l != null) {
+					Bukkit.getPluginManager().registerEvents(l, UltraHC.ins);
+				}
+				onStart();
+			} else {
+				if (l != null) {
+					HandlerList.unregisterAll(l);
+				}
+				onStop();
+			}
 		}
 	}
 
