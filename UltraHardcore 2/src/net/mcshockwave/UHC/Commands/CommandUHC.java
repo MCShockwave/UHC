@@ -246,7 +246,7 @@ public class CommandUHC implements CommandExecutor {
 	}
 
 	public static ItemMenu getPlayerKitMenu() {
-		ItemMenu m = new ItemMenu("Give Kits - Players", 9);
+		ItemMenu m = new ItemMenu("Give Kits - Players", Bukkit.getOnlinePlayers().length);
 
 		int slot = 0;
 		for (final Player p : Bukkit.getOnlinePlayers()) {
