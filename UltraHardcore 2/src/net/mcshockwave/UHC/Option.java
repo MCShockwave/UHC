@@ -356,29 +356,22 @@ public enum Option {
 
 	public String		name;
 
-	public int			defInt;
-	public String		defString;
-	public boolean		defBool;
+	public String		defValue;
 
-	private int			intVal;
-	private int[]		intVals		= null;
-
-	private String		stringVal;
-	private String[]	stringVals	= null;
-
-	private boolean		boolVal;
+	private String		curVal;
+	private String[]	vals	= null;
 
 	private ItemStack	icon;
 
-	public Category		cat			= null;
-	public Scenarios	scen		= null;
+	public Category		cat		= null;
+	public Scenarios	scen	= null;
 
 	private Option(Category cat, Material m, int d, int def, int... others) {
 		this.cat = cat;
 
-		this.defInt = def;
-		this.intVal = def;
-		this.intVals = others;
+		this.defValue = def + "";
+		this.curVal = defValue;
+		this.vals = Arrays.asList(others).toArray(new String[0]);
 
 		this.name = name().replace('_', ' ');
 
@@ -388,9 +381,9 @@ public enum Option {
 	private Option(Category cat, Material m, int d, String def, String... others) {
 		this.cat = cat;
 
-		this.defString = def;
-		this.stringVal = def;
-		this.stringVals = others;
+		this.defValue = def;
+		this.curVal = defValue;
+		this.vals = others;
 
 		this.name = name().replace('_', ' ');
 
@@ -400,8 +393,9 @@ public enum Option {
 	private Option(Category cat, Material m, int d, boolean def) {
 		this.cat = cat;
 
-		this.defBool = def;
-		this.boolVal = def;
+		this.defValue = def + "";
+		this.curVal = defValue;
+		this.vals = new String[] { "true", "false" };
 
 		this.name = name().replace('_', ' ');
 
@@ -411,9 +405,9 @@ public enum Option {
 	private Option(Scenarios scen, Material m, int d, int def, int... others) {
 		this.scen = scen;
 
-		this.defInt = def;
-		this.intVal = def;
-		this.intVals = others;
+		this.defValue = def + "";
+		this.curVal = defValue;
+		this.vals = Arrays.asList(others).toArray(new String[0]);
 
 		this.name = name().replace('_', ' ');
 
@@ -423,9 +417,9 @@ public enum Option {
 	private Option(Scenarios scen, Material m, int d, String def, String... others) {
 		this.scen = scen;
 
-		this.defString = def;
-		this.stringVal = def;
-		this.stringVals = others;
+		this.defValue = def;
+		this.curVal = defValue;
+		this.vals = others;
 
 		this.name = name().replace('_', ' ');
 
@@ -435,46 +429,68 @@ public enum Option {
 	private Option(Scenarios scen, Material m, int d, boolean def) {
 		this.scen = scen;
 
-		this.defBool = def;
-		this.boolVal = def;
+		this.defValue = def + "";
+		this.curVal = defValue;
+		this.vals = new String[] { "true", "false" };
 
 		this.name = name().replace('_', ' ');
 
 		icon = new ItemStack(m, 1, (short) d);
 	}
 
+	public boolean isInt() {
+		try {
+			Integer.parseInt(curVal);
+			return true;
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
+	public boolean isBoolean() {
+		try {
+			Boolean.parseBoolean(curVal);
+			return true;
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
+	public boolean isString() {
+		return !(isInt() || isBoolean());
+	}
+
 	public Class<?> getType() {
-		if (intVals != null) {
+		if (isInt()) {
 			return Integer.class;
-		} else if (stringVals != null) {
-			return String.class;
-		} else {
+		} else if (isBoolean()) {
 			return Boolean.class;
 		}
+		return String.class;
 	}
 
 	public int getInt() {
-		return intVal;
+		return Integer.parseInt(curVal);
 	}
 
 	public String getString() {
-		return stringVal;
+		return curVal;
 	}
 
 	public boolean getBoolean() {
-		return boolVal;
+		return Boolean.parseBoolean(curVal);
 	}
 
 	public void setInt(int i) {
-		intVal = i;
+		curVal = "" + i;
 	}
 
 	public void setString(String s) {
-		stringVal = s;
+		curVal = s;
 	}
 
 	public void setBoolean(boolean b) {
-		boolVal = b;
+		curVal = "" + b;
 	}
 
 	public int getValLength() {
@@ -482,38 +498,26 @@ public enum Option {
 			return Scenarios.values().length;
 		}
 
-		if (getType() == Integer.class) {
-			return intVals.length;
-		} else if (getType() == String.class) {
-			return stringVals.length;
-		} else {
-			return 2;
-		}
+		return vals.length;
 	}
 
-	public Object[] getVals() {
-		if (getType() == Integer.class) {
-			return Arrays.asList(intVals).toArray(new Object[0]);
-		} else if (getType() == String.class) {
-			return stringVals;
-		} else {
-			return new Object[] { true, false };
-		}
+	public <T> T[] getVals(T[] type) {
+		return Arrays.asList(vals).toArray(type);
 	}
 
 	public ItemMenu getMenu(final ItemMenu from) {
 		ItemMenu m = new ItemMenu(name, getValLength() + 1);
 
 		if (getType() == Integer.class) {
-			for (int i = 0; i < intVals.length; i++) {
-				int v = intVals[i];
+			for (int i = 0; i < vals.length; i++) {
+				int v = Integer.parseInt(vals[i]);
 
 				Button b = new Button(false, icon.getType(), 1, icon.getDurability(), "" + v, "Click to set");
 				m.addButton(b, i);
 				b.setOnClick(new ButtonRunnable() {
 					public void run(Player p, InventoryClickEvent event) {
-						intVal = Integer.parseInt(ItemMetaUtils.getItemName(event.getCurrentItem()).substring(2));
-						p.sendMessage("§aSet " + name + " to " + intVal);
+						setInt(Integer.parseInt(ItemMetaUtils.getItemName(event.getCurrentItem()).substring(2)));
+						p.sendMessage("§aSet " + name + " to " + curVal);
 
 						p.closeInventory();
 						getMenuFor(cat == null ? scen : cat, true).open(p);
@@ -547,15 +551,15 @@ public enum Option {
 				m.addButton(back, m.i.getSize() - 1);
 				m.addSubMenu(from, back);
 			} else {
-				for (int i = 0; i < stringVals.length; i++) {
-					String v = stringVals[i];
+				for (int i = 0; i < vals.length; i++) {
+					String v = vals[i];
 
 					Button b = new Button(false, icon.getType(), 1, icon.getDurability(), "" + v, "Click to set");
 					m.addButton(b, i);
 					b.setOnClick(new ButtonRunnable() {
 						public void run(Player p, InventoryClickEvent event) {
-							stringVal = ItemMetaUtils.getItemName(event.getCurrentItem()).substring(2);
-							p.sendMessage("§aSet " + name + " to " + stringVal);
+							setString(ItemMetaUtils.getItemName(event.getCurrentItem()).substring(2));
+							p.sendMessage("§aSet " + name + " to " + curVal);
 
 							p.closeInventory();
 							getMenuFor(cat == null ? scen : cat, true).open(p);
@@ -572,8 +576,8 @@ public enum Option {
 				m.addButton(b, sl);
 				b.setOnClick(new ButtonRunnable() {
 					public void run(Player p, InventoryClickEvent event) {
-						boolVal = Boolean.parseBoolean(ItemMetaUtils.getItemName(event.getCurrentItem()).substring(2));
-						p.sendMessage("§aSet " + name + " to " + boolVal);
+						setBoolean(Boolean.parseBoolean(ItemMetaUtils.getItemName(event.getCurrentItem()).substring(2)));
+						p.sendMessage("§aSet " + name + " to " + curVal);
 
 						p.closeInventory();
 						getMenuFor(cat == null ? scen : cat, true).open(p);
@@ -589,16 +593,7 @@ public enum Option {
 
 	@Override
 	public String toString() {
-		if (getType() == Integer.class) {
-			return intVal + "";
-		}
-		if (getType() == String.class) {
-			return stringVal;
-		}
-		if (getType() == Boolean.class) {
-			return boolVal + "";
-		}
-		return "";
+		return curVal;
 	}
 
 	public static ItemMenu getOptionsMenu(final boolean editable) {
