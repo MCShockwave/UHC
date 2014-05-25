@@ -25,8 +25,6 @@ public class NumberedTeamSystem {
 
 	public static HashMap<Player, NumberTeam>	enteringPassword	= new HashMap<>();
 
-	public boolean								friendlyfire		= false;
-
 	public Scoreboard							s;
 
 	public ArrayList<NumberTeam>				teams				= new ArrayList<>();
@@ -93,7 +91,7 @@ public class NumberedTeamSystem {
 						nt.t = ntt;
 					}
 				}
-				ntt.setAllowFriendlyFire(friendlyfire);
+				ntt.setAllowFriendlyFire(Option.Friendly_Fire.getBoolean());
 			}
 
 			if (s.getTeam("T" + nt.id) == null) {
@@ -120,11 +118,12 @@ public class NumberedTeamSystem {
 	public String getPrefixFromId(int id, boolean noteam, boolean sameteam, boolean chat) {
 		String color = (chat && teams.size() > usableColors.length() * usableFormats.length()) ? getColorFromId(id)
 				: "§e";
+		String refcolor = "§f";
 		if (!noteam) {
-			color = sameteam ? "§a" : "§c";
+			refcolor = sameteam ? "§a" : "§c";
 		}
 
-		return color + id + "|§f";
+		return color + id + refcolor + "|§f";
 	}
 
 	public String getColorFromId(int id) {

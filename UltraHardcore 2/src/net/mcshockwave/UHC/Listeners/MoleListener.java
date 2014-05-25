@@ -1,6 +1,7 @@
 package net.mcshockwave.UHC.Listeners;
 
 import net.mcshockwave.UHC.NumberedTeamSystem.NumberTeam;
+import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.UltraHC;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
@@ -110,6 +111,8 @@ public class MoleListener implements Listener, CommandExecutor {
 					Inventory i = moleKit.get(p.getName());
 
 					p.openInventory(i);
+				} else if (p.isOp() && !UltraHC.started) {
+					p.openInventory(getInv());
 				}
 			}
 
@@ -129,13 +132,15 @@ public class MoleListener implements Listener, CommandExecutor {
 		return true;
 	}
 
-	public static Inventory getInv() {
-		Inventory i = Bukkit.createInventory(null, 9, "Mole Kit");
+	public static ItemStack[]	items	= { new ItemStack(Material.TNT, 4), new ItemStack(Material.STONE_PLATE, 2),
+			new ItemStack(Material.POTION, 3, (short) 16460), new ItemStack(Material.MONSTER_EGG, 3, (short) 54),
+			new ItemStack(Material.MONSTER_EGG, 3, (short) 52), new ItemStack(Material.MONSTER_EGG, 3, (short) 51),
+			new ItemStack(Material.MONSTER_EGG, 3, (short) 50), new ItemStack(Material.GRAVEL, 8),
+			new ItemStack(Material.STONE, 16) };
 
-		ItemStack[] items = { new ItemStack(Material.TNT, 4), new ItemStack(Material.STONE_PLATE, 2),
-				new ItemStack(Material.POTION, 3, (short) 16460), new ItemStack(Material.MONSTER_EGG, 3, (short) 54),
-				new ItemStack(Material.MONSTER_EGG, 3, (short) 52), new ItemStack(Material.MONSTER_EGG, 3, (short) 51),
-				new ItemStack(Material.MONSTER_EGG, 3, (short) 50) };
+	public static Inventory getInv() {
+		Inventory i = Bukkit.createInventory(null, ((items.length + 8) / 9) * 9, "Mole Kit - Use as storage too!");
+
 		for (ItemStack it : items) {
 			i.addItem(ItemMetaUtils.setLore(it, "§6Mole Item"));
 		}
@@ -155,9 +160,10 @@ public class MoleListener implements Listener, CommandExecutor {
 	}
 
 	public static void onStart() {
-		ender = Bukkit.createInventory(null, 27, "Mole Chest");
+		int erows = 4;
+		ender = Bukkit.createInventory(null, erows * 9, "Mole Chest");
 
-		UltraHC.nts.friendlyfire = true;
+		Option.Friendly_Fire.setBoolean(true);
 	}
 
 	@EventHandler
