@@ -151,7 +151,8 @@ public class CommandUHC implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("sethealth")) {
 				Player set = Bukkit.getPlayer(args[1]);
 
-				set.setHealth(Double.parseDouble(args[2]));
+				set.setHealth(Double.parseDouble(args[2]) / 5);
+				UltraHC.updateHealthFor(set);
 			}
 
 			if (args[0].equalsIgnoreCase("world")) {

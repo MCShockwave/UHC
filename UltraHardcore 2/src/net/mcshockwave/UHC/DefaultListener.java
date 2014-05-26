@@ -93,7 +93,7 @@ public class DefaultListener implements Listener {
 
 	Random									rand			= new Random();
 
-	public static int						maxLength		= 9;
+	public static int						maxLength		= 8;
 
 	public static HashMap<String, Integer>	livesRemaining	= new HashMap<>();
 
@@ -153,6 +153,10 @@ public class DefaultListener implements Listener {
 			}
 
 			event.setJoinMessage("§3§o" + p.getName() + " is now spectating");
+
+			if (UltraHC.nts.getTeam(p.getName()) != null) {
+				UltraHC.nts.getTeam(p.getName()).removePlayer(p.getName());
+			}
 
 			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
 		} else {

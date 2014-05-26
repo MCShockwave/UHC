@@ -168,17 +168,13 @@ public class UltraHC extends JavaPlugin {
 		}
 
 		health = scb.registerNewObjective("Health", "dummy");
-		health.setDisplayName(" / 100");
+		health.setDisplayName("% HP");
 		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
-		}
 
 		healthList = scb.registerNewObjective("HealthList", "dummy");
 		healthList.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			healthList.getScore(p).setScore(getRoundedHealth(p.getHealth()));
-		}
+		
+		updateHealth();
 	}
 
 	public static void updateHealthFor(final Player p) {

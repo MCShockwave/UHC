@@ -6,7 +6,6 @@ import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -42,7 +41,7 @@ public class NumberedTeamSystem {
 			public void run() {
 				updateScoreboard();
 			}
-		}, 0l, 1l);
+		}, 10, 1);
 
 		for (final Team t : s.getTeams()) {
 			if (t.getName().startsWith("T") && t.getPlayers().size() > 0) {
@@ -60,12 +59,6 @@ public class NumberedTeamSystem {
 				teams.add(nt);
 			}
 		}
-
-		Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
-			public void run() {
-				updateScoreboard();
-			}
-		}, 10l);
 	}
 
 	public void updateScoreboard() {
@@ -80,6 +73,14 @@ public class NumberedTeamSystem {
 
 			cloneScores(nt.sc, s);
 
+			if (s.getTeam("T" + nt.id) == null) {
+				Team t = s.registerNewTeam("T" + nt.id);
+				t.setAllowFriendlyFire(Option.Friendly_Fire.getBoolean());
+				t.setCanSeeFriendlyInvisibles(false);
+				t.setPrefix(getPrefix(nt.id, true, false, false));
+				t.setSuffix("§r");
+			}
+
 			for (NumberTeam nt2 : teams) {
 				Team ntt = nt.sc.getTeam("T" + nt2.id);
 				if (ntt == null) {
@@ -92,14 +93,6 @@ public class NumberedTeamSystem {
 					}
 				}
 				ntt.setAllowFriendlyFire(Option.Friendly_Fire.getBoolean());
-			}
-
-			if (s.getTeam("T" + nt.id) == null) {
-				Team t = s.registerNewTeam("T" + nt.id);
-				t.setAllowFriendlyFire(true);
-				t.setCanSeeFriendlyInvisibles(false);
-				t.setPrefix(getPrefix(nt.id, true, false, false));
-				t.setSuffix("§r");
 			}
 
 			updatePlayersForTeam(nt);
@@ -116,14 +109,12 @@ public class NumberedTeamSystem {
 	}
 
 	public String getPrefixFromId(int id, boolean noteam, boolean sameteam, boolean chat) {
-		String color = (chat && teams.size() > usableColors.length() * usableFormats.length()) ? getColorFromId(id)
-				: "§e";
 		String refcolor = "§f";
 		if (!noteam) {
 			refcolor = sameteam ? "§a" : "§c";
 		}
 
-		return color + id + refcolor + "|§f";
+		return "§e" + id + refcolor + "|§f";
 	}
 
 	public String getColorFromId(int id) {
@@ -147,44 +138,39 @@ public class NumberedTeamSystem {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private void updatePlayersForTeam(NumberTeam tou) {
-		for (NumberTeam nt : teams) {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			NumberTeam nt = getTeam(p.getName());
+			if (nt == null) {
+				continue;
+			}
+
 			Team t = tou.sc.getTeam("T" + nt.id);
+			updateTeamPlayers(p, t, nt);
 
-			for (String s : nt.players) {
-				OfflinePlayer op = Bukkit.getOfflinePlayer(s);
-				if (!t.hasPlayer(op)) {
-					t.addPlayer(op);
-					if (op.isOnline() && !ChatColor.stripColor(op.getPlayer().getPlayerListName()).equals(op.getName())) {
-						t.addPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(op.getPlayer().getPlayerListName())));
-					}
-				}
-			}
-			for (String s : tou.players) {
-				OfflinePlayer op = Bukkit.getOfflinePlayer(s);
-				if (!nt.players.contains(s) && t.hasPlayer(op)) {
-					t.removePlayer(op);
-				}
-			}
+			Team main = s.getTeam("T" + nt.id);
+			updateTeamPlayers(p, main, nt);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void updateTeamPlayers(Player p, Team t, NumberTeam source) {
+		OfflinePlayer tab = Bukkit.getOfflinePlayer(p.getPlayerListName());
+
+		if (!t.hasPlayer(p) && source.getPlayers().contains(p.getName())) {
+			t.addPlayer(p);
 		}
 
-		Team st = s.getTeam("T" + tou.id);
-		for (OfflinePlayer op : st.getPlayers()) {
-			if (!tou.getPlayers().contains(op.getName())) {
-				st.removePlayer(op);
-			}
+		if (t.hasPlayer(p) && !t.hasPlayer(tab)) {
+			t.addPlayer(tab);
 		}
-		for (String s : tou.players) {
-			OfflinePlayer op = Bukkit.getOfflinePlayer(s);
-			if (!st.hasPlayer(op)) {
-				st.addPlayer(op);
-			}
-			if (op.isOnline()
-					&& !st.hasPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(op.getPlayer().getPlayerListName())))
-					&& !ChatColor.stripColor(op.getPlayer().getPlayerListName()).equals(op.getName())) {
-				st.addPlayer(Bukkit.getOfflinePlayer(ChatColor.stripColor(op.getPlayer().getPlayerListName())));
-			}
+
+		if (t.hasPlayer(p) && !source.getPlayers().contains(p.getName())) {
+			t.removePlayer(p);
+		}
+
+		if (t.hasPlayer(tab) && !t.hasPlayer(p)) {
+			t.removePlayer(tab);
 		}
 	}
 
@@ -365,6 +351,8 @@ public class NumberedTeamSystem {
 			if (Bukkit.getPlayer(name) != null) {
 				Bukkit.getPlayer(name).setScoreboard(sc);
 			}
+
+			updatePlayersForAllTeams();
 
 			if (owner == null) {
 				owner = name;

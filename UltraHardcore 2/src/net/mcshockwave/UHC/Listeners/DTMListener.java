@@ -34,12 +34,12 @@ import java.util.Map.Entry;
 
 public class DTMListener implements Listener {
 
-	public static HashMap<Block, Integer>	monu	= new HashMap<>();
+	public static HashMap<Block, Integer>	monum	= new HashMap<>();
 
 	public static BukkitTask				part	= null;
 
 	public static Block getFromId(int id) {
-		for (Entry<Block, Integer> ent : monu.entrySet()) {
+		for (Entry<Block, Integer> ent : monum.entrySet()) {
 			if (ent.getValue() == id) {
 				return ent.getKey();
 			}
@@ -58,7 +58,7 @@ public class DTMListener implements Listener {
 				Block m = monuLoc.getBlock();
 				m.setType(Material.ENDER_STONE);
 
-				monu.put(m, nt.id);
+				monum.put(m, nt.id);
 			} else {
 				UltraHC.nts.removeTeam(nt);
 			}
@@ -67,7 +67,7 @@ public class DTMListener implements Listener {
 		part = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new Runnable() {
 			@SuppressWarnings("deprecation")
 			public void run() {
-				for (Block b : monu.keySet()) {
+				for (Block b : monum.keySet()) {
 					PacketUtils.playParticleEffect(ParticleEffect.ENCHANTMENT_TABLE,
 							b.getLocation().add(0.5, 0.5, 0.5), 0.3f, 0.3f, 20);
 
@@ -114,8 +114,8 @@ public class DTMListener implements Listener {
 		Block b = event.getBlock();
 		Player p = event.getPlayer();
 
-		if (!UltraHC.specs.contains(p.getName()) && monu.containsKey(b)) {
-			NumberTeam nt = UltraHC.nts.getFromId(monu.get(b));
+		if (!UltraHC.specs.contains(p.getName()) && monum.containsKey(b)) {
+			NumberTeam nt = UltraHC.nts.getFromId(monum.get(b));
 			NumberTeam des = UltraHC.nts.getTeam(p.getName());
 			event.setCancelled(true);
 
@@ -132,7 +132,7 @@ public class DTMListener implements Listener {
 					+ (des == null ? "" : " [Team " + des.id + "]") + "!");
 			b.getWorld().playSound(b.getLocation(), Sound.ENDERDRAGON_DEATH, 1000, 2);
 
-			monu.remove(b);
+			monum.remove(b);
 
 			for (Player tm : nt.getOnlinePlayers()) {
 				tm.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, 1));
@@ -149,7 +149,7 @@ public class DTMListener implements Listener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Location b = event.getBlock().getLocation();
 
-		for (Block m : monu.keySet()) {
+		for (Block m : monum.keySet()) {
 			Location ml = m.getLocation();
 
 			if (ml.getBlockX() == b.getBlockX() && ml.getBlockZ() == b.getBlockZ() && ml.getBlockY() <= b.getBlockY()) {
@@ -173,7 +173,7 @@ public class DTMListener implements Listener {
 		if (e instanceof Player) {
 			Player p = (Player) e;
 			if (event.getRegainReason() == RegainReason.SATIATED && UltraHC.nts.getTeam(p.getName()) != null
-					&& !monu.containsValue(UltraHC.nts.getTeam(p.getName()).id)) {
+					&& !monum.containsValue(UltraHC.nts.getTeam(p.getName()).id)) {
 				event.setCancelled(true);
 			}
 			UltraHC.updateHealthFor(p);
