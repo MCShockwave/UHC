@@ -163,7 +163,7 @@ public class MoleListener implements Listener, CommandExecutor {
 		int erows = 4;
 		ender = Bukkit.createInventory(null, erows * 9, "Mole Chest");
 
-		Option.Friendly_Fire.setBoolean(true);
+		Option.Friendly_Fire.set(true);
 	}
 
 	@EventHandler

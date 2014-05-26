@@ -178,7 +178,7 @@ public class DefaultListener implements Listener {
 		if (UltraHC.specs.contains(p.getName())) {
 			int len = p.getName().length();
 			p.setPlayerListName("\u2718" + (len >= 16 ? p.getName().substring(0, 15) : p.getName()));
-		} else if (p.getName().length() > maxLength) {
+		} else if (p.getName().length() > maxLength + 1) {
 			p.setPlayerListName(getShortName(p));
 		}
 	}
@@ -822,6 +822,15 @@ public class DefaultListener implements Listener {
 				}
 			}
 		}
+
+		if (UltraHC.started && UltraHC.specs.contains(p.getName())) {
+			String mes = event.getMessage();
+
+			if (mes.equalsIgnoreCase("/tp")) {
+				event.setCancelled(true);
+				getTPMenu().open(p);
+			}
+		}
 	}
 
 	@EventHandler
@@ -844,30 +853,7 @@ public class DefaultListener implements Listener {
 
 		if (UltraHC.specs.contains(p.getName()) && a == Action.LEFT_CLICK_AIR
 				&& (it == null || it.getType() == Material.AIR)) {
-			final ArrayList<Player> al = UltraHC.getAlive();
-			ItemMenu m = new ItemMenu("Alive Players", al.size());
-
-			int i = 0;
-			for (final Player p2 : al) {
-				int am = 1;
-				if (UltraHC.nts.getTeam(p2.getName()) != null) {
-					am = UltraHC.nts.getTeam(p2.getName()).id;
-				}
-				Team t = Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(p2);
-				Button bu = new Button(true, Material.WOOL, am, 0, (t != null ? t.getPrefix() : "") + p2.getName()
-						+ (t != null ? t.getSuffix() : ""), "Click to teleport");
-				bu.setOnClick(new ButtonRunnable() {
-					public void run(Player c, InventoryClickEvent event) {
-						c.teleport(p2);
-						c.sendMessage("§7Teleported to §a§o" + p2.getName());
-					}
-				});
-
-				m.addButton(bu, i);
-				i++;
-			}
-
-			m.open(p);
+			getTPMenu().open(p);
 		}
 
 		if (ItemMetaUtils.hasCustomName(it)
@@ -876,6 +862,33 @@ public class DefaultListener implements Listener {
 
 			HallOfFame.getMenu().open(p);
 		}
+	}
+
+	public ItemMenu getTPMenu() {
+		final ArrayList<Player> al = UltraHC.getAlive();
+		ItemMenu m = new ItemMenu("Alive Players", al.size());
+
+		int i = 0;
+		for (final Player p2 : al) {
+			int am = 1;
+			if (UltraHC.nts.getTeam(p2.getName()) != null) {
+				am = UltraHC.nts.getTeam(p2.getName()).id;
+			}
+			Team t = Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(p2);
+			Button bu = new Button(true, Material.WOOL, am, 0, (t != null ? t.getPrefix() : "") + p2.getName()
+					+ (t != null ? t.getSuffix() : ""), "Click to teleport");
+			bu.setOnClick(new ButtonRunnable() {
+				public void run(Player c, InventoryClickEvent event) {
+					c.teleport(p2.getLocation().clone().add(5, 0, 0));
+					c.sendMessage("§7Teleported to §a§o" + p2.getName());
+				}
+			});
+
+			m.addButton(bu, i);
+			i++;
+		}
+
+		return m;
 	}
 
 	public String getColorsHOF(String name) {
@@ -951,6 +964,18 @@ public class DefaultListener implements Listener {
 			}
 
 			p.teleport(Multiworld.getLobby().getSpawnLocation());
+		}
+
+		if (UltraHC.started && !UltraHC.specs.contains(p.getName())) {
+			for (Entity e : p.getNearbyEntities(3, 3, 3)) {
+				if (e instanceof Player) {
+					Player p2 = (Player) e;
+
+					if (!UltraHC.specs.contains(p2.getName())) {
+						p2.getLocation().setY(p2.getLocation().getY() + 1);
+					}
+				}
+			}
 		}
 	}
 

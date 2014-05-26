@@ -30,9 +30,9 @@ public class NumberedTeamSystem {
 
 	public BukkitTask							updater				= null;
 
-	// usable colors: 14, usable formats: 2, total # of colored teams: 28!
+	// usable colors: 14, usable formats: 3, total # of colored teams: 42!
 	public static String						usableColors		= "abcde679342581";
-	public static String						usableFormats		= "xn";
+	public static String						usableFormats		= "xnm";
 
 	public NumberedTeamSystem(Scoreboard s) {
 		this.s = s;
@@ -613,12 +613,12 @@ public class NumberedTeamSystem {
 
 			if (isTeamSize) {
 				tcount = (int) Math.ceil(numPlayers / num);
-				Option.Team_Limit.setInt((int) num);
+				Option.Team_Limit.set((int) num);
 			} else {
 				tcount = num;
-				Option.Team_Limit.setInt((int) Math.ceil(numPlayers / num));
+				Option.Team_Limit.set((int) Math.ceil(numPlayers / num));
 			}
-			Option.Max_Teams.setInt((int) tcount);
+			Option.Max_Teams.set((int) tcount);
 
 			// clear teams
 			for (NumberTeam nt : teams.toArray(new NumberTeam[0])) {

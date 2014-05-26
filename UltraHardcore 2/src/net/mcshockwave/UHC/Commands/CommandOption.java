@@ -26,11 +26,11 @@ public class CommandOption implements CommandExecutor {
 					String to = args[1];
 
 					if (isInteger(to)) {
-						set.setInt(Integer.parseInt(to));
+						set.set(Integer.parseInt(to));
 					} else if (isBoolean(to)) {
-						set.setBoolean(Boolean.parseBoolean(to));
+						set.set(Boolean.parseBoolean(to));
 					} else {
-						set.setString(to);
+						set.set(to);
 					}
 
 					sender.sendMessage("§aSet option " + set.name + " to value " + to);
