@@ -6,6 +6,7 @@ import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -111,7 +112,13 @@ public class NumberedTeamSystem {
 	public String getPrefixFromId(int id, boolean noteam, boolean sameteam, boolean chat) {
 		String refcolor = "§f";
 		if (!noteam) {
-			refcolor = sameteam ? "§a" : "§c";
+			if (usableColors.length() * usableFormats.length() >= teams.size()) {
+				ChatColor col = ChatColor.getByChar(getColorFromId(id).charAt(1));
+				refcolor = sameteam ? (col == ChatColor.DARK_GREEN ? "§a" : "§2") : (col == ChatColor.DARK_RED ? "§c"
+						: "§4");
+			} else {
+				refcolor = sameteam ? "§2" : "§4";
+			}
 		}
 
 		return "§e" + id + refcolor + "|§f";
@@ -146,10 +153,14 @@ public class NumberedTeamSystem {
 			}
 
 			Team t = tou.sc.getTeam("T" + nt.id);
-			updateTeamPlayers(p, t, nt);
+			if (t != null) {
+				updateTeamPlayers(p, t, nt);
+			}
 
 			Team main = s.getTeam("T" + nt.id);
-			updateTeamPlayers(p, main, nt);
+			if (main != null) {
+				updateTeamPlayers(p, main, nt);
+			}
 		}
 	}
 
@@ -176,22 +187,18 @@ public class NumberedTeamSystem {
 
 	private void cloneScores(Scoreboard to, Scoreboard from) {
 		for (OfflinePlayer op : from.getPlayers()) {
-			for (Score f : from.getScores(op)) {
-				if (to.getObjective(f.getObjective().getName()) != null) {
-					Objective t = to.getObjective(f.getObjective().getName());
-
-					if (t.getScore(op).getScore() != f.getScore()) {
-						t.getScore(op).setScore(f.getScore());
-					}
-				}
+			if (to.getPlayers().contains(op) && !from.getPlayers().contains(op)) {
+				to.resetScores(op);
 			}
 
-			for (Score t : to.getScores(op)) {
-				if (from.getObjective(t.getObjective().getName()) != null) {
-					Objective o = from.getObjective(t.getObjective().getName());
+			if (from.getPlayers().contains(op)) {
+				for (Score f : from.getScores(op)) {
+					if (to.getObjective(f.getObjective().getName()) != null) {
+						Objective t = to.getObjective(f.getObjective().getName());
 
-					if (o.getScore(op) == null) {
-						to.resetScores(op);
+						if (t.getScore(op).getScore() != f.getScore()) {
+							t.getScore(op).setScore(f.getScore());
+						}
 					}
 				}
 			}

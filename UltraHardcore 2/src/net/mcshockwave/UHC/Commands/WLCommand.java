@@ -39,13 +39,17 @@ public class WLCommand implements CommandExecutor {
 				if (c.equalsIgnoreCase("list")) {
 					sender.sendMessage(listWhitelisted());
 				} else if (c.equalsIgnoreCase("add")) {
-					OfflinePlayer op = getFromString(args[1]);
-					op.setWhitelisted(true);
-					sender.sendMessage("Added " + op.getName() + " to whitelist");
+					OfflinePlayer op = getFromString(args[1], false);
+					if (op != null) {
+						op.setWhitelisted(true);
+						sender.sendMessage("Added " + op.getName() + " to whitelist");
+					}
 				} else if (c.equalsIgnoreCase("remove")) {
-					OfflinePlayer op = getFromString(args[1]);
-					op.setWhitelisted(false);
-					sender.sendMessage("Removed " + op.getName() + " from whitelist");
+					OfflinePlayer op = getFromString(args[1], true);
+					if (op != null) {
+						op.setWhitelisted(false);
+						sender.sendMessage("Removed " + op.getName() + " from whitelist");
+					}
 				} else if (c.equalsIgnoreCase("clear")) {
 					sender.sendMessage("Cleared whitelist of all non-op players");
 
@@ -124,13 +128,14 @@ public class WLCommand implements CommandExecutor {
 		return ret.substring(0, ret.length() - com.length());
 	}
 
-	public OfflinePlayer getFromString(String s) {
-		for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
+	public OfflinePlayer getFromString(String s, boolean whitelist) {
+		OfflinePlayer[] itr = whitelist ? Bukkit.getWhitelistedPlayers().toArray(new OfflinePlayer[0]) : Bukkit
+				.getOfflinePlayers();
+		for (OfflinePlayer op : itr) {
 			if (op.getName().toLowerCase().startsWith(s.toLowerCase())) {
 				return op;
 			}
 		}
 		return null;
 	}
-
 }

@@ -879,7 +879,7 @@ public class DefaultListener implements Listener {
 					+ (t != null ? t.getSuffix() : ""), "Click to teleport");
 			bu.setOnClick(new ButtonRunnable() {
 				public void run(Player c, InventoryClickEvent event) {
-					c.teleport(p2.getLocation().clone().add(5, 0, 0));
+					c.teleport(p2.getLocation());
 					c.sendMessage("§7Teleported to §a§o" + p2.getName());
 				}
 			});
@@ -967,12 +967,16 @@ public class DefaultListener implements Listener {
 		}
 
 		if (UltraHC.started && !UltraHC.specs.contains(p.getName())) {
-			for (Entity e : p.getNearbyEntities(3, 3, 3)) {
+			double rad = 1.5;
+			for (Entity e : p.getNearbyEntities(rad, rad, rad)) {
 				if (e instanceof Player) {
 					Player p2 = (Player) e;
 
-					if (!UltraHC.specs.contains(p2.getName())) {
-						p2.getLocation().setY(p2.getLocation().getY() + 1);
+					if (UltraHC.specs.contains(p2.getName())) {
+						Location tp = p2.getLocation().clone().add(0, 1, 0);
+						if (tp.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) {
+							p2.teleport(tp);
+						}
 					}
 				}
 			}
