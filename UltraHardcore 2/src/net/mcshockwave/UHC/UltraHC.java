@@ -18,6 +18,7 @@ import net.mcshockwave.UHC.Utils.BarUtil;
 import net.mcshockwave.UHC.Utils.CustomSignUtils.CustomSignListener;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
+import net.mcshockwave.scatter.ScatterManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -173,7 +174,7 @@ public class UltraHC extends JavaPlugin {
 
 		healthList = scb.registerNewObjective("HealthList", "dummy");
 		healthList.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-		
+
 		updateHealth();
 	}
 
@@ -215,7 +216,11 @@ public class UltraHC extends JavaPlugin {
 		started = true;
 
 		if (!resuming) {
-			spreadPlayers(Option.Spread_Radius.getInt());
+			if (Bukkit.getPluginManager().isPluginEnabled("InstantScatter")) {
+				ScatterManager.spreadPlayers(Multiworld.getUHC(), Option.Spread_Radius.getInt());
+			} else {
+				spreadPlayers(Option.Spread_Radius.getInt());
+			}
 		}
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
