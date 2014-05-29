@@ -830,6 +830,13 @@ public class DefaultListener implements Listener {
 				event.setCancelled(true);
 				getTPMenu().open(p);
 			}
+
+			if (mes.toLowerCase().startsWith("/inv")) {
+				event.setCancelled(true);
+				String pl = mes.split(" ")[1];
+
+				openInventory(Bukkit.getPlayer(pl).getInventory(), p);
+			}
 		}
 	}
 
@@ -1003,19 +1010,23 @@ public class DefaultListener implements Listener {
 			if (!UltraHC.getAlive().contains(p) && UltraHC.getAlive().contains(c)) {
 				final PlayerInventory pi = c.getInventory();
 
-				final ItemMenu im = new ItemMenu("Inventory of " + c.getName(), 54);
-
-				updateInventory(im, pi);
-
-				im.open(p);
-
-				updateTask.put(p, new BukkitRunnable() {
-					public void run() {
-						updateInventory(im, pi);
-					}
-				}.runTaskTimer(UltraHC.ins, 0, 20));
+				openInventory(pi, p);
 			}
 		}
+	}
+
+	public void openInventory(final PlayerInventory toOpen, final Player open) {
+		final ItemMenu im = new ItemMenu("Inventory of " + open.getName(), 54);
+
+		updateInventory(im, toOpen);
+
+		im.open(open);
+
+		updateTask.put(open, new BukkitRunnable() {
+			public void run() {
+				updateInventory(im, toOpen);
+			}
+		}.runTaskTimer(UltraHC.ins, 0, 20));
 	}
 
 	@EventHandler
