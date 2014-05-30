@@ -214,14 +214,15 @@ public enum Option {
 		Category.Teams,
 		Material.WOOL,
 		0,
-		0,
+		1,
 		8,
 		6,
 		5,
 		4,
 		3,
 		2,
-		1),
+		1,
+		0),
 	Max_Teams(
 		Category.Teams,
 		Material.WOOL,
@@ -438,7 +439,9 @@ public enum Option {
 
 	public boolean isInt() {
 		try {
-			Integer.parseInt(val);
+			for (String s : vals) {
+				Integer.parseInt(s);
+			}
 			return true;
 		} catch (Exception e) {
 		}
@@ -666,4 +669,73 @@ public enum Option {
 		return ret;
 	}
 
+	public static String serialize() {
+		String ret = "";
+
+		for (Option o : values()) {
+			if (o == Scenario_List) {
+				String add = "";
+				for (int i = 0; i < Scenarios.values().length; i++) {
+					Scenarios sc = Scenarios.values()[i];
+					if (sc.isEnabled()) {
+						add += i + ":";
+					}
+				}
+				ret += add.substring(0, add.length() > 0 ? add.length() - 1 : 0);
+			} else if (o.isInt()) {
+				ret += o.val;
+			} else if (o.isBoolean()) {
+				ret += o.getBoolean() ? "1" : "0";
+			} else {
+				for (int i = 0; i < o.vals.length; i++) {
+					String str = o.vals[i];
+					if (str.equalsIgnoreCase(o.val)) {
+						ret += i;
+						break;
+					}
+				}
+			}
+
+			ret += ";";
+		}
+
+		return ret.substring(0, ret.length() - 1);
+	}
+
+	public static void loadFromString(String load) {
+		String[] str = load.split(";");
+
+		for (int i = 0; i < str.length; i++) {
+			Option set = values()[i];
+			String setTo = str[i];
+
+			if (set == Scenario_List) {
+				Scenarios.enabled.clear();
+				String[] scens = setTo.split(":");
+				for (String s : scens) {
+					if (isInteger(s)) {
+						Scenarios en = Scenarios.values()[Integer.parseInt(s)];
+						en.setEnabled(true);
+					}
+				}
+			} else {
+				if (set.isInt()) {
+					set.set(setTo);
+				} else if (set.isBoolean()) {
+					set.set(setTo.equalsIgnoreCase("1"));
+				} else {
+					set.set(set.vals[Integer.parseInt(setTo)]);
+				}
+			}
+		}
+	}
+
+	public static boolean isInteger(String s) {
+		try {
+			Integer.parseInt(s);
+			return true;
+		} catch (Exception e) {
+		}
+		return false;
+	}
 }

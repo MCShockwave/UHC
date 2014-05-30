@@ -216,6 +216,22 @@ public class CommandUHC implements CommandExecutor {
 					p2.teleport(Multiworld.getLobby().getSpawnLocation());
 				}
 			}
+
+			if (args[0].equalsIgnoreCase("optionstring")) {
+				String opt = Option.serialize();
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(ChatSerializer
+						.a("{\"text\":\"\",\"extra\":[{\"text\":\"" + opt + "\",\"color\""
+								+ ":\"gold\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + opt
+								+ "\"}}]}"), true));
+			}
+			
+			if (args[0].equalsIgnoreCase("fromstring")) {
+				String input = args[1];
+				
+				Option.loadFromString(input);
+				
+				p.sendMessage("§6Loaded options from " + input);
+			}
 		}
 		return true;
 	}

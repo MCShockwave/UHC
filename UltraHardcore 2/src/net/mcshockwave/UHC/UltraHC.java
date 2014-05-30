@@ -18,7 +18,6 @@ import net.mcshockwave.UHC.Utils.BarUtil;
 import net.mcshockwave.UHC.Utils.CustomSignUtils.CustomSignListener;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
-import net.mcshockwave.scatter.ScatterManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -217,7 +216,8 @@ public class UltraHC extends JavaPlugin {
 
 		if (!resuming) {
 			if (Bukkit.getPluginManager().isPluginEnabled("InstantScatter")) {
-				ScatterManager.spreadPlayers(Multiworld.getUHC(), Option.Spread_Radius.getInt());
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spread " + Option.Spread_Radius.getInt() + " "
+						+ Multiworld.getUHC().getName());
 			} else {
 				spreadPlayers(Option.Spread_Radius.getInt());
 			}
