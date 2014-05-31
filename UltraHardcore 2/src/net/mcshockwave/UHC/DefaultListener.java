@@ -823,7 +823,7 @@ public class DefaultListener implements Listener {
 			}
 		}
 
-		if (UltraHC.started && UltraHC.specs.contains(p.getName())) {
+		if (UltraHC.started && UltraHC.specs.contains(p.getName()) || p.isOp()) {
 			String mes = event.getMessage();
 
 			if (mes.equalsIgnoreCase("/tp")) {

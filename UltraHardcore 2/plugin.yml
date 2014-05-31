@@ -28,3 +28,4 @@ commands:
    wl:
       aliases: [whli, wlist]
    setoption:
+   inv:
