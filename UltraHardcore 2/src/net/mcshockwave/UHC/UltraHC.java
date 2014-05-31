@@ -72,6 +72,8 @@ public class UltraHC extends JavaPlugin {
 
 	public static Scoreboard				scb				= null;
 	public static Objective					health			= null, healthList = null, kills = null;
+
+	public static HashMap<String, Integer>	totKills		= new HashMap<>();
 	// borderSize = null;
 
 	public static ArrayList<String>			specs			= new ArrayList<>();
@@ -215,12 +217,7 @@ public class UltraHC extends JavaPlugin {
 		started = true;
 
 		if (!resuming) {
-			if (Bukkit.getPluginManager().isPluginEnabled("InstantScatter")) {
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spread " + Option.Spread_Radius.getInt() + " "
-						+ Multiworld.getUHC().getName());
-			} else {
-				spreadPlayers(Option.Spread_Radius.getInt());
-			}
+			spreadPlayers(Option.Spread_Radius.getInt());
 		}
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
@@ -489,6 +486,9 @@ public class UltraHC extends JavaPlugin {
 			}
 		}, deathKickSeconds * 20);
 		scb.resetScores(p);
+		for (NumberTeam nt : nts.teams) {
+			nt.sc.resetScores(p);
+		}
 		// playersLeft.setScore(getAlive().size());
 	}
 

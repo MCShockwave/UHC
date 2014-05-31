@@ -337,6 +337,16 @@ public class DefaultListener implements Listener {
 
 		if (UltraHC.started && UltraHC.getAlive().contains(p)) {
 
+			if (p.getKiller() != null) {
+				Player k = p.getKiller();
+				if (!UltraHC.totKills.containsKey(k.getName())) {
+					UltraHC.totKills.put(k.getName(), 0);
+				}
+				int kills = UltraHC.totKills.get(k.getName());
+				UltraHC.totKills.remove(k.getName());
+				UltraHC.totKills.put(k.getName(), kills + 1);
+			}
+
 			if (Option.Head_on_Fence.getBoolean() && p.getLocation().getBlock().getType() == Material.AIR
 					&& p.getLocation().getBlock().getRelative(BlockFace.UP).getType() == Material.AIR) {
 				p.getLocation().getBlock().setType(Material.NETHER_FENCE);
@@ -974,7 +984,7 @@ public class DefaultListener implements Listener {
 		}
 
 		if (UltraHC.started && !UltraHC.specs.contains(p.getName())) {
-			double rad = 1.5;
+			double rad = 1;
 			for (Entity e : p.getNearbyEntities(rad, rad, rad)) {
 				if (e instanceof Player) {
 					Player p2 = (Player) e;
@@ -1016,7 +1026,7 @@ public class DefaultListener implements Listener {
 	}
 
 	public void openInventory(final PlayerInventory toOpen, final Player open) {
-		final ItemMenu im = new ItemMenu("Inventory of " + open.getName(), 54);
+		final ItemMenu im = new ItemMenu("Inventory of " + toOpen.getHolder().getName(), 54);
 
 		updateInventory(im, toOpen);
 

@@ -14,6 +14,7 @@ import net.mcshockwave.UHC.Listeners.SwitchListener;
 import net.mcshockwave.UHC.Listeners.TowerListener;
 import net.mcshockwave.UHC.Listeners.TripleListener;
 import net.mcshockwave.UHC.Listeners.WeakestLink;
+import net.mcshockwave.UHC.worlds.Multiworld;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -175,6 +176,10 @@ public enum Scenarios {
 		// if (this == Crux) {
 		// // CruxListener.onStartGame();
 		// }
+		if (this == Mini_UHC) {
+			Multiworld.getUHC().setGameRuleValue("doTileDrops", "false");
+			Multiworld.getNether().setGameRuleValue("doTileDrops", "false");
+		}
 		if (this == Linked) {
 			LinkedListener.onStart();
 		}

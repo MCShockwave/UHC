@@ -224,13 +224,23 @@ public class CommandUHC implements CommandExecutor {
 								+ ":\"gold\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + opt
 								+ "\"}}]}"), true));
 			}
-			
+
 			if (args[0].equalsIgnoreCase("fromstring")) {
 				String input = args[1];
-				
+
 				Option.loadFromString(input);
-				
+
 				p.sendMessage("§6Loaded options from " + input);
+			}
+
+			if (args[0].equalsIgnoreCase("kills")) {
+				String in = args[1];
+
+				if (UltraHC.totKills.containsKey(in)) {
+					p.sendMessage("§a" + in + " has " + UltraHC.totKills.get(in) + " kills");
+				} else {
+					p.sendMessage("§c" + in + " has no kills");
+				}
 			}
 		}
 		return true;

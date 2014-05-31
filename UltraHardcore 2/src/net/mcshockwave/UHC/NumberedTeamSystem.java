@@ -186,7 +186,7 @@ public class NumberedTeamSystem {
 	}
 
 	private void cloneScores(Scoreboard to, Scoreboard from) {
-		for (OfflinePlayer op : from.getPlayers()) {
+		for (OfflinePlayer op : s.getPlayers()) {
 			if (to.getPlayers().contains(op) && !from.getPlayers().contains(op)) {
 				to.resetScores(op);
 			}
