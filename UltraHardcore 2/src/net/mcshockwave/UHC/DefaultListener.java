@@ -208,7 +208,7 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
 		event.setMaxPlayers(UltraHC.maxPlayers);
-		String sta = CommandUHC.kitMOTD ? "§a[Kit PVP]" : UltraHC.started ? "§4[Started]"
+		String sta = CommandUHC.kitMOTD ? "§a[Open PvP]" : UltraHC.started ? "§4[Started]"
 				: (Bukkit.getOnlinePlayers().length >= UltraHC.maxPlayers) ? "§4[Full]"
 						: Bukkit.hasWhitelist() ? "§4[Whitelisted]" : "§a[Joinable]";
 		event.setMotd("§cMCShockwave §7UHC §8- " + sta);
