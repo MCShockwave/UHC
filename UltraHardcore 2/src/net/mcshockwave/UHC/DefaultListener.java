@@ -154,10 +154,6 @@ public class DefaultListener implements Listener {
 
 			event.setJoinMessage("§3§o" + p.getName() + " is now spectating");
 
-			if (UltraHC.nts.getTeam(p.getName()) != null) {
-				UltraHC.nts.getTeam(p.getName()).removePlayer(p.getName());
-			}
-
 			p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
 		} else {
 			for (Player p2 : Bukkit.getOnlinePlayers()) {
