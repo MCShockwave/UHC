@@ -980,13 +980,13 @@ public class DefaultListener implements Listener {
 		}
 
 		if (UltraHC.started && !UltraHC.specs.contains(p.getName())) {
-			double rad = 0.5;
+			double rad = 1;
 			for (Entity e : p.getNearbyEntities(rad, rad, rad)) {
 				if (e instanceof Player) {
 					Player p2 = (Player) e;
 
 					if (UltraHC.specs.contains(p2.getName())) {
-						p2.setVelocity(p2.getVelocity().add(new Vector(0, 3, 0)));
+						p2.setVelocity(p2.getVelocity().add(new Vector(0, 1.5, 0)));
 						if (p2.getAllowFlight()) {
 							p2.setFlying(true);
 						}
