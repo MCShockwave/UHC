@@ -990,9 +990,9 @@ public class DefaultListener implements Listener {
 					Player p2 = (Player) e;
 
 					if (UltraHC.specs.contains(p2.getName())) {
-						Location tp = p2.getLocation().clone().add(0, 1, 0);
-						if (tp.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) {
-							p2.teleport(tp);
+						p2.setVelocity(p2.getVelocity().add(new Vector(0, 3, 0)));
+						if (p2.getAllowFlight()) {
+							p2.setFlying(true);
 						}
 					}
 				}

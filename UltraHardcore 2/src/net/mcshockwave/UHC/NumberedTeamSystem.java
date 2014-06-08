@@ -42,7 +42,7 @@ public class NumberedTeamSystem {
 			public void run() {
 				updateScoreboard();
 			}
-		}, 10, 1);
+		}, 10, 10);
 
 		for (final Team t : s.getTeams()) {
 			if (t.getName().startsWith("T") && t.getPlayers().size() > 0) {

@@ -28,8 +28,6 @@ import org.bukkit.scheduler.BukkitWorker;
 
 import java.util.ArrayList;
 
-import com.dsh105.holoapi.HoloAPI;
-import com.dsh105.holoapi.api.Hologram;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
@@ -125,13 +123,14 @@ public class CommandUHC implements CommandExecutor {
 					s.onStart();
 				}
 			}
-			if (args[0].equalsIgnoreCase("remholos")) {
-				for (Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
-					h.clearAllPlayerViews();
-					HoloAPI.getManager().stopTracking(h);
-					HoloAPI.getManager().clearFromFile(h);
-				}
-			}
+			// if (args[0].equalsIgnoreCase("remholos")) {
+			// for (Hologram h :
+			// HoloAPI.getManager().getAllHolograms().keySet()) {
+			// h.clearAllPlayerViews();
+			// HoloAPI.getManager().stopTracking(h);
+			// HoloAPI.getManager().clearFromFile(h);
+			// }
+			// }
 			if (args[0].equalsIgnoreCase("addplayer")) {
 				UltraHC.addPlayer(args[1]);
 				p.sendMessage("§c" + args[1] + " removed from spectators and added to players");
@@ -256,13 +255,21 @@ public class CommandUHC implements CommandExecutor {
 			}
 
 			if (args[0].equalsIgnoreCase("tasks")) {
-				p.sendMessage("§aPending:");
+				p.sendMessage("§aPending Tasks: (Plugin.ID [Running/Queued])");
+				p.sendMessage("§e§nAsync§r §6§nSync§r\n §e");
 				for (BukkitTask bt : Bukkit.getScheduler().getPendingTasks()) {
-					p.sendMessage(bt.toString());
+					p.sendMessage((bt.isSync() ? "§6" : "§e")
+							+ bt.getOwner().getName()
+							+ "."
+							+ bt.getTaskId()
+							+ " "
+							+ (Bukkit.getScheduler().isCurrentlyRunning(bt.getTaskId()) ? "Running" : Bukkit
+									.getScheduler().isQueued(bt.getTaskId()) ? "Queued" : "Unknown"));
 				}
-				p.sendMessage("§aActive:");
+				p.sendMessage("§aActive Workers: (ThreadName: Plugin.ID)");
 				for (BukkitWorker bw : Bukkit.getScheduler().getActiveWorkers()) {
-					p.sendMessage(bw.toString());
+					p.sendMessage("§b" + bw.getThread().getName() + ": " + bw.getOwner().getName() + "."
+							+ bw.getTaskId());
 				}
 			}
 		}

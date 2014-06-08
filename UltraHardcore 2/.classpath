@@ -7,6 +7,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/MCShockwave"/>
 	<classpathentry kind="lib" path="C:/spigot-api-1.7.5-R0.1-20140403.201412-29.jar"/>
 	<classpathentry kind="lib" path="C:/spigot-1.7.5-R0.1-20140403.201507-29.jar"/>
-	<classpathentry kind="lib" path="C:/HoloAPI-v1.2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
