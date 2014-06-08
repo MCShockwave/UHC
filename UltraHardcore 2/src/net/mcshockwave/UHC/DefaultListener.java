@@ -984,7 +984,7 @@ public class DefaultListener implements Listener {
 		}
 
 		if (UltraHC.started && !UltraHC.specs.contains(p.getName())) {
-			double rad = 1;
+			double rad = 0.5;
 			for (Entity e : p.getNearbyEntities(rad, rad, rad)) {
 				if (e instanceof Player) {
 					Player p2 = (Player) e;

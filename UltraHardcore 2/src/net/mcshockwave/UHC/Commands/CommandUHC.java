@@ -23,6 +23,8 @@ import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scheduler.BukkitWorker;
 
 import java.util.ArrayList;
 
@@ -250,6 +252,17 @@ public class CommandUHC implements CommandExecutor {
 					p.sendMessage("§a" + in + " has " + UltraHC.totKills.get(in) + " kills");
 				} else {
 					p.sendMessage("§c" + in + " has no kills");
+				}
+			}
+
+			if (args[0].equalsIgnoreCase("tasks")) {
+				p.sendMessage("§aPending:");
+				for (BukkitTask bt : Bukkit.getScheduler().getPendingTasks()) {
+					p.sendMessage(bt.toString());
+				}
+				p.sendMessage("§aActive:");
+				for (BukkitWorker bw : Bukkit.getScheduler().getActiveWorkers()) {
+					p.sendMessage(bw.toString());
 				}
 			}
 		}

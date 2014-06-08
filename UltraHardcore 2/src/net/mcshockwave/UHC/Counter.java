@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 public class Counter {
 
-	public long	startTime;
-	public long	runCount	= 0;
-	public long	runCountMin	= 0;
-	private BukkitTask	co	= null, coMi = null;
-	public Runnable		run	= null;
+	public long			startTime;
+	public long			runCount	= 0;
+	public long			runCountMin	= 0;
+	private BukkitTask	co			= null;
+	public Runnable		run			= null;
 
 	public long getTime() {
 		return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
@@ -53,23 +53,15 @@ public class Counter {
 				if (run == null)
 					return;
 				run.run();
-			}
-		}, 20, 20);
-		coMi = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new Runnable() {
-			public void run() {
 				runCountMin = getTotalMins();
 			}
-		}, 0, 120);
+		}, 20, 20);
 	}
 
 	public void stop() {
 		if (co != null) {
 			co.cancel();
 			co = null;
-		}
-		if (coMi != null) {
-			coMi.cancel();
-			coMi = null;
 		}
 	}
 
