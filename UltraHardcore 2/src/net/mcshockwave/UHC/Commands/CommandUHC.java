@@ -189,11 +189,21 @@ public class CommandUHC implements CommandExecutor {
 				for (Player p2 : Bukkit.getOnlinePlayers()) {
 					p2.kickPlayer("§e§lServer Restarting");
 				}
+				Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+					public void run() {
+						for (Player p2 : Bukkit.getOnlinePlayers()) {
+							p2.kickPlayer("§e§lServer Restarting");
+						}
+					}
+				}, 10);
+				Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+					public void run() {
+						UltraHC.deleteWorld(Multiworld.getUHC());
+						UltraHC.deleteWorld(Multiworld.getNether());
 
-				UltraHC.deleteWorld(Multiworld.getUHC());
-				UltraHC.deleteWorld(Multiworld.getNether());
-
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
+					}
+				}, 11);
 			}
 
 			if (args[0].equalsIgnoreCase("spread")) {
