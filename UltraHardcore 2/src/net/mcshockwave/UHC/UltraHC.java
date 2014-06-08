@@ -217,7 +217,9 @@ public class UltraHC extends JavaPlugin {
 		started = true;
 
 		if (!resuming) {
+			Bukkit.broadcastMessage("§aStarting spread...");
 			spreadPlayers(Option.Spread_Radius.getInt());
+			Bukkit.broadcastMessage("§bDone!");
 		}
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
@@ -547,7 +549,7 @@ public class UltraHC extends JavaPlugin {
 				if (noHazard) {
 					goodSpawn = true;
 					l.getChunk().load();
-					p.teleport(l.add(0, 2, 0));
+					p.teleport(l.add(0.5, 2, 0.5));
 					spread.add(p);
 
 					if (nts.getTeam(p.getName()) != null) {
