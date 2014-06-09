@@ -303,9 +303,9 @@ public class NumberedTeamSystem {
 	}
 
 	public void removeTeam(NumberTeam nt) {
-		for (Player p : nt.getOnlinePlayers()) {
-			p.setScoreboard(s);
-		}
+		// for (Player p : nt.getOnlinePlayers()) {
+		// p.setScoreboard(s);
+		// }
 		// updatePlayersForTeam(nt);
 		teams.remove(nt);
 		nt.players.clear();
@@ -378,8 +378,10 @@ public class NumberedTeamSystem {
 
 			if (Bukkit.getPlayer(name) != null) {
 				Player p = Bukkit.getPlayer(name);
-				p.setScoreboard(s);
-				t.removePlayer(p);
+				// p.setScoreboard(s);
+				if (t != null) {
+					t.removePlayer(p);
+				}
 			}
 
 			// updatePlayersForAllTeams();
