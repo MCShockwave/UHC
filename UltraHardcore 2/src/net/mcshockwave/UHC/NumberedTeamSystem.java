@@ -11,7 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -27,7 +26,7 @@ public class NumberedTeamSystem {
 
 	public ArrayList<NumberTeam>				teams				= new ArrayList<>();
 
-	public BukkitTask							updater				= null;
+	// public BukkitTask updater = null;
 
 	// usable colors: 14, usable formats: 3, total # of colored teams: 42!
 	public static String						usableColors		= "abcde679342581";
@@ -36,11 +35,12 @@ public class NumberedTeamSystem {
 	public NumberedTeamSystem(Scoreboard s) {
 		this.s = s;
 
-		updater = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new Runnable() {
-			public void run() {
-				updateScoreboard();
-			}
-		}, 20, 20);
+		// updater = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new
+		// Runnable() {
+		// public void run() {
+		// updateScoreboard();
+		// }
+		// }, 20, 20);
 
 		for (final Team t : s.getTeams()) {
 			if (t.getName().startsWith("T") && t.getPlayers().size() > 0) {
@@ -360,6 +360,7 @@ public class NumberedTeamSystem {
 			// }
 
 			// updatePlayersForAllTeams();
+			updateScoreboard();
 
 			if (owner == null) {
 				owner = name;
@@ -382,6 +383,7 @@ public class NumberedTeamSystem {
 			}
 
 			// updatePlayersForAllTeams();
+			updateScoreboard();
 
 			if (players.size() < 1 && !UltraHC.started) {
 				removeTeam(this);
