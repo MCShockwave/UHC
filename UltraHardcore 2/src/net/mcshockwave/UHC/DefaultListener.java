@@ -167,9 +167,9 @@ public class DefaultListener implements Listener {
 			}
 		}
 
-		if (UltraHC.nts.getTeam(p.getName()) != null) {
-			p.setScoreboard(UltraHC.nts.getTeam(p.getName()).sc);
-		}
+		// if (UltraHC.nts.getTeam(p.getName()) != null) {
+		// p.setScoreboard(UltraHC.nts.getTeam(p.getName()).sc);
+		// }
 
 		if (UltraHC.specs.contains(p.getName())) {
 			int len = p.getName().length();

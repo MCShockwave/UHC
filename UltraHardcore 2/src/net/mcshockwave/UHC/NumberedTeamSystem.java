@@ -11,9 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -29,7 +26,7 @@ public class NumberedTeamSystem {
 
 	public ArrayList<NumberTeam>				teams				= new ArrayList<>();
 
-	public BukkitTask							updater				= null;
+	// public BukkitTask updater = null;
 
 	// usable colors: 14, usable formats: 3, total # of colored teams: 42!
 	public static String						usableColors		= "abcde679342581";
@@ -38,11 +35,12 @@ public class NumberedTeamSystem {
 	public NumberedTeamSystem(Scoreboard s) {
 		this.s = s;
 
-		updater = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new Runnable() {
-			public void run() {
-				updateScoreboard();
-			}
-		}, 10, 10);
+		// updater = Bukkit.getScheduler().runTaskTimer(UltraHC.ins, new
+		// Runnable() {
+		// public void run() {
+		// updateScoreboard();
+		// }
+		// }, 10, 10);
 
 		for (final Team t : s.getTeams()) {
 			if (t.getName().startsWith("T") && t.getPlayers().size() > 0) {
@@ -62,43 +60,43 @@ public class NumberedTeamSystem {
 		}
 	}
 
-	public void updateScoreboard() {
-		for (NumberTeam nt : teams) {
-			for (Objective o : s.getObjectives()) {
-				Objective nto = nt.sc.getObjective(o.getName());
-				if (nto == null) {
-					nto = nt.sc.registerNewObjective(o.getName(), o.getCriteria());
-				}
-				cloneObjective(nto, o);
-			}
-
-			cloneScores(nt.sc, s);
-
-			if (s.getTeam("T" + nt.id) == null) {
-				Team t = s.registerNewTeam("T" + nt.id);
-				t.setAllowFriendlyFire(Option.Friendly_Fire.getBoolean());
-				t.setCanSeeFriendlyInvisibles(false);
-				t.setPrefix(getPrefix(nt.id, true, false, false));
-				t.setSuffix("§r");
-			}
-
-			for (NumberTeam nt2 : teams) {
-				Team ntt = nt.sc.getTeam("T" + nt2.id);
-				if (ntt == null) {
-					ntt = nt.sc.registerNewTeam("T" + nt2.id);
-					ntt.setCanSeeFriendlyInvisibles(true);
-					ntt.setDisplayName("Team " + nt2.id);
-					ntt.setPrefix(getPrefix(nt2.id, false, nt2 == nt, false));
-					if (nt2 == nt) {
-						nt.t = ntt;
-					}
-				}
-				ntt.setAllowFriendlyFire(Option.Friendly_Fire.getBoolean());
-			}
-
-			updatePlayersForTeam(nt);
-		}
-	}
+	// public void updateScoreboard() {
+	// for (NumberTeam nt : teams) {
+	// for (Objective o : s.getObjectives()) {
+	// Objective nto = nt.sc.getObjective(o.getName());
+	// if (nto == null) {
+	// nto = nt.sc.registerNewObjective(o.getName(), o.getCriteria());
+	// }
+	// cloneObjective(nto, o);
+	// }
+	//
+	// cloneScores(nt.sc, s);
+	//
+	// if (s.getTeam("T" + nt.id) == null) {
+	// Team t = s.registerNewTeam("T" + nt.id);
+	// t.setAllowFriendlyFire(Option.Friendly_Fire.getBoolean());
+	// t.setCanSeeFriendlyInvisibles(false);
+	// t.setPrefix(getPrefix(nt.id, true, false, false));
+	// t.setSuffix("§r");
+	// }
+	//
+	// for (NumberTeam nt2 : teams) {
+	// Team ntt = nt.sc.getTeam("T" + nt2.id);
+	// if (ntt == null) {
+	// ntt = nt.sc.registerNewTeam("T" + nt2.id);
+	// ntt.setCanSeeFriendlyInvisibles(true);
+	// ntt.setDisplayName("Team " + nt2.id);
+	// ntt.setPrefix(getPrefix(nt2.id, false, nt2 == nt, false));
+	// if (nt2 == nt) {
+	// nt.t = ntt;
+	// }
+	// }
+	// ntt.setAllowFriendlyFire(Option.Friendly_Fire.getBoolean());
+	// }
+	//
+	// updatePlayersForTeam(nt);
+	// }
+	// }
 
 	public String getPrefix(int id, boolean noteam, boolean sameteam, boolean chat) {
 		if (chat) {
@@ -132,78 +130,78 @@ public class NumberedTeamSystem {
 		return "§" + usableColors.charAt(colorid) + (formatid == 0 ? "" : "§" + usableFormats.charAt(formatid));
 	}
 
-	private void cloneObjective(Objective n, Objective cl) {
-		if (!n.getDisplayName().equals(cl.getDisplayName()))
-			n.setDisplayName(cl.getDisplayName());
-		if (n.getDisplaySlot() != cl.getDisplaySlot())
-			n.setDisplaySlot(cl.getDisplaySlot());
-	}
-
-	private void updatePlayersForAllTeams() {
-		for (NumberTeam nt : teams) {
-			updatePlayersForTeam(nt);
-		}
-	}
-
-	private void updatePlayersForTeam(NumberTeam tou) {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			NumberTeam nt = getTeam(p.getName());
-			if (nt == null) {
-				continue;
-			}
-
-			Team t = tou.sc.getTeam("T" + nt.id);
-			if (t != null) {
-				updateTeamPlayers(p, t, nt);
-			}
-
-			Team main = s.getTeam("T" + nt.id);
-			if (main != null) {
-				updateTeamPlayers(p, main, nt);
-			}
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	private void updateTeamPlayers(Player p, Team t, NumberTeam source) {
-		OfflinePlayer tab = Bukkit.getOfflinePlayer(p.getPlayerListName());
-
-		if (!t.hasPlayer(p) && source.getPlayers().contains(p.getName())) {
-			t.addPlayer(p);
-		}
-
-		if (t.hasPlayer(p) && !t.hasPlayer(tab)) {
-			t.addPlayer(tab);
-		}
-
-		if (t.hasPlayer(p) && !source.getPlayers().contains(p.getName())) {
-			t.removePlayer(p);
-		}
-
-		if (t.hasPlayer(tab) && !t.hasPlayer(p)) {
-			t.removePlayer(tab);
-		}
-	}
-
-	private void cloneScores(Scoreboard to, Scoreboard from) {
-		for (OfflinePlayer op : s.getPlayers()) {
-			if (to.getPlayers().contains(op) && !from.getPlayers().contains(op)) {
-				to.resetScores(op);
-			}
-
-			if (from.getPlayers().contains(op)) {
-				for (Score f : from.getScores(op)) {
-					if (to.getObjective(f.getObjective().getName()) != null) {
-						Objective t = to.getObjective(f.getObjective().getName());
-
-						if (t.getScore(op).getScore() != f.getScore()) {
-							t.getScore(op).setScore(f.getScore());
-						}
-					}
-				}
-			}
-		}
-	}
+	// private void cloneObjective(Objective n, Objective cl) {
+	// if (!n.getDisplayName().equals(cl.getDisplayName()))
+	// n.setDisplayName(cl.getDisplayName());
+	// if (n.getDisplaySlot() != cl.getDisplaySlot())
+	// n.setDisplaySlot(cl.getDisplaySlot());
+	// }
+	//
+	// private void updatePlayersForAllTeams() {
+	// for (NumberTeam nt : teams) {
+	// updatePlayersForTeam(nt);
+	// }
+	// }
+	//
+	// private void updatePlayersForTeam(NumberTeam tou) {
+	// for (Player p : Bukkit.getOnlinePlayers()) {
+	// NumberTeam nt = getTeam(p.getName());
+	// if (nt == null) {
+	// continue;
+	// }
+	//
+	// Team t = tou.sc.getTeam("T" + nt.id);
+	// if (t != null) {
+	// updateTeamPlayers(p, t, nt);
+	// }
+	//
+	// Team main = s.getTeam("T" + nt.id);
+	// if (main != null) {
+	// updateTeamPlayers(p, main, nt);
+	// }
+	// }
+	// }
+	//
+	// @SuppressWarnings("deprecation")
+	// private void updateTeamPlayers(Player p, Team t, NumberTeam source) {
+	// OfflinePlayer tab = Bukkit.getOfflinePlayer(p.getPlayerListName());
+	//
+	// if (!t.hasPlayer(p) && source.getPlayers().contains(p.getName())) {
+	// t.addPlayer(p);
+	// }
+	//
+	// if (t.hasPlayer(p) && !t.hasPlayer(tab)) {
+	// t.addPlayer(tab);
+	// }
+	//
+	// if (t.hasPlayer(p) && !source.getPlayers().contains(p.getName())) {
+	// t.removePlayer(p);
+	// }
+	//
+	// if (t.hasPlayer(tab) && !t.hasPlayer(p)) {
+	// t.removePlayer(tab);
+	// }
+	// }
+	//
+	// private void cloneScores(Scoreboard to, Scoreboard from) {
+	// for (OfflinePlayer op : s.getPlayers()) {
+	// if (to.getPlayers().contains(op) && !from.getPlayers().contains(op)) {
+	// to.resetScores(op);
+	// }
+	//
+	// if (from.getPlayers().contains(op)) {
+	// for (Score f : from.getScores(op)) {
+	// if (to.getObjective(f.getObjective().getName()) != null) {
+	// Objective t = to.getObjective(f.getObjective().getName());
+	//
+	// if (t.getScore(op).getScore() != f.getScore()) {
+	// t.getScore(op).setScore(f.getScore());
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
 
 	public int getHighestId() {
 		int ret = 0;
@@ -307,7 +305,7 @@ public class NumberedTeamSystem {
 		for (Player p : nt.getOnlinePlayers()) {
 			p.setScoreboard(s);
 		}
-		updatePlayersForTeam(nt);
+		// updatePlayersForTeam(nt);
 		teams.remove(nt);
 		nt.players.clear();
 		s.getTeam("T" + nt.id).unregister();
@@ -326,7 +324,7 @@ public class NumberedTeamSystem {
 		public int			id;
 		public String		password, owner;
 		ArrayList<String>	players;
-		public Scoreboard	sc;
+		// public Scoreboard sc;
 		public Team			t;
 
 		public NumberTeam(int id, String pass, String owner) {
@@ -344,7 +342,7 @@ public class NumberedTeamSystem {
 			this.owner = owner;
 			players = new ArrayList<>();
 
-			sc = Bukkit.getScoreboardManager().getNewScoreboard();
+			// sc = Bukkit.getScoreboardManager().getNewScoreboard();
 		}
 
 		public void addPlayer(String name) {
@@ -356,11 +354,11 @@ public class NumberedTeamSystem {
 
 			players.add(name);
 
-			if (Bukkit.getPlayer(name) != null) {
-				Bukkit.getPlayer(name).setScoreboard(sc);
-			}
+			// if (Bukkit.getPlayer(name) != null) {
+			// Bukkit.getPlayer(name).setScoreboard(sc);
+			// }
 
-			updatePlayersForAllTeams();
+			// updatePlayersForAllTeams();
 
 			if (owner == null) {
 				owner = name;
@@ -382,7 +380,7 @@ public class NumberedTeamSystem {
 				t.removePlayer(p);
 			}
 
-			updatePlayersForAllTeams();
+			// updatePlayersForAllTeams();
 
 			if (players.size() < 1 && !UltraHC.started) {
 				removeTeam(this);

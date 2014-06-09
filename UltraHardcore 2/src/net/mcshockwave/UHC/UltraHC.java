@@ -488,9 +488,9 @@ public class UltraHC extends JavaPlugin {
 			}
 		}, deathKickSeconds * 20);
 		scb.resetScores(p);
-		for (NumberTeam nt : nts.teams) {
-			nt.sc.resetScores(p);
-		}
+		// for (NumberTeam nt : nts.teams) {
+		// nt.sc.resetScores(p);
+		// }
 		// playersLeft.setScore(getAlive().size());
 	}
 
