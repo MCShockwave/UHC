@@ -225,11 +225,11 @@ public class NumberedTeamSystem {
 
 			Button b = new Button(true, Material.WOOL, nt.id, data, "Team #" + nt.id, nt.isFull() ? "§c§lFull"
 					: nt.password == null ? "§aClick to join" : "§cPassword Protected", "§eOwner: " + nt.owner,
-					"§aOnline Players: " + nt.getOnlinePlayers().size(), "", "§bPlayers: (max "
-							+ Option.Team_Limit.getInt() + ")");
+					"§aOnline Players: " + nt.getOnlinePlayers().size(), "", "§bPlayers (" + nt.getPlayers().size()
+							+ "): (max " + Option.Team_Limit.getInt() + ")");
 			ArrayList<String> lore = (ArrayList<String>) ItemMetaUtils.getLoreList(b.button);
 			for (String s : nt.players) {
-				String pre = (Bukkit.getPlayer(s) == null ? "§c" : UltraHC.specs.contains(s) ? "§e" : "§a")
+				String pre = (Bukkit.getPlayer(s) == null ? "§c" : UltraHC.specs.contains(s) ? "§a[§lS§a] §c" : "§a")
 						+ (nt.owner.equals(s) ? "§o" : "");
 				lore.add(pre + s);
 			}
