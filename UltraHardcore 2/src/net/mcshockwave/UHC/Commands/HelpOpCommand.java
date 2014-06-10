@@ -22,7 +22,7 @@ public class HelpOpCommand implements CommandExecutor {
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (p.isOp() || p == sender) {
-				p.sendMessage("§8[§aHelpOp§8] §6" + sender.getName() + "§f:" + mes);
+				p.sendMessage("§8[§aHelpOp§8] §6" + sender.getName() + "§f: " + mes);
 			}
 		}
 

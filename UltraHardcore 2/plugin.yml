@@ -29,4 +29,4 @@ commands:
       aliases: [whli, wlist]
    setoption:
    inv:
-   helpop
+   helpop:
