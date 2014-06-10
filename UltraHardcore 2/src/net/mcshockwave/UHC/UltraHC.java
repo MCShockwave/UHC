@@ -5,6 +5,7 @@ import net.mcshockwave.UHC.Commands.BanningCommands;
 import net.mcshockwave.UHC.Commands.CommandOption;
 import net.mcshockwave.UHC.Commands.CommandTeam;
 import net.mcshockwave.UHC.Commands.CommandUHC;
+import net.mcshockwave.UHC.Commands.HelpOpCommand;
 import net.mcshockwave.UHC.Commands.MoleChatCommand;
 import net.mcshockwave.UHC.Commands.RestrictCommand;
 import net.mcshockwave.UHC.Commands.ScenarioListCommand;
@@ -113,6 +114,7 @@ public class UltraHC extends JavaPlugin {
 		getCommand("scenarios").setExecutor(new ScenarioListCommand());
 		getCommand("wl").setExecutor(new WLCommand());
 		getCommand("setoption").setExecutor(new CommandOption());
+		getCommand("helpop").setExecutor(new HelpOpCommand());
 
 		scb = Bukkit.getScoreboardManager().getMainScoreboard();
 
