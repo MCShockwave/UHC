@@ -53,7 +53,9 @@ public enum Scenarios {
 		new Compensation()),
 	Tower_of_Death(
 		new TowerListener()),
-	Skyhigh;
+	Skyhigh,
+	Blood_Bag(
+		new BloodBagListener());
 
 	public static List<Scenarios>	enabled	= new ArrayList<>();
 
