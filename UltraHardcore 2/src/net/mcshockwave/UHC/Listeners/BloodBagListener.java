@@ -1,5 +1,6 @@
-package net.mcshockwave.UHC;
+package net.mcshockwave.UHC.Listeners;
 
+import net.mcshockwave.UHC.UltraHC;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 
 import org.bukkit.Bukkit;
@@ -9,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -112,6 +114,15 @@ public class BloodBagListener implements Listener {
 					updatePlayer((Player) event.getEntity());
 				}
 			}, 1);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent event) {
+		for (ItemStack it : event.getDrops().toArray(new ItemStack[0])) {
+			if (it != null && it.isSimilar(getBlockedSlotStack())) {
+				event.getDrops().remove(it);
+			}
 		}
 	}
 
