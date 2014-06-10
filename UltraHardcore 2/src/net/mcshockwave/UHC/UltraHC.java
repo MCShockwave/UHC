@@ -325,7 +325,7 @@ public class UltraHC extends JavaPlugin {
 
 					String end = Option.End_Game.getString();
 					if (end.equalsIgnoreCase("Meetup")) {
-						Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z:0)");
+						Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z: 0)");
 
 						int y = Multiworld.getUHC().getHighestBlockYAt(0, 0);
 						Block b = Multiworld.getUHC().getBlockAt(0, y, 0);
