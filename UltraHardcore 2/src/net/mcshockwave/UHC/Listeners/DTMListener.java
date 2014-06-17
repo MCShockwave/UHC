@@ -156,6 +156,11 @@ public class DTMListener implements Listener {
 				event.setCancelled(true);
 			}
 		}
+
+		if (b.getBlockY() > (Option.Base_Height.getInt() + 50)) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage("§cDo not build that high!");
+		}
 	}
 
 	@EventHandler
