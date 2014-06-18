@@ -462,10 +462,15 @@ public class DefaultListener implements Listener {
 				UltraHC.setInventory(p, UltraHC.startCon, UltraHC.startACon);
 			}
 
-			int time = 5;
-			p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, time * 20, 100));
-			p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, time * 20, 100));
-			p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, time * 20, 100));
+			Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
+				public void run() {
+					int time = 5;
+					p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, time * 20, 100));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, time * 20, 100));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, time * 20, 100));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, time * 20, 1));
+				}
+			}, 2);
 
 			return;
 		}
