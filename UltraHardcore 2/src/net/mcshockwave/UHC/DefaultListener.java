@@ -100,16 +100,25 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void join(PlayerJoinEvent event) {
 		UltraHC.rerandomize();
+		if (!UltraHC.isMCShockwaveEnabled()) {
+			event.setJoinMessage("§2" + event.getPlayer().getName() + " §7joined");
+		}
 	}
 
 	@EventHandler
 	public void quit(PlayerQuitEvent event) {
 		UltraHC.rerandomize();
+		if (!UltraHC.isMCShockwaveEnabled()) {
+			event.setQuitMessage("§2" + event.getPlayer().getName() + " §7left");
+		}
 	}
 
 	@EventHandler
 	public void kick(PlayerKickEvent event) {
 		UltraHC.rerandomize();
+		if (!UltraHC.isMCShockwaveEnabled()) {
+			event.setLeaveMessage("§2" + event.getPlayer().getName() + " §7was kicked");
+		}
 	}
 
 	@EventHandler

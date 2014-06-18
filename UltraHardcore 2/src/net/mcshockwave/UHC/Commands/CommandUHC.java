@@ -229,7 +229,7 @@ public class CommandUHC implements CommandExecutor {
 
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 					}
-				}, 11);
+				}, 15);
 			}
 
 			if (args[0].equalsIgnoreCase("spread")) {
