@@ -3,10 +3,12 @@ package net.mcshockwave.UHC.Commands;
 import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.Scenarios;
 import net.mcshockwave.UHC.UltraHC;
+import net.mcshockwave.UHC.Kits.Kits;
 import net.mcshockwave.UHC.Listeners.ResurrectListener;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
+import net.mcshockwave.UHC.Utils.SerializationUtils;
 import net.mcshockwave.UHC.db.ConfigFile;
 import net.mcshockwave.UHC.worlds.Multiworld;
 import net.minecraft.server.v1_7_R2.ChatSerializer;
@@ -16,12 +18,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
@@ -41,6 +46,7 @@ public class CommandUHC implements CommandExecutor {
 
 	public static boolean	kitMOTD	= false;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender.isOp() && args.length > 0 && args[0].equalsIgnoreCase("reload")) {
@@ -93,11 +99,30 @@ public class CommandUHC implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("teams")) {
 				UltraHC.nts.getMenu(p, true).open(p);
 			}
+			if (args[0].equalsIgnoreCase("kitlist")) {
+				p.sendMessage("§eAll kits:");
+				for (Kits k : Kits.values()) {
+					p.sendMessage("§7§o" + k.name());
+				}
+			}
 			if (args[0].equalsIgnoreCase("setKit")) {
-				final PlayerInventory inv = p.getInventory();
-				UltraHC.startCon = inv.getContents();
-				UltraHC.startACon = inv.getArmorContents();
-				p.sendMessage("§6Set kit to current inventory");
+				if (args.length > 1) {
+					Kits k = Kits.valueOf(args[1]);
+					if (k == null) {
+						p.sendMessage("§cUnknown kit: \"" + args[1] + "\"");
+						p.sendMessage("§e§oKits care case sensitive");
+						p.sendMessage("§7§oType /uhc kitlist for a list of kits");
+					} else {
+						UltraHC.startACon = k.acon;
+						UltraHC.startCon = k.con;
+						p.sendMessage("§6Set kit to §o" + k.name());
+					}
+				} else {
+					final PlayerInventory inv = p.getInventory();
+					UltraHC.startCon = inv.getContents();
+					UltraHC.startACon = inv.getArmorContents();
+					p.sendMessage("§6Set kit to §ocurrent inventory");
+				}
 			}
 			if (args[0].equalsIgnoreCase("viewKit")) {
 				if (UltraHC.startCon != null) {
@@ -270,6 +295,64 @@ public class CommandUHC implements CommandExecutor {
 				for (BukkitWorker bw : Bukkit.getScheduler().getActiveWorkers()) {
 					p.sendMessage("§b" + bw.getThread().getName() + ": " + bw.getOwner().getName() + "."
 							+ bw.getTaskId());
+				}
+			}
+
+			if (args[0].equalsIgnoreCase("serit")) {
+				String a1 = args[1];
+				if (a1.equalsIgnoreCase("to")) {
+					String ser = SerializationUtils.toString(p.getItemInHand());
+					((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(ChatSerializer
+							.a("{\"text\":\"\",\"extra\":[{\"text\":\"" + ser + "\",\"color\""
+									+ ":\"red\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + ser
+									+ "\"}}]}"), true));
+				}
+
+				if (a1.equalsIgnoreCase("fr")) {
+					String argsstr = "";
+					for (int i = 2; i < args.length; i++) {
+						argsstr += args[i] + " ";
+					}
+					argsstr = argsstr.substring(0, argsstr.length() - 1);
+
+					ItemStack gi = SerializationUtils.itemFromString(argsstr);
+					p.getInventory().addItem(gi);
+				}
+			}
+
+			if (args[0].equalsIgnoreCase("serinv")) {
+				String a1 = args[1];
+				if (a1.equalsIgnoreCase("to")) {
+					String ser = SerializationUtils.toString(p.getInventory().getContents());
+					String serAC = SerializationUtils.toString(p.getInventory().getArmorContents());
+
+					Block b = p.getTargetBlock(null, 10);
+					if (b.getType() == Material.COMMAND) {
+						CommandBlock cb = (CommandBlock) b.getState();
+						cb.setCommand(ser);
+						cb.update();
+						p.sendMessage("§cSet command block to: §f" + ser);
+					}
+
+					Block bu = b.getRelative(0, 1, 0);
+					if (bu.getType() == Material.COMMAND) {
+						CommandBlock cb = (CommandBlock) bu.getState();
+						cb.setCommand(serAC);
+						cb.update();
+						p.sendMessage("§cSet command block above to: §f" + serAC);
+					}
+				}
+
+				if (a1.equalsIgnoreCase("fr")) {
+					String argsstr = "";
+					for (int i = 2; i < args.length; i++) {
+						argsstr += args[i] + " ";
+					}
+					argsstr = argsstr.substring(0, argsstr.length() - 1);
+
+					ItemStack[] si = SerializationUtils.itemsFromString(argsstr, p.getInventory().getContents().length);
+					p.getInventory().setContents(si);
+					p.updateInventory();
 				}
 			}
 		}
