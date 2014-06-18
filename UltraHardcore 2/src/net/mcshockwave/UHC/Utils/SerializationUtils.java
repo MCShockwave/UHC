@@ -113,17 +113,19 @@ public class SerializationUtils {
 	}
 
 	public static ItemStack[] itemsFromString(String ser, int size) {
-		String[] items = ser.split("\\*");
-
 		ItemStack[] ret = new ItemStack[size];
 
-		for (String s : items) {
-			int indx = s.indexOf(',');
-			
-			int slot = Integer.parseInt(s.substring(0, indx));
-			ItemStack item = itemFromString(s.substring(indx + 1, s.length()));
+		if (ser.length() > 0) {
+			String[] items = ser.split("\\*");
 
-			ret[slot] = item;
+			for (String s : items) {
+				int indx = s.indexOf(',');
+
+				int slot = Integer.parseInt(s.substring(0, indx));
+				ItemStack item = itemFromString(s.substring(indx + 1, s.length()));
+
+				ret[slot] = item;
+			}
 		}
 
 		return ret;
