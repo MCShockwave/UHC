@@ -13,6 +13,7 @@ import net.mcshockwave.UHC.Commands.SilenceCommand;
 import net.mcshockwave.UHC.Commands.VoteCommand;
 import net.mcshockwave.UHC.Commands.WLCommand;
 import net.mcshockwave.UHC.Listeners.DTMListener;
+import net.mcshockwave.UHC.Listeners.HungerGamesHandler;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenuListener;
 import net.mcshockwave.UHC.Utils.BarUtil;
@@ -191,7 +192,11 @@ public class UltraHC extends JavaPlugin {
 				}
 
 				try {
-					healthList.getScore(op).setScore(getRoundedHealth(p.getHealth()));
+					if (!Scenarios.Hunger_Games.isEnabled()) {
+						healthList.getScore(op).setScore(getRoundedHealth(p.getHealth()));
+					} else {
+						healthList.getScore(op).setScore(-1);
+					}
 					health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
 				} catch (Exception e) {
 					registerHealthScoreboard();
@@ -214,13 +219,22 @@ public class UltraHC extends JavaPlugin {
 	public static void start(long time) {
 		boolean resuming = time > 0;
 
+		boolean hg = Scenarios.Hunger_Games.isEnabled();
+
 		if (started)
 			return;
 		started = true;
 
 		if (!resuming) {
+			if (hg) {
+				Bukkit.broadcastMessage("§eGenerating center...");
+				HungerGamesHandler.createCenter();
+			}
 			Bukkit.broadcastMessage("§aStarting spread...");
-			spreadPlayers(Option.Spread_Radius.getInt());
+			if (hg) {
+				HungerGamesHandler.spreadAll(30, Multiworld.getUHC().getHighestBlockYAt(0, 0) + 1);
+			} else
+				spreadPlayers(Option.Spread_Radius.getInt());
 			Bukkit.broadcastMessage("§bDone!");
 		}
 
@@ -284,6 +298,10 @@ public class UltraHC extends JavaPlugin {
 				boolean isM = count.runCount % 60 == 0;
 				if (isM && c % Option.Mark_Time.getInt() == 0 && c != 0) {
 					Bukkit.broadcastMessage("§c§lMARK " + c + " MINS IN!");
+				}
+
+				if (isM && (c - 10) % 20 == 0 && Scenarios.Hunger_Games.isEnabled()) {
+					HungerGamesHandler.displayDeaths();
 				}
 
 				if (isM && c == Option.PVP_Time.getInt() && count.getTime() > 30) {
@@ -360,6 +378,8 @@ public class UltraHC extends JavaPlugin {
 									ItemMetaUtils.setLore(new ItemStack(Material.COMPASS), "§eClick to point",
 											"§eto closest player"));
 						}
+					} else if (end.equalsIgnoreCase("Feast")) {
+						HungerGamesHandler.onFeast();
 					}
 				}
 
@@ -383,7 +403,9 @@ public class UltraHC extends JavaPlugin {
 
 		Multiworld.getUHC().setTime(0);
 
-		registerKillScoreboard();
+		if (!hg) {
+			registerKillScoreboard();
+		}
 
 		for (Scenarios s : Scenarios.getEnabled()) {
 			if (s.l != null) {
@@ -461,7 +483,9 @@ public class UltraHC extends JavaPlugin {
 
 		players.clear();
 		specs.clear();
-		kills.unregister();
+		if (kills != null) {
+			kills.unregister();
+		}
 
 		BarUtil.destroyTimer();
 
@@ -525,6 +549,9 @@ public class UltraHC extends JavaPlugin {
 
 				int x = rand.nextInt(spreadDistance) - rand.nextInt(spreadDistance);
 				int z = rand.nextInt(spreadDistance) - rand.nextInt(spreadDistance);
+				Multiworld.getUHC()
+						.getChunkAt(new Location(Multiworld.getUHC(), x, Multiworld.getUHC().getMaxHeight() - 1, z))
+						.load(true);
 				int y = Multiworld.getUHC().getHighestBlockYAt(x, z);
 				Location l = new Location(Multiworld.getUHC(), x, y, z);
 				Material m = l.add(0, -1, 0).getBlock().getType();

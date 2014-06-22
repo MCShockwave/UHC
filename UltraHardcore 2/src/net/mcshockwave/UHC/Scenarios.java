@@ -1,20 +1,6 @@
 package net.mcshockwave.UHC;
 
-import net.mcshockwave.UHC.Listeners.BarebonesListener;
-import net.mcshockwave.UHC.Listeners.BloodBagListener;
-import net.mcshockwave.UHC.Listeners.BloodPrice;
-import net.mcshockwave.UHC.Listeners.ChumpHandler;
-import net.mcshockwave.UHC.Listeners.Compensation;
-import net.mcshockwave.UHC.Listeners.DTMListener;
-import net.mcshockwave.UHC.Listeners.HallucinationHandler;
-import net.mcshockwave.UHC.Listeners.LinkedListener;
-import net.mcshockwave.UHC.Listeners.MoleListener;
-import net.mcshockwave.UHC.Listeners.ResurrectListener;
-import net.mcshockwave.UHC.Listeners.SkyhighHandler;
-import net.mcshockwave.UHC.Listeners.SwitchListener;
-import net.mcshockwave.UHC.Listeners.TowerListener;
-import net.mcshockwave.UHC.Listeners.TripleListener;
-import net.mcshockwave.UHC.Listeners.WeakestLink;
+import net.mcshockwave.UHC.Listeners.*;
 import net.mcshockwave.UHC.worlds.Multiworld;
 
 import org.bukkit.Bukkit;
@@ -56,7 +42,9 @@ public enum Scenarios {
 		new TowerListener()),
 	Skyhigh,
 	Blood_Bag(
-		new BloodBagListener());
+		new BloodBagListener()),
+	Hunger_Games(
+		new HungerGamesHandler());
 
 	public static List<Scenarios>	enabled	= new ArrayList<>();
 
@@ -215,6 +203,9 @@ public enum Scenarios {
 		if (this == Skyhigh) {
 			SkyhighHandler.start();
 		}
+		if (this == Hunger_Games) {
+			HungerGamesHandler.start();
+		}
 	}
 
 	public void onStop() {
@@ -250,6 +241,9 @@ public enum Scenarios {
 		}
 		if (this == Skyhigh) {
 			SkyhighHandler.stop();
+		}
+		if (this == Hunger_Games) {
+			HungerGamesHandler.stop();
 		}
 	}
 

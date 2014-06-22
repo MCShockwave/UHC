@@ -4,6 +4,7 @@ import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.Scenarios;
 import net.mcshockwave.UHC.UltraHC;
 import net.mcshockwave.UHC.Kits.Kits;
+import net.mcshockwave.UHC.Listeners.HungerGamesHandler;
 import net.mcshockwave.UHC.Listeners.ResurrectListener;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
@@ -354,6 +355,23 @@ public class CommandUHC implements CommandExecutor {
 					p.getInventory().setContents(si);
 					p.updateInventory();
 				}
+			}
+
+			if (args[0].equalsIgnoreCase("spreadCir")) {
+				double rad = Integer.parseInt(args[1]);
+				HungerGamesHandler.spreadAll(rad, Multiworld.getUHC().getHighestBlockYAt(0, 0) + 1);
+			}
+
+			if (args[0].equalsIgnoreCase("genCenterHG")) {
+				HungerGamesHandler.createCenter();
+			}
+
+			if (args[0].equalsIgnoreCase("dropChestsHG")) {
+				HungerGamesHandler.dropChests();
+			}
+			
+			if (args[0].equalsIgnoreCase("displayDeathsHG")) {
+				HungerGamesHandler.displayDeaths();
 			}
 		}
 		return true;

@@ -6,6 +6,7 @@ import net.mcshockwave.UHC.NumberedTeamSystem.NumberTeam;
 import net.mcshockwave.UHC.Commands.CommandUHC;
 import net.mcshockwave.UHC.Commands.VoteCommand;
 import net.mcshockwave.UHC.HoF.HallOfFame;
+import net.mcshockwave.UHC.Listeners.HungerGamesHandler;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
@@ -25,6 +26,7 @@ import org.bukkit.Sound;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -36,6 +38,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -1143,6 +1146,23 @@ public class DefaultListener implements Listener {
 					}
 				}
 			}
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+		Entity e = event.getEntity();
+		Block b = event.getBlock();
+
+		if (HungerGamesHandler.chests.contains(e) && event.getTo() == Material.CHEST) {
+			b.setType(Material.CHEST);
+			b.setData((byte) rand.nextInt(16));
+			event.setCancelled(true);
+
+			Chest c = (Chest) b.getState();
+
+			c.getBlockInventory().setItem(rand.nextInt(27), HungerGamesHandler.getRandomItem(false));
 		}
 	}
 
