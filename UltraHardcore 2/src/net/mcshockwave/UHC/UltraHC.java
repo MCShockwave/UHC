@@ -348,6 +348,9 @@ public class UltraHC extends JavaPlugin {
 						Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z: 0)");
 
 						int y = Multiworld.getUHC().getHighestBlockYAt(0, 0);
+						if (Scenarios.Hunger_Games.isEnabled()) {
+							y--;
+						}
 						Block b = Multiworld.getUHC().getBlockAt(0, y, 0);
 						if (b.getRelative(0, -1, 0).getType() == Material.BEACON) {
 							y--;
