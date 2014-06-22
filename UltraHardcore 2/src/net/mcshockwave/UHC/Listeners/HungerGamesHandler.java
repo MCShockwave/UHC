@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class HungerGamesHandler implements Listener {
 			util.add(new Runnable() {
 				public void run() {
 					for (Player p : UltraHC.getAlive()) {
-						p.getLocation().getBlock().setType(Material.STONE);
+						p.getLocation().getBlock().setType(Material.BEDROCK);
 						p.teleport(p.getLocation().add(0, 1, 0));
 						p.playSound(p.getLocation(), Sound.PISTON_EXTEND, 10, 0);
 					}
@@ -216,9 +217,23 @@ public class HungerGamesHandler implements Listener {
 		SchedulerUtils util = SchedulerUtils.getNew();
 
 		bc("§b§lThe fallen players of the last day:", util);
+		util.add(new Runnable() {
+			public void run() {
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					p.playSound(p.getLocation(), Sound.FIREWORK_LAUNCH, 10, 0);
+				}
+			}
+		});
 		util.add(40);
 		for (String s : deaths) {
 			bc("§c[Death] §f" + s, util);
+			util.add(new Runnable() {
+				public void run() {
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						p.playSound(p.getLocation(), Sound.FIREWORK_BLAST, 10, 0);
+					}
+				}
+			});
 			util.add(40);
 		}
 		util.add(new Runnable() {
@@ -226,12 +241,20 @@ public class HungerGamesHandler implements Listener {
 				if (count <= 0) {
 					Bukkit.broadcastMessage("§a§l - REGEN IS NOW OFF! -");
 					Option.UHC_Mode.set(true);
-				}
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.playSound(p.getLocation(), Sound.EXPLODE, 10, 1);
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						p.playSound(p.getLocation(), Sound.EXPLODE, 10, 1);
+					}
 				}
 				count++;
 				deaths.clear();
+
+				UltraHC.kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+			}
+		});
+		util.add(300);
+		util.add(new Runnable() {
+			public void run() {
+				UltraHC.kills.setDisplaySlot(null);
 			}
 		});
 

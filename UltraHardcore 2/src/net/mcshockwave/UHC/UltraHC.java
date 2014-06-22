@@ -160,7 +160,9 @@ public class UltraHC extends JavaPlugin {
 		}
 
 		kills = scb.registerNewObjective("Kills", "playerKillCount");
-		kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+		if (!Scenarios.Hunger_Games.isEnabled()) {
+			kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+		}
 		kills.setDisplayName("§e>> §6KILLS §e<<");
 	}
 
@@ -405,9 +407,7 @@ public class UltraHC extends JavaPlugin {
 
 		Multiworld.getUHC().setTime(0);
 
-		if (!hg) {
-			registerKillScoreboard();
-		}
+		registerKillScoreboard();
 
 		for (Scenarios s : Scenarios.getEnabled()) {
 			if (s.l != null) {
