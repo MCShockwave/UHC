@@ -73,7 +73,7 @@ public class UltraHC extends JavaPlugin {
 	public static Counter					count			= null;
 
 	public static Scoreboard				scb				= null;
-	public static Objective					health			= null, healthList = null, kills = null;
+	public static Objective					health			= null, healthTab = null, kills = null;
 
 	public static HashMap<String, Integer>	totKills		= new HashMap<>();
 	// borderSize = null;
@@ -176,8 +176,8 @@ public class UltraHC extends JavaPlugin {
 		health.setDisplayName("% HP");
 		health.setDisplaySlot(DisplaySlot.BELOW_NAME);
 
-		healthList = scb.registerNewObjective("HealthList", "dummy");
-		healthList.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+		healthTab = scb.registerNewObjective("HealthList", "dummy");
+		healthTab.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
 		updateHealth();
 	}
@@ -193,9 +193,7 @@ public class UltraHC extends JavaPlugin {
 
 				try {
 					if (!Scenarios.Hunger_Games.isEnabled()) {
-						healthList.getScore(op).setScore(getRoundedHealth(p.getHealth()));
-					} else {
-						healthList.getScore(op).setScore(-1);
+						healthTab.getScore(op).setScore(getRoundedHealth(p.getHealth()));
 					}
 					health.getScore(p).setScore(getRoundedHealth(p.getHealth()));
 				} catch (Exception e) {
@@ -233,6 +231,7 @@ public class UltraHC extends JavaPlugin {
 			Bukkit.broadcastMessage("§aStarting spread...");
 			if (hg) {
 				HungerGamesHandler.spreadAll(30, Multiworld.getUHC().getHighestBlockYAt(0, 0) + 1);
+				HungerGamesHandler.preparePlayers();
 			} else
 				spreadPlayers(Option.Spread_Radius.getInt());
 			Bukkit.broadcastMessage("§bDone!");
@@ -304,7 +303,7 @@ public class UltraHC extends JavaPlugin {
 					HungerGamesHandler.displayDeaths();
 				}
 
-				if (isM && c == Option.PVP_Time.getInt() && count.getTime() > 30) {
+				if (isM && c == Option.PVP_Time.getInt() && count.getTime() > 30 && !Scenarios.Hunger_Games.isEnabled()) {
 					Bukkit.broadcastMessage("§a§lKilling is now allowed!");
 					for (Player p : Bukkit.getOnlinePlayers()) {
 						p.playSound(p.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 0.75f);

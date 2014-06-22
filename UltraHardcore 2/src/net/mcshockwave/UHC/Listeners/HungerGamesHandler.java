@@ -41,15 +41,17 @@ import com.sk89q.worldedit.regions.Region;
 
 public class HungerGamesHandler implements Listener {
 
-	public static Random					rand	= new Random();
+	private static final int				DISTANCE_BEGIN	= 5;
 
-	public static ArrayList<FallingBlock>	chests	= new ArrayList<>();
+	public static Random					rand			= new Random();
 
-	public static boolean					freeze	= false;
+	public static ArrayList<FallingBlock>	chests			= new ArrayList<>();
 
-	public static int						high	= 64;
+	public static boolean					freeze			= false;
 
-	public static String[]					welcome	= { "Welcome to the %num% weekly Hunger Games.",
+	public static int						high			= 64;
+
+	public static String[]					welcome			= { "Welcome to the %num% weekly Hunger Games.",
 			"I am your gamemaker.", "We have a total of %count% tributes competing today.",
 			"Here's a reminder of how things work.", "1. Friendly Fire is on and encouraged.",
 			"2. There will be no grace period at the start. Kill immediately.",
@@ -58,11 +60,27 @@ public class HungerGamesHandler implements Listener {
 			"And remember, may the odds be ever in your favor!" };
 
 	public static void start() {
+		UltraHC.healthTab.unregister();
 		freeze = true;
 		final String num = getNum();
+		Option.PVP_Time.set(1);
 		SchedulerUtils util = SchedulerUtils.getNew();
 
-		util.add(100);
+		util.add(60);
+
+		for (int i = 0; i < DISTANCE_BEGIN + 1; i++) {
+			util.add(new Runnable() {
+				public void run() {
+					for (Player p : UltraHC.getAlive()) {
+						p.getLocation().getBlock().setType(Material.STONE);
+						p.teleport(p.getLocation().add(0, 1, 0));
+						p.playSound(p.getLocation(), Sound.PISTON_EXTEND, 10, 0);
+					}
+				}
+			});
+			util.add(10);
+		}
+		util.add(60);
 
 		for (int i = 0; i < welcome.length; i++) {
 			final int id = i;
@@ -87,6 +105,9 @@ public class HungerGamesHandler implements Listener {
 				dropChests();
 				Bukkit.broadcastMessage("§b§n§lThe " + num + " Hunger Games will begin in:");
 				Bukkit.broadcastMessage("§f");
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					p.playSound(p.getLocation(), Sound.EXPLODE, 10, 2);
+				}
 			}
 		});
 		util.add(20);
@@ -96,7 +117,7 @@ public class HungerGamesHandler implements Listener {
 				public void run() {
 					Bukkit.broadcastMessage("§e§l" + i);
 					for (Player p : Bukkit.getOnlinePlayers()) {
-						p.playSound(p.getLocation(), Sound.NOTE_PLING, 10, 2 * i / isec.length);
+						p.playSound(p.getLocation(), Sound.NOTE_PLING, 10, (float) 2 * (float) i / (float) isec.length);
 					}
 				}
 			});
@@ -127,6 +148,18 @@ public class HungerGamesHandler implements Listener {
 		} catch (Exception e) {
 			e.printStackTrace();
 			Bukkit.broadcastMessage("§cERROR: " + e.getMessage());
+		}
+	}
+
+	public static void preparePlayers() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Location pl = p.getLocation();
+			Location l = new Location(p.getWorld(), pl.getBlockX() + 0.5, pl.getBlockY() - DISTANCE_BEGIN,
+					pl.getBlockZ() + 0.5);
+			for (int i = 0; i < DISTANCE_BEGIN; i++) {
+				l.clone().add(0, i, 0).getBlock().setType(Material.AIR);
+			}
+			p.teleport(l);
 		}
 	}
 
@@ -191,11 +224,11 @@ public class HungerGamesHandler implements Listener {
 		util.add(new Runnable() {
 			public void run() {
 				if (count <= 0) {
-					Bukkit.broadcastMessage("§a§lREGEN IS NOW OFF!");
+					Bukkit.broadcastMessage("§a§l - REGEN IS NOW OFF! -");
 					Option.UHC_Mode.set(true);
-					for (Player p : Bukkit.getOnlinePlayers()) {
-						p.playSound(p.getLocation(), Sound.EXPLODE, 10, 1);
-					}
+				}
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					p.playSound(p.getLocation(), Sound.EXPLODE, 10, 1);
 				}
 				count++;
 				deaths.clear();
@@ -259,7 +292,7 @@ public class HungerGamesHandler implements Listener {
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Location f = event.getFrom();
 		Location t = event.getTo();
-		if ((freeze) && ((f.getX() != t.getX()) || (f.getZ() != t.getZ()))) {
+		if ((freeze) && ((f.getBlockX() != t.getBlockX()) || (f.getBlockZ() != t.getBlockZ()))) {
 			while (f.getBlock().getType() != Material.AIR && f.getY() > 0) {
 				f.setY(f.getY() - 0.5);
 			}
