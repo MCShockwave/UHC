@@ -366,7 +366,12 @@ public enum Option {
 		20,
 		10,
 		5,
-		0);
+		0),
+	HG_Regen_Off(
+		Scenarios.Hunger_Games,
+		Material.GOLDEN_APPLE,
+		0,
+		true);
 
 	public String		name	= name().replace('_', ' ');
 

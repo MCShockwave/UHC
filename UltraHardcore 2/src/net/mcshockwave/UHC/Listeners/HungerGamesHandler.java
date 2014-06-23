@@ -61,7 +61,7 @@ public class HungerGamesHandler implements Listener {
 			"Here's a reminder of how things work.", "1. Friendly Fire is on and encouraged.",
 			"2. There will be a %grace% second grace period at the start.",
 			"3. Death messages and the like have been removed, but will be shown at sundown.",
-			"4. Regen will be turned off at sunset.", "Now that I've finished explaining the rules, let's get going!",
+			"4. Regen will be %regen%.", "Now that I've finished explaining the rules, let's get going!",
 			"And remember, may the odds be ever in your favor!" };
 
 	public static void start() {
@@ -91,8 +91,13 @@ public class HungerGamesHandler implements Listener {
 			final int id = i;
 			util.add(new Runnable() {
 				public void run() {
-					String[] repl = { "%num%:" + num, "%count%:" + UltraHC.getAlive().size(),
-							"%grace%:" + Option.HG_Grace_Period.getInt() };
+					String[] repl = {
+							"%num%:" + num,
+							"%count%:" + UltraHC.getAlive().size(),
+							"%grace%:" + Option.HG_Grace_Period.getInt(),
+							"%regen%:"
+									+ (Option.HG_Regen_Off.getBoolean() ? "turned off at sundown" : "always "
+											+ (Option.UHC_Mode.getBoolean() ? "off" : "on")) };
 
 					String msg = welcome[id];
 					for (String s : repl) {
