@@ -11,11 +11,13 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -50,12 +52,14 @@ public class HungerGamesHandler implements Listener {
 
 	public static boolean					freeze			= false;
 
+	public static boolean					grace			= false;
+
 	public static int						high			= 64;
 
 	public static String[]					welcome			= { "Welcome to the %num% weekly Hunger Games.",
 			"I am your gamemaker.", "We have a total of %count% tributes competing today.",
 			"Here's a reminder of how things work.", "1. Friendly Fire is on and encouraged.",
-			"2. There will be no grace period at the start. Kill immediately.",
+			"2. There will be a %grace% second grace period at the start.",
 			"3. Death messages and the like have been removed, but will be shown at sundown.",
 			"4. Regen will be turned off at sunset.", "Now that I've finished explaining the rules, let's get going!",
 			"And remember, may the odds be ever in your favor!" };
@@ -87,7 +91,8 @@ public class HungerGamesHandler implements Listener {
 			final int id = i;
 			util.add(new Runnable() {
 				public void run() {
-					String[] repl = { "%num%:" + num, "%count%:" + UltraHC.getAlive().size() };
+					String[] repl = { "%num%:" + num, "%count%:" + UltraHC.getAlive().size(),
+							"%grace%:" + Option.HG_Grace_Period.getInt() };
 
 					String msg = welcome[id];
 					for (String s : repl) {
@@ -127,6 +132,7 @@ public class HungerGamesHandler implements Listener {
 		util.add(new Runnable() {
 			public void run() {
 				freeze = false;
+				grace = true;
 				Bukkit.broadcastMessage("§a§lBEGIN!");
 				UltraHC.count.startTime = System.currentTimeMillis();
 				Option.PVP_Time.set(0);
@@ -143,12 +149,37 @@ public class HungerGamesHandler implements Listener {
 				Multiworld.getUHC().setTime(0);
 			}
 		});
+		util.add(Option.HG_Grace_Period.getInt() * 20);
+		util.add(new Runnable() {
+			public void run() {
+				Bukkit.broadcastMessage("§d§lGRACE PERIOD OVER!");
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					p.playSound(p.getLocation(), Sound.EXPLODE, 10, 2);
+				}
+				grace = false;
+			}
+		});
 
 		try {
 			util.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Bukkit.broadcastMessage("§cERROR: " + e.getMessage());
+		}
+	}
+
+	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		Entity ee = event.getEntity();
+		Entity de = event.getDamager();
+
+		if (de instanceof Player) {
+			Player d = (Player) de;
+
+			if (ee instanceof Player && UltraHC.started && grace) {
+				event.setCancelled(true);
+				d.sendMessage("§cGrace period is still on!");
+			}
 		}
 	}
 

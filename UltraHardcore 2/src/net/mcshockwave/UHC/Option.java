@@ -353,7 +353,20 @@ public enum Option {
 		45,
 		30,
 		15,
-		5);
+		5),
+	HG_Grace_Period(
+		Scenarios.Hunger_Games,
+		Material.STONE_SWORD,
+		0,
+		20,
+		120,
+		60,
+		45,
+		30,
+		20,
+		10,
+		5,
+		0);
 
 	public String		name	= name().replace('_', ' ');
 
