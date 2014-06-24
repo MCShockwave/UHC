@@ -74,11 +74,14 @@ public class HungerGamesHandler implements Listener {
 		util.add(60);
 
 		for (int i = 0; i < DISTANCE_BEGIN + 1; i++) {
+			final int y = (high - DISTANCE_BEGIN) + i;
 			util.add(new Runnable() {
 				public void run() {
 					for (Player p : UltraHC.getAlive()) {
-						p.getLocation().getBlock().setType(Material.BEDROCK);
-						p.teleport(p.getLocation().add(0, 1, 0));
+						Location tp = p.getLocation();
+						tp.setY(y);
+						tp.getBlock().setType(Material.BEDROCK);
+						p.teleport(tp.add(0, 1, 0));
 						p.playSound(p.getLocation(), Sound.PISTON_EXTEND, 10, 0);
 					}
 				}
@@ -191,8 +194,7 @@ public class HungerGamesHandler implements Listener {
 	public static void preparePlayers() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Location pl = p.getLocation();
-			Location l = new Location(p.getWorld(), pl.getBlockX() + 0.5, pl.getBlockY() - DISTANCE_BEGIN,
-					pl.getBlockZ() + 0.5);
+			Location l = new Location(p.getWorld(), pl.getBlockX() + 0.5, high - DISTANCE_BEGIN, pl.getBlockZ() + 0.5);
 			for (int i = 0; i < DISTANCE_BEGIN; i++) {
 				l.clone().add(0, i, 0).getBlock().setType(Material.AIR);
 			}
@@ -213,10 +215,12 @@ public class HungerGamesHandler implements Listener {
 		Bukkit.broadcastMessage("§eRegenerating center...");
 		createCenter();
 
-		for (String s : UltraHC.players) {
-			Inventory inv = Bukkit.createInventory(null, 9);
-			inv.setItem(4, getRandomItem(true));
-			feast.put(s, inv);
+		for (int slot : new int[] { 3, 5 }) {
+			for (String s : UltraHC.players) {
+				Inventory inv = Bukkit.createInventory(null, 9);
+				inv.setItem(slot, getRandomItem(true));
+				feast.put(s, inv);
+			}
 		}
 
 		Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
@@ -233,6 +237,10 @@ public class HungerGamesHandler implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player p = event.getPlayer();
 		Block b = event.getClickedBlock();
+
+		if (freeze) {
+			event.setCancelled(true);
+		}
 
 		if (b != null && b.getType() == Material.CHEST) {
 			Location bl = b.getLocation();
@@ -274,7 +282,7 @@ public class HungerGamesHandler implements Listener {
 		}
 		util.add(new Runnable() {
 			public void run() {
-				if (count <= 0) {
+				if (count <= 0 && Option.HG_Regen_Off.getBoolean()) {
 					Bukkit.broadcastMessage("§a§l - REGEN IS NOW OFF! -");
 					Option.UHC_Mode.set(true);
 					for (Player p : Bukkit.getOnlinePlayers()) {
@@ -453,8 +461,7 @@ public class HungerGamesHandler implements Listener {
 			Material.PUMPKIN_PIE	};
 
 	static Material[]	feastItems	= { Material.DIAMOND_SWORD, Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,
-			Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.ENCHANTMENT_TABLE, Material.ANVIL,
-			Material.IRON_INGOT	};
+			Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.ENCHANTMENT_TABLE, Material.ANVIL };
 
 	public static ItemStack getRandomItem(boolean feast) {
 		Material[] mats = feast ? feastItems : startItems;
