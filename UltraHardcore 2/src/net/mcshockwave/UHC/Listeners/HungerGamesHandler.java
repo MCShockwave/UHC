@@ -66,113 +66,116 @@ public class HungerGamesHandler implements Listener {
 
 	public static void start() {
 		UltraHC.healthTab.unregister();
-		freeze = true;
-		final String num = getNum();
-		Option.PVP_Time.set(1);
-		SchedulerUtils util = SchedulerUtils.getNew();
+		if (Option.HG_Game_Handling.getBoolean()) {
+			freeze = true;
+			final String num = getNum();
+			Option.PVP_Time.set(1);
+			SchedulerUtils util = SchedulerUtils.getNew();
 
-		util.add(60);
+			util.add(60);
 
-		for (int i = 0; i < DISTANCE_BEGIN + 1; i++) {
-			final int y = (high - DISTANCE_BEGIN) + i;
-			util.add(new Runnable() {
-				public void run() {
-					for (Player p : UltraHC.getAlive()) {
-						Location tp = p.getLocation();
-						tp.setY(y);
-						tp.getBlock().setType(Material.BEDROCK);
-						p.teleport(tp.add(0, 1, 0));
-						p.playSound(p.getLocation(), Sound.PISTON_EXTEND, 10, 0);
+			for (int i = 0; i < DISTANCE_BEGIN + 1; i++) {
+				final int y = (high - DISTANCE_BEGIN) + i;
+				util.add(new Runnable() {
+					public void run() {
+						for (Player p : UltraHC.getAlive()) {
+							Location tp = p.getLocation();
+							tp.setY(y);
+							tp.getBlock().setType(Material.BEDROCK);
+							p.teleport(tp.add(0, 1, 0));
+							p.playSound(p.getLocation(), Sound.PISTON_EXTEND, 10, 0);
+						}
 					}
-				}
-			});
-			util.add(10);
-		}
-		util.add(60);
-
-		for (int i = 0; i < welcome.length; i++) {
-			final int id = i;
-			util.add(new Runnable() {
-				public void run() {
-					String[] repl = {
-							"%num%:" + num,
-							"%count%:" + UltraHC.getAlive().size(),
-							"%grace%:" + Option.HG_Grace_Period.getInt(),
-							"%regen%:"
-									+ (Option.HG_Regen_Off.getBoolean() ? "turned off at sundown" : "always "
-											+ (Option.UHC_Mode.getBoolean() ? "off" : "on")) };
-
-					String msg = welcome[id];
-					for (String s : repl) {
-						String[] ss = s.split(":");
-						msg = msg.replace(ss[0], ss[1]);
-					}
-					Bukkit.broadcastMessage("§8[§6Gamemaker§8] §e" + msg);
-				}
-			});
-			util.add(90);
-		}
-
-		util.add(20);
-		util.add(new Runnable() {
-			public void run() {
-				dropChests();
-				Bukkit.broadcastMessage("§b§n§lThe " + num + " Hunger Games will begin in:");
-				Bukkit.broadcastMessage("§f");
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.playSound(p.getLocation(), Sound.EXPLODE, 10, 2);
-				}
+				});
+				util.add(10);
 			}
-		});
-		util.add(20);
-		final int[] isec = { 5, 4, 3, 2, 1 };
-		for (final int i : isec) {
+			util.add(60);
+
+			for (int i = 0; i < welcome.length; i++) {
+				final int id = i;
+				util.add(new Runnable() {
+					public void run() {
+						String[] repl = {
+								"%num%:" + num,
+								"%count%:" + UltraHC.getAlive().size(),
+								"%grace%:" + Option.HG_Grace_Period.getInt(),
+								"%regen%:"
+										+ (Option.HG_Regen_Off.getBoolean() ? "turned off at sundown" : "always "
+												+ (Option.UHC_Mode.getBoolean() ? "off" : "on")) };
+
+						String msg = welcome[id];
+						for (String s : repl) {
+							String[] ss = s.split(":");
+							msg = msg.replace(ss[0], ss[1]);
+						}
+						Bukkit.broadcastMessage("§8[§6Gamemaker§8] §e" + msg);
+					}
+				});
+				util.add(90);
+			}
+
+			util.add(20);
 			util.add(new Runnable() {
 				public void run() {
-					Bukkit.broadcastMessage("§e§l" + i);
+					dropChests();
+					Bukkit.broadcastMessage("§b§n§lThe " + num + " Hunger Games will begin in:");
+					Bukkit.broadcastMessage("§f");
 					for (Player p : Bukkit.getOnlinePlayers()) {
-						p.playSound(p.getLocation(), Sound.NOTE_PLING, 10, (float) 2 * (float) i / (float) isec.length);
+						p.playSound(p.getLocation(), Sound.EXPLODE, 10, 2);
 					}
 				}
 			});
 			util.add(20);
-		}
-		util.add(new Runnable() {
-			public void run() {
-				freeze = false;
-				grace = true;
-				Bukkit.broadcastMessage("§a§lBEGIN!");
-				UltraHC.count.startTime = System.currentTimeMillis();
-				Option.PVP_Time.set(0);
-				Option.UHC_Mode.set(false);
-				Option.Friendly_Fire.set(true);
-				Option.End_Game.set("Feast");
-				for (Team t : UltraHC.scb.getTeams()) {
-					t.setAllowFriendlyFire(true);
-				}
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.playSound(p.getLocation(), Sound.EXPLODE, 10, 0);
-					p.playSound(p.getLocation(), Sound.WOLF_HOWL, 10, 0);
-				}
-				Multiworld.getUHC().setTime(0);
+			final int[] isec = { 5, 4, 3, 2, 1 };
+			for (final int i : isec) {
+				util.add(new Runnable() {
+					public void run() {
+						Bukkit.broadcastMessage("§e§l" + i);
+						for (Player p : Bukkit.getOnlinePlayers()) {
+							p.playSound(p.getLocation(), Sound.NOTE_PLING, 10, (float) 2 * (float) i
+									/ (float) isec.length);
+						}
+					}
+				});
+				util.add(20);
 			}
-		});
-		util.add(Option.HG_Grace_Period.getInt() * 20);
-		util.add(new Runnable() {
-			public void run() {
-				Bukkit.broadcastMessage("§d§lGRACE PERIOD OVER!");
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.playSound(p.getLocation(), Sound.EXPLODE, 10, 2);
+			util.add(new Runnable() {
+				public void run() {
+					freeze = false;
+					grace = true;
+					Bukkit.broadcastMessage("§a§lBEGIN!");
+					UltraHC.count.startTime = System.currentTimeMillis();
+					Option.PVP_Time.set(0);
+					Option.UHC_Mode.set(false);
+					Option.Friendly_Fire.set(true);
+					Option.End_Game.set("Feast");
+					for (Team t : UltraHC.scb.getTeams()) {
+						t.setAllowFriendlyFire(true);
+					}
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						p.playSound(p.getLocation(), Sound.EXPLODE, 10, 0);
+						p.playSound(p.getLocation(), Sound.WOLF_HOWL, 10, 0);
+					}
+					Multiworld.getUHC().setTime(0);
 				}
-				grace = false;
-			}
-		});
+			});
+			util.add(Option.HG_Grace_Period.getInt() * 20);
+			util.add(new Runnable() {
+				public void run() {
+					Bukkit.broadcastMessage("§d§lGRACE PERIOD OVER!");
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						p.playSound(p.getLocation(), Sound.EXPLODE, 10, 2);
+					}
+					grace = false;
+				}
+			});
 
-		try {
-			util.execute();
-		} catch (Exception e) {
-			e.printStackTrace();
-			Bukkit.broadcastMessage("§cERROR: " + e.getMessage());
+			try {
+				util.execute();
+			} catch (Exception e) {
+				e.printStackTrace();
+				Bukkit.broadcastMessage("§cERROR: " + e.getMessage());
+			}
 		}
 	}
 

@@ -263,7 +263,7 @@ public enum Option {
 		Scenarios.DTM,
 		Material.ENDER_STONE,
 		0,
-		150,
+		100,
 		256,
 		150,
 		140,
@@ -276,6 +276,11 @@ public enum Option {
 		70,
 		64,
 		16),
+	Wither_on_Break(
+		Scenarios.DTM,
+		Material.SKULL_ITEM,
+		1,
+		true),
 	Ore_Multiplier(
 		Scenarios.Triple_Ores,
 		Material.IRON_INGOT,
@@ -370,6 +375,11 @@ public enum Option {
 	HG_Regen_Off(
 		Scenarios.Hunger_Games,
 		Material.GOLDEN_APPLE,
+		0,
+		true),
+	HG_Game_Handling(
+		Scenarios.Hunger_Games,
+		Material.GRASS,
 		0,
 		true);
 

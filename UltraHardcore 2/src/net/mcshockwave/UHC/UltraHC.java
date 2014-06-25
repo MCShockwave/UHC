@@ -160,7 +160,7 @@ public class UltraHC extends JavaPlugin {
 		}
 
 		kills = scb.registerNewObjective("Kills", "playerKillCount");
-		if (!Scenarios.Hunger_Games.isEnabled()) {
+		if (!Scenarios.Hunger_Games.isEnabled() || !Option.HG_Game_Handling.getBoolean()) {
 			kills.setDisplaySlot(DisplaySlot.SIDEBAR);
 		}
 		kills.setDisplayName("§e>> §6KILLS §e<<");
@@ -220,18 +220,19 @@ public class UltraHC extends JavaPlugin {
 		boolean resuming = time > 0;
 
 		boolean hg = Scenarios.Hunger_Games.isEnabled();
+		boolean hgh = Option.HG_Game_Handling.getBoolean();
 
 		if (started)
 			return;
 		started = true;
 
 		if (!resuming) {
-			if (hg) {
+			if (hg && hgh) {
 				Bukkit.broadcastMessage("§eGenerating center...");
 				HungerGamesHandler.createCenter();
 			}
 			Bukkit.broadcastMessage("§aStarting spread...");
-			if (hg) {
+			if (hg && hgh) {
 				HungerGamesHandler.spreadAll(30, Multiworld.getUHC().getHighestBlockYAt(0, 0) + 1);
 				HungerGamesHandler.preparePlayers();
 			} else
@@ -349,10 +350,10 @@ public class UltraHC extends JavaPlugin {
 						Bukkit.broadcastMessage("§a§lMeet up time! Everyone stop what you are doing and head to the center of the map! (x: 0, z: 0)");
 
 						int y = Multiworld.getUHC().getHighestBlockYAt(0, 0);
-						if (Scenarios.Hunger_Games.isEnabled()) {
-							y--;
-						}
 						Block b = Multiworld.getUHC().getBlockAt(0, y, 0);
+						if (b.getType() == Material.CHEST) {
+							b = b.getRelative(0, -1, 0);
+						}
 						if (b.getRelative(0, -1, 0).getType() == Material.BEACON) {
 							y--;
 						} else {

@@ -134,8 +134,10 @@ public class DTMListener implements Listener {
 
 			monum.remove(b);
 
-			for (Player tm : nt.getOnlinePlayers()) {
-				tm.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, 1));
+			if (Option.Wither_on_Break.getBoolean()) {
+				for (Player tm : nt.getOnlinePlayers()) {
+					tm.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, 1));
+				}
 			}
 
 			for (String tm : nt.getPlayers()) {
@@ -157,7 +159,7 @@ public class DTMListener implements Listener {
 			}
 		}
 
-		if (b.getBlockY() > (Option.Base_Height.getInt() + 50)) {
+		if (b.getBlockY() > (Option.Base_Height.getInt() + 40)) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage("§cDo not build that high!");
 		}
