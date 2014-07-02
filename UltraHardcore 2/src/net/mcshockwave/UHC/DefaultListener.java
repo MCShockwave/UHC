@@ -453,7 +453,7 @@ public class DefaultListener implements Listener {
 			}
 		}, 10l);
 
-		event.setRespawnLocation(UltraHC.getScatterLocation(p));
+		event.setRespawnLocation(ScatterManager.getLocation(p.getName()));
 
 		if (getLives(p.getName()) == -8 || getLives(p.getName()) > 1) {
 			if (getLives(p.getName()) != -8) {

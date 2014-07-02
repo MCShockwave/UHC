@@ -17,6 +17,7 @@ import net.mcshockwave.UHC.Listeners.HungerGamesHandler;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenuListener;
 import net.mcshockwave.UHC.Utils.BarUtil;
+import net.mcshockwave.UHC.Utils.SchedulerUtils;
 import net.mcshockwave.UHC.Utils.CustomSignUtils.CustomSignListener;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
@@ -33,7 +34,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -50,6 +50,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import com.comphenix.protocol.PacketType;
@@ -215,8 +216,7 @@ public class UltraHC extends JavaPlugin {
 		stop();
 	}
 
-	@SuppressWarnings("deprecation")
-	public static void start(long time) {
+	public static void startSpread(long time) {
 		boolean resuming = time > 0;
 
 		boolean hg = Scenarios.Hunger_Games.isEnabled();
@@ -235,11 +235,17 @@ public class UltraHC extends JavaPlugin {
 			if (hg && hgh) {
 				HungerGamesHandler.spreadAll(30, Multiworld.getUHC().getHighestBlockYAt(0, 0) + 1);
 				HungerGamesHandler.preparePlayers();
-			} else
-				spreadPlayers(Option.Spread_Radius.getInt());
-			Bukkit.broadcastMessage("§bDone!");
+				start(time, resuming);
+			} else {
+				spreadPlayers(Option.Spread_Radius.getInt(), true, time, resuming);
+			}
+		} else {
+			start(time, resuming);
 		}
 
+	}
+
+	public static void start(long time, boolean resuming) {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Chunk c = p.getLocation().getChunk();
 
@@ -284,6 +290,7 @@ public class UltraHC extends JavaPlugin {
 
 		count = new Counter();
 		count.setRunnable(new Runnable() {
+			@SuppressWarnings("deprecation")
 			public void run() {
 				// stats.setDisplayName("§c" +
 				// Option.getScenario().name().replace('_', ' ') + " §6"
@@ -374,7 +381,7 @@ public class UltraHC extends JavaPlugin {
 						CommandUHC.genWalls(Multiworld.getUHC(), 100);
 
 						Bukkit.broadcastMessage("§bSpreading players...");
-						spreadPlayers(100);
+						spreadPlayers(100, true);
 					} else if (end.equalsIgnoreCase("Compasses")) {
 						Bukkit.broadcastMessage("§a§lCompass Time! Everyone has received a compass. Right-click the compass to point to close players.");
 
@@ -527,85 +534,111 @@ public class UltraHC extends JavaPlugin {
 
 	public static int		maxPlayers	= 30;
 
-	public static void spreadPlayers(int spreadDistance) {
-		scatterLocs.clear();
-
-		Material[] nospawn = { Material.STATIONARY_WATER, Material.WATER, Material.STATIONARY_LAVA, Material.LAVA,
-				Material.CACTUS };
-		if (spreadDistance <= -1) {
-			spreadDistance = 1000;
+	public static int getScatterAmount() {
+		int ret = 0;
+		if (nts.isTeamGame()) {
+			ret += nts.teams.size();
 		}
-		ArrayList<Player> spread = new ArrayList<Player>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			boolean goodSpawn = false;
-			for (Player p2 : spread) {
-				NumberTeam t = nts.getTeam(p.getName());
-				NumberTeam t2 = nts.getTeam(p2.getName());
-				if (t != null && t2 != null && t == t2) {
-					p.teleport(p2);
-					goodSpawn = true;
+			if (nts.isTeamGame()) {
+				if (nts.getTeam(p.getName()) != null) {
+					continue;
 				}
+				ret++;
+			} else {
+				ret++;
 			}
-			int tries = 0;
-			while (!goodSpawn) {
-				tries++;
+		}
 
-				int x = rand.nextInt(spreadDistance) - rand.nextInt(spreadDistance);
-				int z = rand.nextInt(spreadDistance) - rand.nextInt(spreadDistance);
-				Multiworld.getUHC()
-						.getChunkAt(new Location(Multiworld.getUHC(), x, Multiworld.getUHC().getMaxHeight() - 1, z))
-						.load(true);
-				int y = Multiworld.getUHC().getHighestBlockYAt(x, z);
-				Location l = new Location(Multiworld.getUHC(), x, y, z);
-				Material m = l.add(0, -1, 0).getBlock().getType();
-				boolean noHazard = true;
-				int minRadPlayers = (spreadDistance / (UltraHC.nts.isTeamGame() ? UltraHC.nts.teams.size() : Bukkit
-						.getOnlinePlayers().length)) - tries;
-				for (Entity e : p.getNearbyEntities(minRadPlayers, 256, minRadPlayers)) {
-					if (e instanceof Player) {
-						Player n = (Player) e;
-						if (nts.getTeam(p.getName()) != null && nts.getTeam(n.getName()) != null
-								&& nts.getTeam(n.getName()) != nts.getTeam(p.getName())) {
-							noHazard = false;
+		return ret;
+	}
+
+	public static void spreadPlayers(int spreadDistance, final boolean delay) {
+		spreadPlayers(spreadDistance, delay, -2, false);
+	}
+
+	public static void spreadPlayers(int spreadDistance, final boolean delay, final long time, final boolean resuming) {
+		SchedulerUtils util = SchedulerUtils.getNew();
+		util.add("§cGetting scatter locations...");
+		final Location[] locs = ScatterManager.getScatterLocations(Multiworld.getUHC(), spreadDistance,
+				getScatterAmount());
+		util.add(delay ? 10 : 0);
+		util.add("§cLoading chunks...");
+		for (final Location l : locs) {
+			util.add(new Runnable() {
+				public void run() {
+					l.getChunk().load(true);
+				}
+			});
+			util.add(delay ? 1 : 0);
+		}
+		util.add(delay ? 9 : 0);
+		util.add("§eLoading locations...");
+		if (nts.isTeamGame()) {
+			util.add(new Runnable() {
+				public void run() {
+					int index = 0;
+					for (NumberTeam nt : nts.teams) {
+						final Location l = locs[index];
+						for (String s : nt.getPlayersArray()) {
+							ScatterManager.scatterLocs.put(s, l);
+						}
+						index++;
+					}
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						if (nts.getTeam(p.getName()) == null) {
+							ScatterManager.scatterLocs.put(p.getName(), locs[index]);
+							index++;
 						}
 					}
 				}
-				if (l.getBlockY() < 48) {
-					noHazard = false;
-				}
-				for (Material no : nospawn) {
-					if (m == no) {
-						noHazard = false;
+			});
+		} else {
+			util.add(new Runnable() {
+				public void run() {
+					int index = 0;
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						ScatterManager.scatterLocs.put(p.getName(), locs[index]);
+						index++;
 					}
 				}
-				if (noHazard) {
-					goodSpawn = true;
-					l.getChunk().load();
-					p.teleport(l.add(0.5, 2, 0.5));
-					spread.add(p);
+			});
+		}
+		util.add(delay ? 10 : 0);
+		util.add("§dStarting spread!");
+		util.add(new Runnable() {
+			public void run() {
+				SchedulerUtils util = SchedulerUtils.getNew();
 
-					if (nts.getTeam(p.getName()) != null) {
-						scatterLocs.put(nts.getTeam(p.getName()).id + "", l);
-					} else {
-						scatterLocs.put(p.getName(), l);
-					}
+				for (final Entry<String, Location> ent : ScatterManager.scatterLocs.entrySet()) {
+					util.add(new Runnable() {
+						public void run() {
+							if (Bukkit.getPlayer(ent.getKey()) != null) {
+								Player p = Bukkit.getPlayer(ent.getKey());
+								p.teleport(ent.getValue());
+								Bukkit.broadcastMessage("§aScattering: §6" + p.getName());
+								for (Player pl : Bukkit.getOnlinePlayers()) {
+									pl.playSound(pl.getLocation(), Sound.NOTE_PLING, 10, 2);
+								}
+							}
+						}
+					});
+					util.add(delay ? 5 : 0);
+				}
+
+				util.add("§e§lDone scattering!");
+				if (time != -2) {
+					util.add(delay ? 10 : 0);
+					util.add(new Runnable() {
+						public void run() {
+							start(time, resuming);
+						}
+					});
 				}
 			}
-		}
-		spread.clear();
-	}
+		});
 
-	public static Location getScatterLocation(Player p) {
-		String s = p.getName();
-
-		if (scatterLocs.containsKey(s)) {
-			return scatterLocs.get(s);
-		}
-		NumberTeam nt = nts.getTeam(s);
-		if (nt != null && scatterLocs.containsKey(nt.id + "")) {
-			return scatterLocs.get(nt.id + "");
-		}
-		return Multiworld.getUHC().getSpawnLocation();
+		util.execute();
 	}
 
 	public static void setInventory(Player p, ItemStack[] con, ItemStack[] acon) {

@@ -86,9 +86,9 @@ public class CommandUHC implements CommandExecutor {
 			}
 			if (args[0].equalsIgnoreCase("start")) {
 				if (args.length == 1) {
-					UltraHC.start(0);
+					UltraHC.startSpread(0);
 				} else {
-					UltraHC.start(Long.parseLong(args[1]));
+					UltraHC.startSpread(Long.parseLong(args[1]));
 				}
 			}
 			if (args[0].equalsIgnoreCase("stop")) {
@@ -235,8 +235,15 @@ public class CommandUHC implements CommandExecutor {
 
 			if (args[0].equalsIgnoreCase("spread")) {
 				int rad = Integer.parseInt(args[1]);
+				boolean delay = true;
+				if (args.length > 2) {
+					try {
+						delay = Boolean.parseBoolean(args[2]);
+					} catch (Exception e) {
+					}
+				}
 
-				UltraHC.spreadPlayers(rad);
+				UltraHC.spreadPlayers(rad, delay);
 			}
 
 			if (args[0].equalsIgnoreCase("starttime")) {
@@ -369,7 +376,7 @@ public class CommandUHC implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("dropChestsHG")) {
 				HungerGamesHandler.dropChests();
 			}
-			
+
 			if (args[0].equalsIgnoreCase("displayDeathsHG")) {
 				HungerGamesHandler.displayDeaths();
 			}
