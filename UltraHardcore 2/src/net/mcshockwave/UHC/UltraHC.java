@@ -224,20 +224,18 @@ public class UltraHC extends JavaPlugin {
 
 		if (started)
 			return;
-		started = true;
 
 		if (!resuming) {
 			if (hg && hgh) {
 				Bukkit.broadcastMessage("§eGenerating center...");
 				HungerGamesHandler.createCenter();
 			}
-			Bukkit.broadcastMessage("§aStarting spread...");
 			if (hg && hgh) {
 				HungerGamesHandler.spreadAll(30, Multiworld.getUHC().getHighestBlockYAt(0, 0) + 1);
 				HungerGamesHandler.preparePlayers();
 				start(time, resuming);
 			} else {
-				spreadPlayers(Option.Spread_Radius.getInt(), true, time, resuming);
+				spreadPlayers(Option.Spread_Radius.getInt(), true, false, time, resuming);
 			}
 		} else {
 			start(time, resuming);
@@ -246,6 +244,8 @@ public class UltraHC extends JavaPlugin {
 	}
 
 	public static void start(long time, boolean resuming) {
+		started = true;
+
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Chunk c = p.getLocation().getChunk();
 
@@ -381,7 +381,7 @@ public class UltraHC extends JavaPlugin {
 						CommandUHC.genWalls(Multiworld.getUHC(), 100);
 
 						Bukkit.broadcastMessage("§bSpreading players...");
-						spreadPlayers(100, true);
+						spreadPlayers(100, true, true);
 					} else if (end.equalsIgnoreCase("Compasses")) {
 						Bukkit.broadcastMessage("§a§lCompass Time! Everyone has received a compass. Right-click the compass to point to close players.");
 
@@ -540,6 +540,9 @@ public class UltraHC extends JavaPlugin {
 			ret += nts.teams.size();
 		}
 		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (UltraHC.specs.contains(p.getName())) {
+				continue;
+			}
 			if (nts.isTeamGame()) {
 				if (nts.getTeam(p.getName()) != null) {
 					continue;
@@ -553,24 +556,25 @@ public class UltraHC extends JavaPlugin {
 		return ret;
 	}
 
-	public static void spreadPlayers(int spreadDistance, final boolean delay) {
-		spreadPlayers(spreadDistance, delay, -2, false);
+	public static void spreadPlayers(int spreadDistance, final boolean delay, final boolean instant) {
+		spreadPlayers(spreadDistance, delay, instant, -2, false);
 	}
 
-	public static void spreadPlayers(int spreadDistance, final boolean delay, final long time, final boolean resuming) {
+	public static void spreadPlayers(int spreadDistance, final boolean delay, final boolean instant, final long time,
+			final boolean resuming) {
 		SchedulerUtils util = SchedulerUtils.getNew();
-		util.add("§cGetting scatter locations...");
+		Bukkit.broadcastMessage("§cGetting scatter locations...");
 		final Location[] locs = ScatterManager.getScatterLocations(Multiworld.getUHC(), spreadDistance,
 				getScatterAmount());
 		util.add(delay ? 10 : 0);
-		util.add("§cLoading chunks...");
+		util.add("§aLoading chunks... (this may take a while)");
 		for (final Location l : locs) {
 			util.add(new Runnable() {
 				public void run() {
 					l.getChunk().load(true);
 				}
 			});
-			util.add(delay ? 1 : 0);
+			util.add(delay ? 10 : 0);
 		}
 		util.add(delay ? 9 : 0);
 		util.add("§eLoading locations...");
@@ -579,6 +583,10 @@ public class UltraHC extends JavaPlugin {
 				public void run() {
 					int index = 0;
 					for (NumberTeam nt : nts.teams) {
+						if (index >= locs.length) {
+							continue;
+						}
+
 						final Location l = locs[index];
 						for (String s : nt.getPlayersArray()) {
 							ScatterManager.scatterLocs.put(s, l);
@@ -587,6 +595,14 @@ public class UltraHC extends JavaPlugin {
 					}
 					for (Player p : Bukkit.getOnlinePlayers()) {
 						if (nts.getTeam(p.getName()) == null) {
+							if (index >= locs.length) {
+								continue;
+							}
+
+							if (UltraHC.specs.contains(p.getName())) {
+								continue;
+							}
+
 							ScatterManager.scatterLocs.put(p.getName(), locs[index]);
 							index++;
 						}
@@ -598,6 +614,14 @@ public class UltraHC extends JavaPlugin {
 				public void run() {
 					int index = 0;
 					for (Player p : Bukkit.getOnlinePlayers()) {
+						if (index >= locs.length) {
+							continue;
+						}
+
+						if (UltraHC.specs.contains(p.getName())) {
+							continue;
+						}
+
 						ScatterManager.scatterLocs.put(p.getName(), locs[index]);
 						index++;
 					}
@@ -616,14 +640,18 @@ public class UltraHC extends JavaPlugin {
 							if (Bukkit.getPlayer(ent.getKey()) != null) {
 								Player p = Bukkit.getPlayer(ent.getKey());
 								p.teleport(ent.getValue());
-								Bukkit.broadcastMessage("§aScattering: §6" + p.getName());
+								Bukkit.broadcastMessage("§aScattering: §6"
+										+ p.getName()
+										+ " §8[§7"
+										+ (nts.getTeam(p.getName()) != null ? "Team " + nts.getTeam(p.getName()).id
+												: "Solo") + "§8]");
 								for (Player pl : Bukkit.getOnlinePlayers()) {
 									pl.playSound(pl.getLocation(), Sound.NOTE_PLING, 10, 2);
 								}
 							}
 						}
 					});
-					util.add(delay ? 5 : 0);
+					util.add(instant ? 0 : 2);
 				}
 
 				util.add("§e§lDone scattering!");
@@ -635,6 +663,8 @@ public class UltraHC extends JavaPlugin {
 						}
 					});
 				}
+
+				util.execute();
 			}
 		});
 

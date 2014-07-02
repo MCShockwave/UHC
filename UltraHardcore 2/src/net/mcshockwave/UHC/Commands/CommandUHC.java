@@ -243,7 +243,7 @@ public class CommandUHC implements CommandExecutor {
 					}
 				}
 
-				UltraHC.spreadPlayers(rad, delay);
+				UltraHC.spreadPlayers(rad, delay, !delay);
 			}
 
 			if (args[0].equalsIgnoreCase("starttime")) {

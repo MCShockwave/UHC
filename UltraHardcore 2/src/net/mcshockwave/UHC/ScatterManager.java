@@ -48,7 +48,7 @@ public class ScatterManager {
 						close = true;
 					}
 				}
-				if (!close && isValidSpawnLocation(r)) {
+				if (!close && isValidSpawnLocation(r.clone())) {
 					locs.add(r);
 					good = true;
 				} else {
@@ -69,6 +69,7 @@ public class ScatterManager {
 			Material.LAVA, Material.CACTUS };
 
 	public static boolean isValidSpawnLocation(Location l) {
+		l.setY(l.getWorld().getHighestBlockYAt(l.getBlockX(), l.getBlockZ()));
 		Material m = l.add(0, -1, 0).getBlock().getType();
 		boolean noHazard = true;
 		if (l.getBlockY() < 48) {
