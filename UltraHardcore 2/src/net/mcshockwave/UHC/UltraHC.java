@@ -20,6 +20,7 @@ import net.mcshockwave.UHC.Utils.BarUtil;
 import net.mcshockwave.UHC.Utils.CustomSignUtils.CustomSignListener;
 import net.mcshockwave.UHC.Utils.FakePlayer;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
+import net.mcshockwave.UHC.Utils.NametagUtils;
 import net.mcshockwave.UHC.Utils.SchedulerUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
 
@@ -172,6 +173,8 @@ public class UltraHC extends JavaPlugin {
 		Multiworld.getUHC().setSpawnLocation(0, Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
 		
 		FakePlayer.init();
+		
+		NametagUtils.init();
 	}
 
 	public static void registerKillScoreboard() {

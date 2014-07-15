@@ -1,6 +1,6 @@
 package net.mcshockwave.UHC.Utils;
 
-import net.mcshockwave.UHC.Utils.CustomEntityRegistrar;
+import net.mcshockwave.MCS.Entities.CustomEntityRegistrar;
 import net.minecraft.server.v1_7_R2.Entity;
 import net.minecraft.server.v1_7_R2.EntityAmbient;
 import net.minecraft.server.v1_7_R2.EntityBat;
@@ -24,6 +24,8 @@ public class NametagUtils {
 	private static Map<String, NametagEntity>	entities	= new HashMap<>();
 
 	public static void init() {
+		CustomEntityRegistrar.addCustomEntity("NametagHider", EntityType.BAT, EntityBat.class, NametagEntity.class);
+
 		Iterator<org.bukkit.entity.Entity> localIterator2;
 		for (Iterator<World> localIterator1 = Bukkit.getWorlds().iterator(); localIterator1.hasNext(); localIterator2
 				.hasNext()) {
@@ -34,10 +36,6 @@ public class NametagUtils {
 				entity.remove();
 			}
 		}
-	}
-
-	public void onLoad() {
-		CustomEntityRegistrar.addCustomEntity("NametagHider", EntityType.BAT, EntityBat.class, NametagEntity.class);
 	}
 
 	public static void disable() {
@@ -106,7 +104,7 @@ public class NametagUtils {
 		// }
 
 		public void h() {
-			this.motX = (this.motY = this.motZ = 0.0D);
+			this.motX = this.motY = this.motZ = 0.0D;
 			a(0.0F, 0.0F);
 			a(0.0F, 0.0F, 0.0F);
 		}
