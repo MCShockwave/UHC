@@ -2,8 +2,8 @@ name: MCShockwaveUHC
 version: 2.0
 main: net.mcshockwave.UHC.UltraHC
 author: Blaxcraft
-depend: [WorldEdit]
-softdepend: [MCShockwave, ProtocolLib]
+depend: [WorldEdit, ProtocolLib]
+softdepend: [MCShockwave]
 commands:
    uhc:
    team:

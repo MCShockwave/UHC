@@ -177,6 +177,11 @@ public enum Option {
 		Material.NETHER_FENCE,
 		0,
 		true),
+	Dead_Bodies(
+		Category.Game_Settings,
+		Material.SKULL_ITEM,
+		1,
+		false),
 	Enable_Nether(
 		Category.Game_Settings,
 		Material.NETHERRACK,

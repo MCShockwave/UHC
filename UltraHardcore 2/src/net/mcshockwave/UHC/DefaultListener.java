@@ -12,6 +12,7 @@ import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.Utils.BlockFace2DVector;
+import net.mcshockwave.UHC.Utils.FakePlayer;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
 
@@ -338,8 +339,10 @@ public class DefaultListener implements Listener {
 		final Player p = event.getEntity();
 
 		String dm = event.getDeathMessage();
-		if (dm.contains(" using ")) {
-			dm = event.getDeathMessage().substring(0, dm.lastIndexOf(" using "));
+		String us = " using ";
+		if (dm.contains(us)) {
+			dm = event.getDeathMessage().substring(0, dm.lastIndexOf(us) + us.length()) + "<"
+					+ p.getKiller().getItemInHand().getItemMeta().getDisplayName() + ">";
 		}
 		event.setDeathMessage(dm);
 
@@ -412,6 +415,14 @@ public class DefaultListener implements Listener {
 			if (Scenarios.Team_DM.isEnabled()) {
 				event.getDrops().clear();
 			}
+
+			if (Option.Dead_Bodies.getBoolean()) {
+				FakePlayer fp = FakePlayer.spawnNew(p.getLocation(), p.getName());
+				fp.startAnimation(50, false);
+
+				fp.setInventory(p.getInventory(), true);
+				event.getDrops().clear();
+			}
 		}
 	}
 
@@ -453,7 +464,9 @@ public class DefaultListener implements Listener {
 			}
 		}, 10l);
 
-		event.setRespawnLocation(ScatterManager.getLocation(p.getName()));
+		if (ScatterManager.getLocation(p.getName()) != null) {
+			event.setRespawnLocation(ScatterManager.getLocation(p.getName()));
+		}
 
 		if (getLives(p.getName()) == -8 || getLives(p.getName()) > 1) {
 			if (getLives(p.getName()) != -8) {

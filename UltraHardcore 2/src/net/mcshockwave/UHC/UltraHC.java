@@ -17,9 +17,10 @@ import net.mcshockwave.UHC.Listeners.HungerGamesHandler;
 import net.mcshockwave.UHC.Listeners.MoleListener;
 import net.mcshockwave.UHC.Menu.ItemMenuListener;
 import net.mcshockwave.UHC.Utils.BarUtil;
-import net.mcshockwave.UHC.Utils.SchedulerUtils;
 import net.mcshockwave.UHC.Utils.CustomSignUtils.CustomSignListener;
+import net.mcshockwave.UHC.Utils.FakePlayer;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
+import net.mcshockwave.UHC.Utils.SchedulerUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
 
 import org.bukkit.Bukkit;
@@ -58,6 +59,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
@@ -134,25 +136,42 @@ public class UltraHC extends JavaPlugin {
 				ChatColor.GOLD + "Golden Head")).shape("III", "IHI", "III").setIngredient('I', Material.GOLD_INGOT)
 				.setIngredient('H', new ItemStack(Material.SKULL_ITEM, 1, (short) 3).getData()));
 
-		if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
-			ProtocolManager pm = ProtocolLibrary.getProtocolManager();
-			PacketAdapter pa = null;
-			if (pa == null) {
-				pa = new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.LOGIN) {
-					@Override
-					public void onPacketSending(PacketEvent event) {
-						if (event.getPacketType() == PacketType.Play.Server.LOGIN) {
-							event.getPacket().getBooleans().write(0, true);
-						}
+		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
+		PacketAdapter pa = null;
+		if (pa == null) {
+			pa = new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.LOGIN) {
+				@Override
+				public void onPacketSending(PacketEvent event) {
+					if (event.getPacketType() == PacketType.Play.Server.LOGIN) {
+						event.getPacket().getBooleans().write(0, true);
 					}
-				};
-			}
-			pm.addPacketListener(pa);
+				}
+			};
 		}
+		pm.addPacketListener(pa);
+		pm.addPacketListener(new PacketAdapter(ins, PacketType.Play.Client.USE_ENTITY) {
+			@Override
+			public void onPacketReceiving(PacketEvent event) {
+				PacketContainer con = event.getPacket();
+				Player p = event.getPlayer();
+
+				short id = con.getIntegers().read(0).shortValue();
+
+				if (FakePlayer.fakePlayers.containsKey(id)) {
+					final FakePlayer fp = FakePlayer.fakePlayers.get(id);
+
+					if (fp.getInventory() != null) {
+						p.openInventory(fp.getInventory());
+					}
+				}
+			}
+		});
 
 		rerandomize();
 
 		Multiworld.getUHC().setSpawnLocation(0, Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
+		
+		FakePlayer.init();
 	}
 
 	public static void registerKillScoreboard() {
