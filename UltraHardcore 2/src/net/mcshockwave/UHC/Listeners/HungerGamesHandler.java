@@ -391,7 +391,7 @@ public class HungerGamesHandler implements Listener {
 		World w = Multiworld.getUHC();
 		BukkitWorld bw = new BukkitWorld(w);
 
-		high = w.getHighestBlockYAt(0, 0) - 1;
+		high = w.getHighestBlockYAt(0, 0) - 2;
 
 		EditSession es = new EditSession(bw, Integer.MAX_VALUE);
 

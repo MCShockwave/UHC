@@ -1,6 +1,5 @@
 package net.mcshockwave.UHC.Utils;
 
-import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.UHC.UltraHC;
 
 import org.bukkit.Bukkit;
@@ -146,7 +145,7 @@ public class FakePlayer {
 	public void startAnimation(int times, boolean destroy) {
 		long delay = 0;
 		for (int i = 0; i < times; i++) {
-			Bukkit.getScheduler().runTaskLater(MCShockwave.instance, new Runnable() {
+			Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
 				public void run() {
 					if (!exists) {
 						return;
@@ -173,7 +172,7 @@ public class FakePlayer {
 			}, delay += rand.nextInt(15) + 5);
 		}
 		if (destroy && exists) {
-			Bukkit.getScheduler().runTaskLater(MCShockwave.instance, new Runnable() {
+			Bukkit.getScheduler().runTaskLater(UltraHC.ins, new Runnable() {
 				public void run() {
 					destroy();
 				}

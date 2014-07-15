@@ -23,7 +23,7 @@ public class NametagUtils {
 	private static Map<String, NametagEntity>	entities	= new HashMap<>();
 
 	public static void init() {
-		CustomEntityRegistrar.addCustomEntity("NametagHider", EntityType.BAT, EntityBat.class, NametagEntity.class);
+		CustomEntityRegistrar.addCustomEntity("UHCNametagHider", EntityType.BAT, EntityBat.class, NametagEntity.class);
 
 		Iterator<org.bukkit.entity.Entity> localIterator2;
 		for (Iterator<World> localIterator1 = Bukkit.getWorlds().iterator(); localIterator1.hasNext(); localIterator2
@@ -73,6 +73,10 @@ public class NametagUtils {
 	}
 
 	private static class NametagEntity extends EntityAmbient {
+		public NametagEntity(net.minecraft.server.v1_7_R2.World w) {
+			super(w);
+		}
+
 		public NametagEntity(Player player) {
 			super(((CraftWorld) player.getWorld()).getHandle());
 

@@ -319,9 +319,9 @@ public class UltraHC extends JavaPlugin {
 				// + count.getTimeString());
 				BarUtil.displayTextBar(getBarText(), getBarHealth());
 
-				if (Option.Show_Nametags.getBoolean()) {
+				if (!Option.Show_Nametags.getBoolean()) {
 					for (Player p : getAlive()) {
-						if (!NametagUtils.isNametagHidden(p)) {
+						if (p.getPassenger() == null) {
 							NametagUtils.hideNametag(p);
 						}
 					}

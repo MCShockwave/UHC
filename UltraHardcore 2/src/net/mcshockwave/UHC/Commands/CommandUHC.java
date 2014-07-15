@@ -9,6 +9,7 @@ import net.mcshockwave.UHC.Listeners.ResurrectListener;
 import net.mcshockwave.UHC.Menu.ItemMenu;
 import net.mcshockwave.UHC.Menu.ItemMenu.Button;
 import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
+import net.mcshockwave.UHC.Utils.NametagUtils;
 import net.mcshockwave.UHC.Utils.SerializationUtils;
 import net.mcshockwave.UHC.db.ConfigFile;
 import net.mcshockwave.UHC.worlds.Multiworld;
@@ -379,6 +380,22 @@ public class CommandUHC implements CommandExecutor {
 
 			if (args[0].equalsIgnoreCase("displayDeathsHG")) {
 				HungerGamesHandler.displayDeaths();
+			}
+
+			if (args[0].equalsIgnoreCase("hidetag")) {
+				if (args.length > 1) {
+					NametagUtils.hideNametag(Bukkit.getPlayer(args[1]));
+				} else {
+					NametagUtils.hideNametag((Player) sender);
+				}
+			}
+
+			if (args[0].equalsIgnoreCase("showtag")) {
+				if (args.length > 1) {
+					NametagUtils.showNametag(Bukkit.getPlayer(args[1]));
+				} else {
+					NametagUtils.showNametag((Player) sender);
+				}
 			}
 		}
 		return true;
