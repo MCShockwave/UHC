@@ -182,6 +182,11 @@ public enum Option {
 		Material.SKULL_ITEM,
 		1,
 		false),
+	Show_Nametags(
+		Category.Game_Settings,
+		Material.NAME_TAG,
+		0,
+		true),
 	Enable_Nether(
 		Category.Game_Settings,
 		Material.NETHERRACK,

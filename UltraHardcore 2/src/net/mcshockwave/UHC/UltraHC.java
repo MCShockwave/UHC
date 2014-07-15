@@ -171,9 +171,9 @@ public class UltraHC extends JavaPlugin {
 		rerandomize();
 
 		Multiworld.getUHC().setSpawnLocation(0, Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
-		
+
 		FakePlayer.init();
-		
+
 		NametagUtils.init();
 	}
 
@@ -318,6 +318,14 @@ public class UltraHC extends JavaPlugin {
 				// Option.getScenario().name().replace('_', ' ') + " §6"
 				// + count.getTimeString());
 				BarUtil.displayTextBar(getBarText(), getBarHealth());
+
+				if (Option.Show_Nametags.getBoolean()) {
+					for (Player p : getAlive()) {
+						if (!NametagUtils.isNametagHidden(p)) {
+							NametagUtils.hideNametag(p);
+						}
+					}
+				}
 
 				if (Option.Eternal_Daylight.getBoolean()) {
 					Multiworld.getUHC().setTime(5000);
