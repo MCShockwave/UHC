@@ -644,7 +644,7 @@ public enum Option {
 
 	public static ItemMenu getMenuFor(final Enum<?> category, final boolean editable) {
 		ItemMenu m = new ItemMenu(category.name().replace('_', ' ') + " - " + (editable ? "Editable" : "Viewing"),
-				getOptionsFor(category).size());
+				getOptionsFor(category).size() + 1);
 
 		int in = 0;
 		for (Option o : getOptionsFor(category)) {

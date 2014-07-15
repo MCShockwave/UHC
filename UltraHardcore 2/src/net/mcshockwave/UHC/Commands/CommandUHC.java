@@ -261,7 +261,7 @@ public class CommandUHC implements CommandExecutor {
 				}
 			}
 
-			if (args[0].equalsIgnoreCase("optionstring")) {
+			if (args[0].equalsIgnoreCase("ts")) {
 				String opt = Option.serialize();
 				((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(ChatSerializer
 						.a("{\"text\":\"\",\"extra\":[{\"text\":\"" + opt + "\",\"color\""
@@ -269,7 +269,7 @@ public class CommandUHC implements CommandExecutor {
 								+ "\"}}]}"), true));
 			}
 
-			if (args[0].equalsIgnoreCase("fromstring")) {
+			if (args[0].equalsIgnoreCase("fs")) {
 				String input = args[1];
 
 				Option.loadFromString(input);
