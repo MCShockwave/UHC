@@ -1,6 +1,5 @@
 package net.mcshockwave.UHC.Utils;
 
-import net.mcshockwave.MCS.Entities.CustomEntityRegistrar;
 import net.minecraft.server.v1_7_R2.Entity;
 import net.minecraft.server.v1_7_R2.EntityAmbient;
 import net.minecraft.server.v1_7_R2.EntityBat;
