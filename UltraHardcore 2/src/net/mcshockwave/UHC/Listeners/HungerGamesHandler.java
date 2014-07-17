@@ -74,7 +74,7 @@ public class HungerGamesHandler implements Listener {
 
 			util.add(60);
 
-			for (int i = 0; i < DISTANCE_BEGIN + 1; i++) {
+			for (int i = 1; i <= DISTANCE_BEGIN + 1; i++) {
 				final int y = (high - DISTANCE_BEGIN) + i;
 				util.add(new Runnable() {
 					public void run() {
