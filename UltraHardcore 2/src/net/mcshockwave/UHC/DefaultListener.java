@@ -267,10 +267,12 @@ public class DefaultListener implements Listener {
 		}
 
 		if (UltraHC.isMCShockwaveEnabled()) {
-			return SQLTable.hasRank(p.getName(), Rank.valueOf(op.toUpperCase().replace(' ', '_')));
-		} else {
-			return p.isWhitelisted();
+			if (op.equalsIgnoreCase("Mod+")) {
+				return SQLTable.hasRank(p.getName(), Rank.JR_MOD);
+			}
 		}
+		
+		return p.isWhitelisted();
 	}
 
 	// HashMap<String, BukkitTask> logOut = new HashMap<>();
