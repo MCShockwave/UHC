@@ -6,12 +6,12 @@ import net.mcshockwave.UHC.Utils.LocUtils;
 import net.mcshockwave.UHC.Utils.PacketUtils;
 import net.mcshockwave.UHC.Utils.PacketUtils.ParticleEffect;
 import net.mcshockwave.UHC.worlds.Multiworld;
-import net.minecraft.server.v1_7_R2.EntityLiving;
-import net.minecraft.server.v1_7_R2.EntitySkeleton;
-import net.minecraft.server.v1_7_R2.EntityZombie;
-import net.minecraft.server.v1_7_R2.GenericAttributes;
-import net.minecraft.server.v1_7_R2.Items;
-import net.minecraft.server.v1_7_R2.World;
+import net.minecraft.server.v1_7_R4.EntityLiving;
+import net.minecraft.server.v1_7_R4.EntitySkeleton;
+import net.minecraft.server.v1_7_R4.EntityZombie;
+import net.minecraft.server.v1_7_R4.GenericAttributes;
+import net.minecraft.server.v1_7_R4.Items;
+import net.minecraft.server.v1_7_R4.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -19,7 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -66,7 +66,7 @@ public class TowerListener implements Listener {
 		particles = new BukkitRunnable() {
 			public void run() {
 				for (Entity e : Multiworld.getUHC().getEntities()) {
-					net.minecraft.server.v1_7_R2.Entity nmsE = ((CraftEntity) e).getHandle();
+					net.minecraft.server.v1_7_R4.Entity nmsE = ((CraftEntity) e).getHandle();
 					if (spawned.containsKey(nmsE)) {
 						if (spawned.get(nmsE) == CustomZombie.class) {
 							PacketUtils.playParticleEffect(ParticleEffect.FLAME, e.getLocation(), 0.2f, 0.05f, 5);
@@ -88,11 +88,11 @@ public class TowerListener implements Listener {
 							rand.nextBoolean() ? CustomSkeleton.class : CustomZombie.class,
 							isAboveBedrock(loc.getBlock(), SPAWN_CHECK_AMOUNT).getRelative(0, 1, 0).getLocation());
 					if (el instanceof EntitySkeleton) {
-						el.setEquipment(0, new net.minecraft.server.v1_7_R2.ItemStack(Items.BOW));
+						el.setEquipment(0, new net.minecraft.server.v1_7_R4.ItemStack(Items.BOW));
 						spawned.put(el, CustomSkeleton.class);
 					}
 					if (el instanceof EntityZombie) {
-						el.setEquipment(0, new net.minecraft.server.v1_7_R2.ItemStack(Items.GOLD_SWORD));
+						el.setEquipment(0, new net.minecraft.server.v1_7_R4.ItemStack(Items.GOLD_SWORD));
 						spawned.put(el, CustomZombie.class);
 					}
 				}
@@ -136,7 +136,7 @@ public class TowerListener implements Listener {
 		public CustomZombie(World world) {
 			super(world);
 
-			this.getAttributeInstance(GenericAttributes.a).setValue(30);
+			this.getAttributeInstance(GenericAttributes.maxHealth).setValue(30);
 			this.getAttributeInstance(GenericAttributes.c).setValue(1);
 			this.getAttributeInstance(GenericAttributes.d).setValue(0.4);
 
@@ -149,7 +149,7 @@ public class TowerListener implements Listener {
 		public CustomSkeleton(World world) {
 			super(world);
 
-			this.getAttributeInstance(GenericAttributes.a).setValue(30);
+			this.getAttributeInstance(GenericAttributes.maxHealth).setValue(30);
 		}
 
 		@Override

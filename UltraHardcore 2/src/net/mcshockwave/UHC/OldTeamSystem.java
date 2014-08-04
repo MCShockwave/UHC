@@ -227,7 +227,7 @@ public class OldTeamSystem {
 	}
 
 	public ItemMenu getAddMenu(final ChatColor c) {
-		Player[] ps = Bukkit.getOnlinePlayers();
+		Player[] ps = Bukkit.getOnlinePlayers().toArray(new Player[0]);
 
 		ItemMenu m = new ItemMenu("Add Players - " + getName(c), 54);
 

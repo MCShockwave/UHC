@@ -409,9 +409,9 @@ public class HungerGamesHandler implements Listener {
 	}
 
 	public static void spreadAll(double radius, int y) {
-		Location[] locs = getCircleLocations(Multiworld.getUHC(), radius, Bukkit.getOnlinePlayers().length, y);
+		Location[] locs = getCircleLocations(Multiworld.getUHC(), radius, Bukkit.getOnlinePlayers().size(), y);
 
-		Player[] pls = Bukkit.getOnlinePlayers();
+		Player[] pls = Bukkit.getOnlinePlayers().toArray(new Player[0]);
 
 		List<Player> spread = new ArrayList<>();
 

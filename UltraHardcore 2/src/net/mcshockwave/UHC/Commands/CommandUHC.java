@@ -13,8 +13,8 @@ import net.mcshockwave.UHC.Utils.NametagUtils;
 import net.mcshockwave.UHC.Utils.SerializationUtils;
 import net.mcshockwave.UHC.db.ConfigFile;
 import net.mcshockwave.UHC.worlds.Multiworld;
-import net.minecraft.server.v1_7_R2.ChatSerializer;
-import net.minecraft.server.v1_7_R2.PacketPlayOutChat;
+import net.minecraft.server.v1_7_R4.ChatSerializer;
+import net.minecraft.server.v1_7_R4.PacketPlayOutChat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,7 +25,7 @@ import org.bukkit.block.CommandBlock;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -428,7 +428,7 @@ public class CommandUHC implements CommandExecutor {
 	}
 
 	public static ItemMenu getPlayerKitMenu() {
-		ItemMenu m = new ItemMenu("Give Kits - Players", Bukkit.getOnlinePlayers().length);
+		ItemMenu m = new ItemMenu("Give Kits - Players", Bukkit.getOnlinePlayers().size());
 
 		int slot = 0;
 		for (final Player p : Bukkit.getOnlinePlayers()) {

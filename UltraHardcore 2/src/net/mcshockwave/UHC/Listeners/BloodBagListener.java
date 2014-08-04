@@ -37,7 +37,6 @@ public class BloodBagListener implements Listener {
 		return c;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void updatePlayer(Player p) {
 		int curBlocked = getBlockedSlots(p);
 		int neededBlocked = (int) (p.getMaxHealth() - p.getHealth());

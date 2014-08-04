@@ -1,14 +1,14 @@
 package net.mcshockwave.UHC.Utils;
 
-import net.minecraft.server.v1_7_R2.BiomeBase;
-import net.minecraft.server.v1_7_R2.BiomeMeta;
-import net.minecraft.server.v1_7_R2.Entity;
-import net.minecraft.server.v1_7_R2.EntityInsentient;
-import net.minecraft.server.v1_7_R2.EntityTypes;
-import net.minecraft.server.v1_7_R2.World;
+import net.minecraft.server.v1_7_R4.BiomeBase;
+import net.minecraft.server.v1_7_R4.BiomeMeta;
+import net.minecraft.server.v1_7_R4.Entity;
+import net.minecraft.server.v1_7_R4.EntityInsentient;
+import net.minecraft.server.v1_7_R4.EntityTypes;
+import net.minecraft.server.v1_7_R4.World;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.entity.EntityType;
 
 import java.lang.reflect.Field;

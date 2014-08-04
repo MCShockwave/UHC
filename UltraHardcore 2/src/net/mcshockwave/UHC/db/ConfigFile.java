@@ -28,6 +28,7 @@ public enum ConfigFile {
 		saveDefaults();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void reload() {
 		if (file == null) {
 			file = new File(UltraHC.ins.getDataFolder(), name);

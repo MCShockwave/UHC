@@ -50,7 +50,6 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -553,7 +552,7 @@ public class UltraHC extends JavaPlugin {
 				p.kickPlayer("§c§lThanks for playing MCShockwave UHC!");
 			}
 		}, deathKickSeconds * 20);
-		scb.resetScores(p);
+		scb.resetScores(p.getName());
 		// for (NumberTeam nt : nts.teams) {
 		// nt.sc.resetScores(p);
 		// }
@@ -806,7 +805,7 @@ public class UltraHC extends JavaPlugin {
 
 	public static void rerandomize() {
 		ArrayList<String> ret = new ArrayList<>();
-		ArrayList<Player> ps = new ArrayList<>(Arrays.asList(Bukkit.getOnlinePlayers()));
+		ArrayList<Player> ps = new ArrayList<>(Bukkit.getOnlinePlayers());
 
 		for (int i = 0; i < ps.size(); i++) {
 			Player r = ps.get(rand.nextInt(ps.size()));

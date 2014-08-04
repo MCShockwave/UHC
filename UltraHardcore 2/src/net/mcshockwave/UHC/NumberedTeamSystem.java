@@ -491,9 +491,9 @@ public class NumberedTeamSystem {
 	}
 
 	public ItemMenu getAddMenu(final int id) {
-		Player[] ps = Bukkit.getOnlinePlayers();
+		Player[] ps = Bukkit.getOnlinePlayers().toArray(new Player[0]);
 
-		ItemMenu m = new ItemMenu("Add Players - #" + id, Bukkit.getOnlinePlayers().length);
+		ItemMenu m = new ItemMenu("Add Players - #" + id, Bukkit.getOnlinePlayers().size());
 
 		for (int i = 0; i < ps.length; i++) {
 			final Player p = ps[i];
@@ -620,7 +620,7 @@ public class NumberedTeamSystem {
 			}
 		} else {
 			double tcount = 0;
-			double numPlayers = Bukkit.getOnlinePlayers().length;
+			double numPlayers = Bukkit.getOnlinePlayers().size();
 
 			if (isTeamSize) {
 				tcount = (int) Math.ceil(numPlayers / num);

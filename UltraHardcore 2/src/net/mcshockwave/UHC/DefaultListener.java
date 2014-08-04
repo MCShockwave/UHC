@@ -218,7 +218,7 @@ public class DefaultListener implements Listener {
 	public void onServerListPing(ServerListPingEvent event) {
 		event.setMaxPlayers(UltraHC.maxPlayers);
 		String sta = CommandUHC.kitMOTD ? "§a[Open PvP]" : UltraHC.started ? "§4[Started]"
-				: (Bukkit.getOnlinePlayers().length >= UltraHC.maxPlayers) ? "§4[Full]"
+				: (Bukkit.getOnlinePlayers().size() >= UltraHC.maxPlayers) ? "§4[Full]"
 						: Bukkit.hasWhitelist() ? "§4[Whitelisted]" : "§a[Joinable]";
 		event.setMotd("§cMCShockwave §7UHC §8- " + sta);
 	}
@@ -231,7 +231,7 @@ public class DefaultListener implements Listener {
 			event.disallow(Result.KICK_BANNED, BanManager.getBanReason(p.getName()));
 		}
 
-		if (UltraHC.maxPlayers <= Bukkit.getOnlinePlayers().length) {
+		if (UltraHC.maxPlayers <= Bukkit.getOnlinePlayers().size()) {
 			event.disallow(Result.KICK_FULL, "§cServer full!");
 		}
 
