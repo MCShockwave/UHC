@@ -189,6 +189,14 @@ public enum Option {
 		Material.BLAZE_POWDER,
 		0,
 		false),
+	Display_Name(
+		Category.Game_Settings,
+		Material.BOAT,
+		0,
+		"MCShockwave UHC",
+		"MCShockwave UHC",
+		"VikingCraft UHC",
+		"Ultra Hardcore"),
 	Lives(
 		Category.End_Game,
 		Material.BEACON,

@@ -20,7 +20,6 @@ import net.mcshockwave.UHC.Utils.BarUtil;
 import net.mcshockwave.UHC.Utils.CustomSignUtils.CustomSignListener;
 import net.mcshockwave.UHC.Utils.FakePlayer;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
-import net.mcshockwave.UHC.Utils.NametagUtils;
 import net.mcshockwave.UHC.Utils.SchedulerUtils;
 import net.mcshockwave.UHC.worlds.Multiworld;
 
@@ -172,8 +171,6 @@ public class UltraHC extends JavaPlugin {
 		Multiworld.getUHC().setSpawnLocation(0, Multiworld.getUHC().getHighestBlockYAt(0, 0), 0);
 
 		FakePlayer.init();
-
-		NametagUtils.init();
 	}
 
 	public static void registerKillScoreboard() {
@@ -318,14 +315,6 @@ public class UltraHC extends JavaPlugin {
 				// + count.getTimeString());
 				BarUtil.displayTextBar(getBarText(), getBarHealth());
 
-				if (!Option.Show_Nametags.getBoolean()) {
-					for (Player p : getAlive()) {
-						if (p.getPassenger() == null) {
-							NametagUtils.hideNametag(p);
-						}
-					}
-				}
-
 				if (Option.Eternal_Daylight.getBoolean()) {
 					Multiworld.getUHC().setTime(5000);
 				} else {
@@ -457,7 +446,7 @@ public class UltraHC extends JavaPlugin {
 	}
 
 	public static String getBarText() {
-		return "§eMCShockwave UHC §6" + count.getTimeString() + "§0 - §a" + getTimeUntil();
+		return "§e" + Option.Display_Name.getString() + " §6" + count.getTimeString() + "§0 - §a" + getTimeUntil();
 	}
 
 	public static String	colors	= "c6ea2b3d5";
