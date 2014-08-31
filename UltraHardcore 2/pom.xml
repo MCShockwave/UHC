@@ -104,11 +104,6 @@
 			<version>3.4.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.comphenix.packetwrapper</groupId>
-			<artifactId>PacketWrapper</artifactId>
-			<version>1.7.2-R0.5</version>
-		</dependency>
-		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldedit</artifactId>
 			<version>5.5.7-SNAPSHOT</version>
