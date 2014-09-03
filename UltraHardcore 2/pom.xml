@@ -54,6 +54,7 @@
 					<include>plugin.yml</include>
 					<include>halloffame.yml</include>
 					<include>bans.yml</include>
+					<include>config.yml</include>
 				</includes>
 			</resource>
 		</resources>
