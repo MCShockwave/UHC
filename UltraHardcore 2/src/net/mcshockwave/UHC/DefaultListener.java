@@ -218,17 +218,22 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
 		event.setMaxPlayers(UltraHC.maxPlayers);
-		ConfigFile file = ConfigFile.Default;
-		String pvp = file.get().getString("status.pvp").replace('&', '§');
-		String started = file.get().getString("status.started").replace('&', '§');
-		String full = file.get().getString("status.full").replace('&', '§');
-		String whitelisted = file.get().getString("status.whitelisted").replace('&', '§');
-		String joinable = file.get().getString("status.joinable").replace('&', '§');
-		String sta = CommandUHC.kitMOTD ? pvp : UltraHC.started ? started
-				: (Bukkit.getOnlinePlayers().size() >= UltraHC.maxPlayers) ? full : Bukkit.hasWhitelist() ? whitelisted
-						: joinable;
-		String motd = file.get().getString("motd").replace('&', '§').replace("[status]", sta);
-		event.setMotd(motd);
+		try {
+			ConfigFile file = ConfigFile.Default;
+			String pvp = file.get().getString("status.pvp").replace('&', '§');
+			String started = file.get().getString("status.started").replace('&', '§');
+			String full = file.get().getString("status.full").replace('&', '§');
+			String whitelisted = file.get().getString("status.whitelisted").replace('&', '§');
+			String joinable = file.get().getString("status.joinable").replace('&', '§');
+			String sta = CommandUHC.kitMOTD ? pvp : UltraHC.started ? started
+					: (Bukkit.getOnlinePlayers().size() >= UltraHC.maxPlayers) ? full
+							: Bukkit.hasWhitelist() ? whitelisted : joinable;
+			String motd = file.get().getString("name").replace('&', '§');
+			motd = motd.replace("[status]", sta);
+			event.setMotd(motd);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@EventHandler
