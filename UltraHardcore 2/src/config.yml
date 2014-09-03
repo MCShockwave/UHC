@@ -1,0 +1,7 @@
+name: &cMCShockwave &7UHC &8- [status]
+status:
+   pvp: &a[Open PvP]
+   started: &4[Started]
+   full: &4[Full]
+   whitelisted: &4[Whitelisted]
+   joinable: &a[Joinable]

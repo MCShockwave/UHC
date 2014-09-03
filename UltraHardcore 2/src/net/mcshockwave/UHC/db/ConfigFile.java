@@ -15,7 +15,9 @@ public enum ConfigFile {
 	Bans(
 		"bans.yml"),
 	HOF(
-		"halloffame.yml");
+		"halloffame.yml"),
+	Default(
+		"config.yml");
 
 	public String				name;
 

@@ -14,6 +14,7 @@ import net.mcshockwave.UHC.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.UHC.Utils.BlockFace2DVector;
 import net.mcshockwave.UHC.Utils.FakePlayer;
 import net.mcshockwave.UHC.Utils.ItemMetaUtils;
+import net.mcshockwave.UHC.db.ConfigFile;
 import net.mcshockwave.UHC.worlds.Multiworld;
 
 import org.bukkit.Bukkit;
@@ -217,10 +218,17 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
 		event.setMaxPlayers(UltraHC.maxPlayers);
-		String sta = CommandUHC.kitMOTD ? "§a[Open PvP]" : UltraHC.started ? "§4[Started]"
-				: (Bukkit.getOnlinePlayers().size() >= UltraHC.maxPlayers) ? "§4[Full]"
-						: Bukkit.hasWhitelist() ? "§4[Whitelisted]" : "§a[Joinable]";
-		event.setMotd("§cMCShockwave §7UHC §8- " + sta);
+		ConfigFile file = ConfigFile.Default;
+		String pvp = file.get().getString("status.pvp").replace('&', '§');
+		String started = file.get().getString("status.started").replace('&', '§');
+		String full = file.get().getString("status.full").replace('&', '§');
+		String whitelisted = file.get().getString("status.whitelisted").replace('&', '§');
+		String joinable = file.get().getString("status.joinable").replace('&', '§');
+		String sta = CommandUHC.kitMOTD ? pvp : UltraHC.started ? started
+				: (Bukkit.getOnlinePlayers().size() >= UltraHC.maxPlayers) ? full : Bukkit.hasWhitelist() ? whitelisted
+						: joinable;
+		String motd = file.get().getString("motd").replace('&', '§').replace("[status]", sta);
+		event.setMotd(motd);
 	}
 
 	@EventHandler
@@ -271,7 +279,7 @@ public class DefaultListener implements Listener {
 				return SQLTable.hasRank(p.getName(), Rank.JR_MOD);
 			}
 		}
-		
+
 		return p.isWhitelisted();
 	}
 
