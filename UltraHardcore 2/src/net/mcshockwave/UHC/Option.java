@@ -65,11 +65,14 @@ public enum Option {
 		20,
 		10,
 		5),
-	Eternal_Daylight(
+	Time_Settings(
 		Category.Game_Settings,
 		Material.WATCH,
 		0,
-		true),
+		"Default",
+		"Default",
+		"Eternal Day",
+		"Eternal Night"),
 	Game_Length(
 		Category.End_Game,
 		Material.BEDROCK,

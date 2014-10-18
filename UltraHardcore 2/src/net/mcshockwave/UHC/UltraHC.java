@@ -315,8 +315,9 @@ public class UltraHC extends JavaPlugin {
 				// + count.getTimeString());
 				BarUtil.displayTextBar(getBarText(), getBarHealth());
 
-				if (Option.Eternal_Daylight.getBoolean()) {
-					Multiworld.getUHC().setTime(5000);
+				if (!Option.Time_Settings.getString().equalsIgnoreCase("Default")) {
+					Multiworld.getUHC().setTime(
+							Option.Time_Settings.getString().equalsIgnoreCase("Eternal Day") ? 5000 : 18000);
 				} else {
 					Multiworld.getUHC().setTime(count.getTime() * 20);
 				}
