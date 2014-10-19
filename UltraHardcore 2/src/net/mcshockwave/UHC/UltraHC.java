@@ -543,6 +543,9 @@ public class UltraHC extends JavaPlugin {
 			}
 		}, deathKickSeconds * 20);
 		scb.resetScores(p.getName());
+		if (!Option.Kill_Board_Remove_On_Death.getBoolean()) {
+			kills.getScore(p.getName()).setScore(totKills.get(p.getName()));
+		}
 		// for (NumberTeam nt : nts.teams) {
 		// nt.sc.resetScores(p);
 		// }

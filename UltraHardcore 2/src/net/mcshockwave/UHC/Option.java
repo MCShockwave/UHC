@@ -152,6 +152,11 @@ public enum Option {
 		Material.SKULL_ITEM,
 		3,
 		true),
+	Kill_Board_Remove_On_Death(
+		Category.Game_Settings,
+		Material.ITEM_FRAME,
+		0,
+		true),
 	Ender_Pearl_Damage(
 		Category.Game_Settings,
 		Material.ENDER_PEARL,
