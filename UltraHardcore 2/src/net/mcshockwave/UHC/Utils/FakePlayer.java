@@ -1,5 +1,6 @@
 package net.mcshockwave.UHC.Utils;
 
+import net.mcshockwave.UHC.Option;
 import net.mcshockwave.UHC.UltraHC;
 
 import org.bukkit.Bukkit;
@@ -49,17 +50,19 @@ public class FakePlayer {
 	public static void init() {
 		new BukkitRunnable() {
 			public void run() {
-				for (FakePlayer fp : fakePlayers.values()) {
-					for (Player p : fp.loc.getWorld().getPlayers()) {
-						if (fp.loc.distanceSquared(p.getLocation()) < MAX_RADIUS * MAX_RADIUS) {
-							if (!fp.canSee.contains(p.getName())) {
-								fp.showTo(p);
-								fp.canSee.add(p.getName());
-							}
-						} else {
-							if (fp.canSee.contains(p.getName())) {
-								fp.hideFrom(p);
-								fp.canSee.remove(p.getName());
+				if (Option.Dead_Bodies.getBoolean()) {
+					for (FakePlayer fp : fakePlayers.values()) {
+						for (Player p : fp.loc.getWorld().getPlayers()) {
+							if (fp.loc.distanceSquared(p.getLocation()) < MAX_RADIUS * MAX_RADIUS) {
+								if (!fp.canSee.contains(p.getName())) {
+									fp.showTo(p);
+									fp.canSee.add(p.getName());
+								}
+							} else {
+								if (fp.canSee.contains(p.getName())) {
+									fp.hideFrom(p);
+									fp.canSee.remove(p.getName());
+								}
 							}
 						}
 					}

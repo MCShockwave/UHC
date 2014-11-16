@@ -197,6 +197,11 @@ public enum Option {
 		Material.BLAZE_POWDER,
 		0,
 		false),
+	Tier_2_Potions(
+		Category.Game_Settings,
+		Material.GLOWSTONE_DUST,
+		0,
+		true),
 	Display_Name(
 		Category.Game_Settings,
 		Material.BOAT,

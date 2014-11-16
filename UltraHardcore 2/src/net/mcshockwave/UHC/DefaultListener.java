@@ -730,6 +730,14 @@ public class DefaultListener implements Listener {
 				&& (bm == Material.IRON_BLOCK || bm == Material.BEACON)) {
 			event.setCancelled(true);
 		}
+
+		if (Multiworld.getUHC().getName().equalsIgnoreCase(b.getWorld().getName())
+				&& !Option.Tier_2_Potions.getBoolean() && b.getType() == Material.GLOWSTONE) {
+			event.setCancelled(true);
+			b.setType(Material.AIR);
+			b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, Material.GLOWSTONE);
+			b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.GLOWSTONE));
+		}
 	}
 
 	@EventHandler
@@ -977,7 +985,8 @@ public class DefaultListener implements Listener {
 		for (Block b : event.blockList().toArray(new Block[0])) {
 			if (b.getLocation().getWorld() == Multiworld.getUHC() && Math.abs(b.getLocation().getX()) < 4
 					&& Math.abs(b.getLocation().getX()) < 4
-					&& UltraHC.count.getTotalMins() >= Option.Game_Length.getInt()) {
+					&& UltraHC.count.getTotalMins() >= Option.Game_Length.getInt() || b.getType() == Material.GLOWSTONE
+					&& !Option.Tier_2_Potions.getBoolean()) {
 				event.blockList().remove(b);
 			}
 		}
